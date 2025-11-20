@@ -1,15 +1,15 @@
 devkit_outputs = [
-  'frida-core.gir',
-  'frida-core.h',
-  static_lib_prefix + 'frida-core' + static_lib_suffix,
-  'frida-core-example.c',
+  'plawnekjx-core.gir',
+  'plawnekjx-core.h',
+  static_lib_prefix + 'plawnekjx-core' + static_lib_suffix,
+  'plawnekjx-core-example.c',
 ]
 
 if host_toolchain == 'microsoft'
   devkit_outputs += [
-    'frida-core-example.sln',
-    'frida-core-example.vcxproj',
-    'frida-core-example.vcxproj.filters',
+    'plawnekjx-core-example.sln',
+    'plawnekjx-core-example.vcxproj',
+    'plawnekjx-core-example.vcxproj.filters',
   ]
 endif
 
@@ -18,10 +18,10 @@ custom_target('core-devkit',
   output: devkit_outputs,
   command: [
     mkdevkit,
-    'frida-core',
+    'plawnekjx-core',
     f'@host_os@-@host_arch@',
     meson.current_build_dir(),
   ] + devkit_options,
   install: true,
-  install_dir: get_option('libdir') / 'frida' / 'devkits' / 'core'
+  install_dir: get_option('libdir') / 'plawnekjx' / 'devkits' / 'core'
 )

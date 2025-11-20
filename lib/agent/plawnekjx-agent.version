@@ -1,0 +1,7 @@
+{
+  global:
+    plawnekjx_agent_main;
+
+  local:
+    *;
+};

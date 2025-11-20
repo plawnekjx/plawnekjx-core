@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class PortalService : Object {
 		public signal void node_connected (uint connection_id, SocketAddress remote_address);
 		public signal void node_joined (uint connection_id, Application application);
@@ -1196,7 +1196,7 @@ namespace Frida {
 
 						AuthenticationService null_auth = new NullAuthenticationService ();
 						registrations.add (
-							connection.register_object (Frida.ObjectPath.AUTHENTICATION_SERVICE, null_auth));
+							connection.register_object (Plawnekjx.ObjectPath.AUTHENTICATION_SERVICE, null_auth));
 					} catch (IOError e) {
 						assert_not_reached ();
 					}
@@ -1412,7 +1412,7 @@ namespace Frida {
 					registrations.add (connection.register_object (ObjectPath.PORTAL_SESSION, session));
 
 					AuthenticationService null_auth = new NullAuthenticationService ();
-					registrations.add (connection.register_object (Frida.ObjectPath.AUTHENTICATION_SERVICE, null_auth));
+					registrations.add (connection.register_object (Plawnekjx.ObjectPath.AUTHENTICATION_SERVICE, null_auth));
 				} catch (IOError e) {
 					assert_not_reached ();
 				}

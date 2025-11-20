@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class ServiceSessionRegistry : Object {
 		public signal void session_closed (ServiceSessionId id);
 

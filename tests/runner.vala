@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public bool can_test_cross_arch_injection =
 #if CROSS_ARCH
 		true
@@ -8,7 +8,7 @@ namespace Frida {
 		;
 }
 
-namespace Frida.Test {
+namespace Plawnekjx.Test {
 	public static void run (string[] args) {
 		Environment.init (ref args);
 
@@ -69,20 +69,20 @@ namespace Frida.Test {
 			}
 		}
 
-		Frida.SystemTest.add_tests ();
+		Plawnekjx.SystemTest.add_tests ();
 
 #if HAVE_LOCAL_BACKEND
-		Frida.InjectorTest.add_tests ();
+		Plawnekjx.InjectorTest.add_tests ();
 
-		Frida.AgentTest.add_tests ();
+		Plawnekjx.AgentTest.add_tests ();
 #endif
 #if HAVE_GADGET && !WINDOWS
-		Frida.GadgetTest.add_tests ();
+		Plawnekjx.GadgetTest.add_tests ();
 #endif
-		Frida.HostSessionTest.add_tests ();
+		Plawnekjx.HostSessionTest.add_tests ();
 
 #if HAVE_COMPILER_BACKEND && !QNX
-		Frida.CompilerTest.add_tests ();
+		Plawnekjx.CompilerTest.add_tests ();
 #endif
 
 		GLib.Test.run ();
@@ -96,7 +96,7 @@ namespace Frida.Test {
 	}
 
 	public static string path_to_temporary_file (string name) {
-		var prefix = "frida-tests-%u-".printf (Gum.Process.get_id ());
+		var prefix = "plawnekjx-tests-%u-".printf (Gum.Process.get_id ());
 #if QNX
 		return Path.build_filename (GLib.Environment.get_tmp_dir (), prefix + name);
 #else
@@ -145,7 +145,7 @@ namespace Frida.Test {
 		}
 
 		string abi_name;
-		switch (Frida.Test.cpu ()) {
+		switch (Plawnekjx.Test.cpu ()) {
 			case CPU.X86_32:
 				abi_name = "x86";
 				break;

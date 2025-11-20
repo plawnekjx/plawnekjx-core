@@ -1,7 +1,7 @@
-option('frida_version',
+option('plawnekjx_version',
   type: 'string',
   value: '',
-  description: 'Frida version, such as 16.2.2 or 16.2.2-dev.27',
+  description: 'Plawnekjx version, such as 16.2.2 or 16.2.2-dev.27',
 )
 
 option('local_backend',
@@ -43,14 +43,14 @@ option('barebone_backend',
 option('compiler_backend',
   type: 'feature',
   value: 'auto',
-  description: 'Include frida-compile backend powered by ESBuild and typescript-go',
+  description: 'Include plawnekjx-compile backend powered by ESBuild and typescript-go',
 )
 
 option('assets',
   type: 'combo',
   choices: ['embedded', 'installed'],
   value: 'embedded',
-  description: 'Whether assets such as frida-agent should be embedded vs installed and loaded at runtime'
+  description: 'Whether assets such as plawnekjx-agent should be embedded vs installed and loaded at runtime'
 )
 
 option('asset_path_template',
@@ -68,25 +68,25 @@ option('compat',
 option('helper_modern',
   type: 'string',
   value: 'auto',
-  description: 'Prebuilt frida-helper to embed for supporting modern targets'
+  description: 'Prebuilt plawnekjx-helper to embed for supporting modern targets'
 )
 
 option('helper_legacy',
   type: 'string',
   value: 'auto',
-  description: 'Prebuilt frida-helper to embed for supporting legacy targets'
+  description: 'Prebuilt plawnekjx-helper to embed for supporting legacy targets'
 )
 
 option('helper_emulated_modern',
   type: 'string',
   value: 'auto',
-  description: 'Prebuilt frida-helper to embed for supporting modern emulated targets'
+  description: 'Prebuilt plawnekjx-helper to embed for supporting modern emulated targets'
 )
 
 option('helper_emulated_legacy',
   type: 'string',
   value: 'auto',
-  description: 'Prebuilt frida-helper to embed for supporting legacy emulated targets'
+  description: 'Prebuilt plawnekjx-helper to embed for supporting legacy emulated targets'
 )
 
 option('agent_modern',
@@ -116,25 +116,25 @@ option('agent_emulated_legacy',
 option('gadget',
   type: 'feature',
   value: 'auto',
-  description: 'Build frida-gadget',
+  description: 'Build plawnekjx-gadget',
 )
 
 option('server',
   type: 'feature',
   value: 'auto',
-  description: 'Build frida-server',
+  description: 'Build plawnekjx-server',
 )
 
 option('portal',
   type: 'feature',
   value: 'auto',
-  description: 'Build frida-portal',
+  description: 'Build plawnekjx-portal',
 )
 
 option('inject',
   type: 'feature',
   value: 'auto',
-  description: 'Build frida-inject',
+  description: 'Build plawnekjx-inject',
 )
 
 option('connectivity',
@@ -161,7 +161,7 @@ option('devkit_symbol_scope',
   choices: ['prefixed', 'original'],
   value: 'prefixed',
   description : 'How devkit generation treats third-party symbols:\n'
-                + ' - prefixed: add the \'_frida_\' prefix\n'
+                + ' - prefixed: add the \'_plawnekjx_\' prefix\n'
                 + ' - original: keep symbols exactly as upstream\n'
 )
 

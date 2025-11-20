@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  FRIDA_CORE_OPTIONS: '--with-devkits=core --enable-tests'
+  PLAWNEKJX_CORE_OPTIONS: '--with-devkits=core --enable-tests'
 
 jobs:
   native:
@@ -63,7 +63,7 @@ jobs:
           .\configure `
               --host=${{ matrix.id }} `
               --enable-compiler-backend `
-              ${{ env.FRIDA_CORE_OPTIONS }}
+              ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           .\make
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
@@ -72,7 +72,7 @@ jobs:
         run: |
           ./configure \
               --enable-compiler-backend \
-              ${{ env.FRIDA_CORE_OPTIONS }}
+              ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           make
       - name: Build
         if: matrix.id == 'linux-x86'
@@ -82,7 +82,7 @@ jobs:
                 --build=linux-x86 \
                 --host=linux-x86 \
                 --enable-compiler-backend \
-                ${{ env.FRIDA_CORE_OPTIONS }}
+                ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           make
       - name: Upload devkit
         if: ${{ !startsWith(matrix.id, 'linux-') }}
@@ -125,7 +125,7 @@ jobs:
           ./configure \
               ${{ matrix.opts }} \
               ${{ !contains(matrix.id, 'mips') && '--enable-compiler-backend' || '' }} \
-              ${{ env.FRIDA_CORE_OPTIONS }}
+              ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           make
       - name: Upload devkit
         if: ${{ !startsWith(matrix.id, 'linux-') }}
@@ -140,7 +140,7 @@ jobs:
         arch: [x86, x86_64, x86_64-musl, armhf, arm64, arm64-musl, mips, mipsel, mips64, mips64el]
       fail-fast: false
     runs-on: ubuntu-latest
-    container: ghcr.io/frida/x-tools-linux-${{ matrix.arch }}:latest
+    container: ghcr.io/plawnekjx/x-tools-linux-${{ matrix.arch }}:latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -156,7 +156,7 @@ jobs:
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
-              ${{ env.FRIDA_CORE_OPTIONS }}
+              ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           make
       - name: Upload devkit
         uses: actions/upload-artifact@v4
@@ -173,7 +173,7 @@ jobs:
         arch: [armbe8, arm64be]
       fail-fast: false
     runs-on: ubuntu-latest
-    container: ghcr.io/frida/x-tools-linux-${{ matrix.arch }}:latest
+    container: ghcr.io/plawnekjx/x-tools-linux-${{ matrix.arch }}:latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -204,8 +204,8 @@ jobs:
             export LD_LIBRARY_PATH=/lib:/lib64:/libilp32
             /sbin/entropy
             cat /etc/motd
-            export PS1='\u@frida:\w\$ '
-            /root/frida-tests
+            export PS1='\u@plawnekjx:\w\$ '
+            /root/plawnekjx-tests
             status=\$?
             echo "exit status: \$status"
             if [ \$status -eq 0 ]; then
@@ -265,7 +265,7 @@ jobs:
             EOF
 
             cat <<EOF > /workspace/Dockerfile.ci
-            FROM ghcr.io/frida/x-tools-linux-be-target:latest
+            FROM ghcr.io/plawnekjx/x-tools-linux-be-target:latest
 
             ENV DEBIAN_FRONTEND=noninteractive
             RUN apt-get update && \
@@ -333,7 +333,7 @@ jobs:
           ./configure \
               --host=${{ matrix.id }} \
               --enable-compiler-backend \
-              ${{ env.FRIDA_CORE_OPTIONS }}
+              ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           make
       - name: Upload devkit
         uses: actions/upload-artifact@v4
@@ -352,46 +352,46 @@ jobs:
               shlibext=.so
               ;;
           esac
-          cp -a tests/frida-tests tests/labrats lib/agent/frida-agent$shlibext /tmp/pkg/
+          cp -a tests/plawnekjx-tests tests/labrats lib/agent/plawnekjx-agent$shlibext /tmp/pkg/
           case ${{ matrix.id }} in
             ios-*)
-              cp -a lib/gadget/frida-gadget.dylib ../tests/test-gadget-standalone.js /tmp/pkg/
+              cp -a lib/gadget/plawnekjx-gadget.dylib ../tests/test-gadget-standalone.js /tmp/pkg/
               ;;
           esac
           tar -C /tmp/pkg -czf /tmp/runner.tar.gz .
       - name: Test on Corellium iOS device
         if: matrix.id == 'ios-arm64'
         continue-on-error: true
-        uses: frida/corellium-action@v4
+        uses: plawnekjx/corellium-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          gateway: corellium.frida.re
+          gateway: corellium.plawnekjx.re
           device: ios-12.5.7-arm64
           upload: /tmp/runner.tar.gz
           run: |
             cd /usr/local
-            rm -rf opt/frida
-            mkdir -p opt/frida
-            cd opt/frida
+            rm -rf opt/plawnekjx
+            mkdir -p opt/plawnekjx
+            cd opt/plawnekjx
             tar xf $ASSET_PATH
-            ./frida-tests
+            ./plawnekjx-tests
       - name: Test on Corellium Android device
         if: matrix.id == 'android-arm64'
         continue-on-error: true
-        uses: frida/corellium-action@v4
+        uses: plawnekjx/corellium-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          gateway: corellium.frida.re
+          gateway: corellium.plawnekjx.re
           device: android-8.1.0-arm64
           upload: /tmp/runner.tar.gz
           run: |
-            cd /data/local/tmp
+            cd /data/android/plawnekjx
             tar xf $ASSET_PATH
-            TMPDIR=/data/local/tmp ./frida-tests
+            TMPDIR=/data/android/plawnekjx ./plawnekjx-tests
 
   qnx-armeabi:
     runs-on: ubuntu-latest
-    container: ghcr.io/frida/qnx-tools:latest
+    container: ghcr.io/plawnekjx/qnx-tools:latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -400,7 +400,7 @@ jobs:
       - name: Build
         run: |
           CFLAGS="--sysroot=$QNX_TARGET/armle-v7" \
-              ./configure --host=arm-unknown-nto-qnx6.5.0eabi ${{ env.FRIDA_CORE_OPTIONS }}
+              ./configure --host=arm-unknown-nto-qnx6.5.0eabi ${{ env.PLAWNEKJX_CORE_OPTIONS }}
           make
       - name: Upload devkit
         uses: actions/upload-artifact@v4
@@ -411,9 +411,9 @@ jobs:
         run: |
           mkdir -p /tmp/pkg
           cd build
-          cp -a tests/frida-tests tests/labrats lib/agent/frida-agent.so /tmp/pkg/
+          cp -a tests/plawnekjx-tests tests/labrats lib/agent/plawnekjx-agent.so /tmp/pkg/
           tar -C /tmp/pkg -cf /tmp/runner.tar .
-          /opt/sabrelite/run.sh /tmp/runner.tar /opt/frida/frida-tests
+          /opt/sabrelite/run.sh /tmp/runner.tar /opt/plawnekjx/plawnekjx-tests
 
   # This job is used to check that the Linux helpers are built correctly for all
   # supported architectures. We do this because the binary artifacts are checked
@@ -425,7 +425,7 @@ jobs:
         arch: [x86, x86_64, arm, armbe8, arm64, arm64be, arm64beilp32, mips, mipsel, mips64, mips64el]
       fail-fast: false
     runs-on: ubuntu-latest
-    container: ghcr.io/frida/core-linux-helpers-${{ matrix.arch }}:latest
+    container: ghcr.io/plawnekjx/core-linux-helpers-${{ matrix.arch }}:latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -458,7 +458,7 @@ jobs:
         arch: [x86, x86_64, arm, armbe8, arm64, arm64be, arm64beilp32, mips, mipsel, mips64, mips64el]
       fail-fast: false
     runs-on: ubuntu-latest
-    container: ghcr.io/frida/core-linux-helpers-${{ matrix.arch }}:latest
+    container: ghcr.io/plawnekjx/core-linux-helpers-${{ matrix.arch }}:latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4

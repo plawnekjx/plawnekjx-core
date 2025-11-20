@@ -1,4 +1,4 @@
-namespace Frida.FS {
+namespace Plawnekjx.FS {
 	public void mkdirp (File dir, Cancellable? cancellable = null) throws Error {
 		try {
 			dir.make_directory_with_parents (cancellable);

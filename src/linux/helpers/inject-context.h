@@ -1,5 +1,5 @@
-#ifndef __FRIDA_INJECT_CONTEXT_H__
-#define __FRIDA_INJECT_CONTEXT_H__
+#ifndef __PLAWNEKJX_INJECT_CONTEXT_H__
+#define __PLAWNEKJX_INJECT_CONTEXT_H__
 
 #ifdef NOLIBC
 typedef void * pthread_t;
@@ -15,28 +15,28 @@ typedef unsigned int socklen_t;
 # include <sys/socket.h>
 #endif
 
-typedef size_t FridaBootstrapStatus;
-typedef struct _FridaBootstrapContext FridaBootstrapContext;
-typedef struct _FridaLoaderContext FridaLoaderContext;
-typedef struct _FridaLibcApi FridaLibcApi;
-typedef uint8_t FridaMessageType;
-typedef struct _FridaHelloMessage FridaHelloMessage;
-typedef struct _FridaByeMessage FridaByeMessage;
-typedef int FridaRtldFlavor;
+typedef size_t PlawnekjxBootstrapStatus;
+typedef struct _PlawnekjxBootstrapContext PlawnekjxBootstrapContext;
+typedef struct _PlawnekjxLoaderContext PlawnekjxLoaderContext;
+typedef struct _PlawnekjxLibcApi PlawnekjxLibcApi;
+typedef uint8_t PlawnekjxMessageType;
+typedef struct _PlawnekjxHelloMessage PlawnekjxHelloMessage;
+typedef struct _PlawnekjxByeMessage PlawnekjxByeMessage;
+typedef int PlawnekjxRtldFlavor;
 
-enum _FridaBootstrapStatus
+enum _PlawnekjxBootstrapStatus
 {
-  FRIDA_BOOTSTRAP_ALLOCATION_SUCCESS,
-  FRIDA_BOOTSTRAP_ALLOCATION_ERROR,
+  PLAWNEKJX_BOOTSTRAP_ALLOCATION_SUCCESS,
+  PLAWNEKJX_BOOTSTRAP_ALLOCATION_ERROR,
 
-  FRIDA_BOOTSTRAP_SUCCESS,
-  FRIDA_BOOTSTRAP_AUXV_NOT_FOUND,
-  FRIDA_BOOTSTRAP_TOO_EARLY,
-  FRIDA_BOOTSTRAP_LIBC_LOAD_ERROR,
-  FRIDA_BOOTSTRAP_LIBC_UNSUPPORTED,
+  PLAWNEKJX_BOOTSTRAP_SUCCESS,
+  PLAWNEKJX_BOOTSTRAP_AUXV_NOT_FOUND,
+  PLAWNEKJX_BOOTSTRAP_TOO_EARLY,
+  PLAWNEKJX_BOOTSTRAP_LIBC_LOAD_ERROR,
+  PLAWNEKJX_BOOTSTRAP_LIBC_UNSUPPORTED,
 };
 
-struct _FridaBootstrapContext
+struct _PlawnekjxBootstrapContext
 {
   void * allocation_base;
   size_t allocation_size;
@@ -44,28 +44,28 @@ struct _FridaBootstrapContext
   size_t page_size;
   const char * fallback_ld;
   const char * fallback_libc;
-  FridaRtldFlavor rtld_flavor;
+  PlawnekjxRtldFlavor rtld_flavor;
   void * rtld_base;
   void * r_brk;
   int enable_ctrlfds;
   int ctrlfds[2];
-  FridaLibcApi * libc;
+  PlawnekjxLibcApi * libc;
 };
 
-struct _FridaLoaderContext
+struct _PlawnekjxLoaderContext
 {
   int ctrlfds[2];
   const char * agent_entrypoint;
   const char * agent_data;
   const char * fallback_address;
-  FridaLibcApi * libc;
+  PlawnekjxLibcApi * libc;
 
   pthread_t worker;
   void * agent_handle;
   void (* agent_entrypoint_impl) (const char * data, int * unload_policy, void * injector_state);
 };
 
-struct _FridaLibcApi
+struct _PlawnekjxLibcApi
 {
   int (* printf) (const char * format, ...);
   int (* sprintf) (char * str, const char * format, ...);
@@ -90,34 +90,34 @@ struct _FridaLibcApi
   char * (* dlerror) (void);
 };
 
-enum _FridaMessageType
+enum _PlawnekjxMessageType
 {
-  FRIDA_MESSAGE_HELLO,
-  FRIDA_MESSAGE_READY,
-  FRIDA_MESSAGE_ACK,
-  FRIDA_MESSAGE_BYE,
-  FRIDA_MESSAGE_ERROR_DLOPEN,
-  FRIDA_MESSAGE_ERROR_DLSYM,
+  PLAWNEKJX_MESSAGE_HELLO,
+  PLAWNEKJX_MESSAGE_READY,
+  PLAWNEKJX_MESSAGE_ACK,
+  PLAWNEKJX_MESSAGE_BYE,
+  PLAWNEKJX_MESSAGE_ERROR_DLOPEN,
+  PLAWNEKJX_MESSAGE_ERROR_DLSYM,
 };
 
-struct _FridaHelloMessage
+struct _PlawnekjxHelloMessage
 {
   pid_t thread_id;
 };
 
-struct _FridaByeMessage
+struct _PlawnekjxByeMessage
 {
   int unload_policy;
 };
 
-enum _FridaRtldFlavor
+enum _PlawnekjxRtldFlavor
 {
-  FRIDA_RTLD_UNKNOWN,
-  FRIDA_RTLD_NONE,
-  FRIDA_RTLD_GLIBC,
-  FRIDA_RTLD_UCLIBC,
-  FRIDA_RTLD_MUSL,
-  FRIDA_RTLD_ANDROID,
+  PLAWNEKJX_RTLD_UNKNOWN,
+  PLAWNEKJX_RTLD_NONE,
+  PLAWNEKJX_RTLD_GLIBC,
+  PLAWNEKJX_RTLD_UCLIBC,
+  PLAWNEKJX_RTLD_MUSL,
+  PLAWNEKJX_RTLD_ANDROID,
 };
 
 #endif

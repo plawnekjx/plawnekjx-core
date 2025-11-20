@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class DarwinHostSessionBackend : LocalHostSessionBackend {
 		protected override LocalHostSessionProvider make_provider () {
 			return new DarwinHostSessionProvider ();
@@ -44,7 +44,7 @@ namespace Frida {
 #if HAVE_EMBEDDED_ASSETS
 				return null;
 #else
-				unowned string path = Config.FRIDA_AGENT_PATH;
+				unowned string path = Config.PLAWNEKJX_AGENT_PATH;
 # if IOS || TVOS
 				unowned string? cryptex_path = Environment.get_variable ("CRYPTEX_MOUNT_PATH");
 				if (cryptex_path != null)
@@ -91,7 +91,7 @@ namespace Frida {
 			injector.uninjected.connect (on_uninjected);
 
 #if HAVE_EMBEDDED_ASSETS
-			var blob = Frida.Data.Agent.get_frida_agent_dylib_blob ();
+			var blob = Plawnekjx.Data.Agent.get_plawnekjx_agent_dylib_blob ();
 			agent = new AgentResource (blob.name, new Bytes.static (blob.data), tempdir);
 #endif
 
@@ -307,7 +307,7 @@ namespace Frida {
 		private async uint inject_agent (uint pid, string agent_parameters, Cancellable? cancellable) throws Error, IOError {
 			uint id;
 
-			unowned string entrypoint = "frida_agent_main";
+			unowned string entrypoint = "plawnekjx_agent_main";
 #if HAVE_EMBEDDED_ASSETS
 			id = yield fruitjector.inject_library_resource (pid, agent, entrypoint, agent_parameters, cancellable);
 #else
@@ -936,7 +936,7 @@ namespace Frida {
 		}
 
 		protected override async string? load_source (Cancellable? cancellable) throws Error, IOError {
-			string * raw_source = Frida.Data.Darwin.get_launchd_js_blob ().data;
+			string * raw_source = Plawnekjx.Data.Darwin.get_launchd_js_blob ().data;
 			return raw_source->replace ("@REPORT_CRASHES@",
 				((DarwinHostSession) connection.host_session).report_crashes.to_string ());
 		}
@@ -980,7 +980,7 @@ namespace Frida {
 		}
 
 		protected override async string? load_source (Cancellable? cancellable) throws Error, IOError {
-			return (string) Frida.Data.Darwin.get_xpcproxy_js_blob ().data;
+			return (string) Plawnekjx.Data.Darwin.get_xpcproxy_js_blob ().data;
 		}
 	}
 
@@ -1212,7 +1212,7 @@ namespace Frida {
 		}
 
 		protected override async string? load_source (Cancellable? cancellable) throws Error, IOError {
-			return (string) Frida.Data.Darwin.get_reportcrash_js_blob ().data;
+			return (string) Plawnekjx.Data.Darwin.get_reportcrash_js_blob ().data;
 		}
 	}
 
@@ -1253,7 +1253,7 @@ namespace Frida {
 		}
 
 		protected override async string? load_source (Cancellable? cancellable) throws Error, IOError {
-			return (string) Frida.Data.Darwin.get_osanalytics_js_blob ().data;
+			return (string) Plawnekjx.Data.Darwin.get_osanalytics_js_blob ().data;
 		}
 	}
 #endif

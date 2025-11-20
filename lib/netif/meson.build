@@ -14,8 +14,8 @@ if host_os in ['ios', 'tvos']
   extra_link_args += '-Wl,-framework,SystemConfiguration'
 endif
 
-netif = static_library('frida-netif', netif_sources,
-  c_args: frida_component_cflags,
+netif = static_library('plawnekjx-netif', netif_sources,
+  c_args: plawnekjx_component_cflags,
   vala_args: [base_vala_args, extra_vala_args],
   dependencies: [base_dep, gee_dep],
 )

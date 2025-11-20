@@ -3,7 +3,7 @@ import alias from 'esbuild-plugin-alias';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-const BUFFER_SHIM = require.resolve('@frida/buffer');
+const BUFFER_SHIM = require.resolve('@plawnekjx/buffer');
 
 esbuild.build({
   entryPoints: ['index.js'],

@@ -1,4 +1,4 @@
-import ObjC from 'frida-objc-bridge';
+import ObjC from 'plawnekjx-objc-bridge';
 
 const YES = ptr(1);
 
@@ -28,7 +28,7 @@ function tryInitialize() {
       const session = sessions.get(threadId);
       if (session.forcedByUs) {
         const oldPath = log.filepath().toString();
-        const newPath = oldPath + '.forced-by-frida';
+        const newPath = oldPath + '.forced-by-plawnekjx';
         NSFileManager.defaultManager().moveItemAtPath_toPath_error_(oldPath, newPath, NULL);
         log.rename_(newPath);
       }

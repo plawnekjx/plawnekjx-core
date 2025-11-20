@@ -11,7 +11,7 @@ def detect_version() -> str:
     releng_location = next(enumerate_releng_locations(), None)
     if releng_location is not None:
         sys.path.insert(0, str(releng_location.parent))
-        from releng.frida_version import detect
+        from releng.plawnekjx_version import detect
         version = detect(SOURCE_ROOT).name
     else:
         version = "0.0.0"
@@ -19,7 +19,7 @@ def detect_version() -> str:
 
 
 def enumerate_releng_locations() -> Iterator[Path]:
-    val = os.environ.get("FRIDA_RELENG")
+    val = os.environ.get("PLAWNEKJX_RELENG")
     if val is not None:
         custom_releng = Path(val)
         if releng_location_exists(custom_releng):
@@ -37,7 +37,7 @@ def enumerate_releng_locations() -> Iterator[Path]:
 
 
 def releng_location_exists(location: Path) -> bool:
-    return (location / "frida_version.py").exists()
+    return (location / "plawnekjx_version.py").exists()
 
 
 if __name__ == "__main__":

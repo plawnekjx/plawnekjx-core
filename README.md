@@ -1,6 +1,6 @@
-# frida-core
+# plawnekjx-core
 
-Frida core library intended for static linking into bindings.
+Plawnekjx core library intended for static linking into bindings.
 
 - Lets you inject your own JavaScript instrumentation code into other processes,
   optionally with your own [C code][] for performance-sensitive bits.
@@ -24,13 +24,13 @@ Typically used through one of the available language bindings:
 E.g.:
 
 ```console
-$ pip install frida-tools # CLI tools
-$ pip install frida # Python bindings
-$ npm install frida # Node.js bindings
+$ pip install plawnekjx-tools # CLI tools
+$ pip install plawnekjx # Python bindings
+$ npm install plawnekjx # Node.js bindings
 ```
 
 Or, for static linking into your own project written in a C-compatible language,
-download a devkit from the Frida [releases][] page.
+download a devkit from the Plawnekjx [releases][] page.
 
 ## Internals
 
@@ -38,13 +38,13 @@ For a higher level view of the internals, check out the [architecture diagram][]
 and its links to the different parts of the codebase.
 
 
-[C code]: https://frida.re/docs/javascript-api/#cmodule
+[C code]: https://plawnekjx.re/docs/javascript-api/#cmodule
 [Vala]: https://wiki.gnome.org/Projects/Vala
-[GumJS]: https://github.com/frida/frida-gum
-[Python]: https://github.com/frida/frida-python
-[Node.js]: https://github.com/frida/frida-node
-[.NET]: https://github.com/frida/frida-clr
-[Swift]: https://github.com/frida/frida-swift
-[Qml]: https://github.com/frida/frida-qml
-[releases]: https://github.com/frida/frida/releases
-[architecture diagram]: https://frida.re/docs/hacking/
+[GumJS]: https://github.com/plawnekjx/plawnekjx-gum
+[Python]: https://github.com/plawnekjx/plawnekjx-python
+[Node.js]: https://github.com/plawnekjx/plawnekjx-node
+[.NET]: https://github.com/plawnekjx/plawnekjx-clr
+[Swift]: https://github.com/plawnekjx/plawnekjx-swift
+[Qml]: https://github.com/plawnekjx/plawnekjx-qml
+[releases]: https://github.com/plawnekjx/plawnekjx/releases
+[architecture diagram]: https://plawnekjx.re/docs/hacking/

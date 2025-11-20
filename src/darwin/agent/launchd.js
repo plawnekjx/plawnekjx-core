@@ -116,12 +116,12 @@ Interceptor.attach(Process.getModuleByName('/usr/lib/system/libsystem_kernel.dyl
       pidsToIgnore.add(pid);
 
     if (substrateInvocations.has(threadId)) {
-      substratePidsPending.set(pid, notifyFridaBackend);
+      substratePidsPending.set(pid, notifyPlawnekjxBackend);
     } else {
-      notifyFridaBackend();
+      notifyPlawnekjxBackend();
     }
 
-    function notifyFridaBackend() {
+    function notifyPlawnekjxBackend() {
       send([event, path, identifier, pid]);
     }
   }

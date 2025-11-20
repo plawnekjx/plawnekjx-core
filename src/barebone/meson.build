@@ -22,7 +22,7 @@ backend_sources += files(
   'arch-arm64' / 'machine.vala',
   'arch-unknown' / 'machine.vala',
 )
-barebone_script_runtime = custom_target('frida-barebone-script-runtime',
+barebone_script_runtime = custom_target('plawnekjx-barebone-script-runtime',
   input: [
     'package.json',
     'package-lock.json',
@@ -45,22 +45,22 @@ barebone_script_runtime = custom_target('frida-barebone-script-runtime',
     '@INPUT@',
   ],
 )
-backend_sources += custom_target('frida-data-barebone',
+backend_sources += custom_target('plawnekjx-data-barebone',
   input: [
     'barebone.resources',
     barebone_script_runtime,
     'helpers/memory-scanner-arm64.elf',
   ],
   output: [
-    'frida-data-barebone.vapi',
-    'frida-data-barebone.h',
-    'frida-data-barebone.c',
-    'frida-data-barebone-blob' + resource_blob_extension,
+    'plawnekjx-data-barebone.vapi',
+    'plawnekjx-data-barebone.h',
+    'plawnekjx-data-barebone.c',
+    'plawnekjx-data-barebone-blob' + resource_blob_extension,
   ],
   command: [
     resource_compiler_cmd_array,
     '-c', '@INPUT0@',
-    '-o', meson.current_build_dir() / 'frida-data-barebone',
+    '-o', meson.current_build_dir() / 'plawnekjx-data-barebone',
     '@INPUT1@',
     '@INPUT2@',
   ],

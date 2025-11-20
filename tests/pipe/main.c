@@ -1,11 +1,11 @@
-#include <frida-pipe.h>
+#include <plawnekjx-pipe.h>
 
 int
 main (int argc, char * argv[])
 {
-  FridaPipeTransport * transport = NULL;
+  PlawnekjxPipeTransport * transport = NULL;
   const gchar * address;
-  FridaPipe * pipe;
+  PlawnekjxPipe * pipe;
   gchar c;
   GError * error = NULL;
 
@@ -14,19 +14,19 @@ main (int argc, char * argv[])
 
   if (argc == 1)
   {
-    transport = frida_pipe_transport_new (NULL);
-    address = frida_pipe_transport_get_local_address (transport);
-    g_print ("listening on '%s'\n", frida_pipe_transport_get_remote_address (transport));
+    transport = plawnekjx_pipe_transport_new (NULL);
+    address = plawnekjx_pipe_transport_get_local_address (transport);
+    g_print ("listening on '%s'\n", plawnekjx_pipe_transport_get_remote_address (transport));
   }
   else
   {
     address = argv[1];
   }
 
-  pipe = frida_pipe_new (address, &error);
+  pipe = plawnekjx_pipe_new (address, &error);
   if (error != NULL)
   {
-    g_printerr ("frida_pipe_new failed: %s\n", error->message);
+    g_printerr ("plawnekjx_pipe_new failed: %s\n", error->message);
   }
   else
   {

@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 #if WINDOWS
 	public sealed class FileDescriptorTablePadder {
 		public static FileDescriptorTablePadder obtain () {

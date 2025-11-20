@@ -50,7 +50,7 @@ mod bindings {
 
 #[repr(u8)]
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
-pub enum FridaCommand {
+pub enum PlawnekjxCommand {
     CreateScript = 1,
     LoadScript = 2,
     DestroyScript = 3,
@@ -60,15 +60,15 @@ pub enum FridaCommand {
     ScriptMessage = 129,
 }
 
-impl core::fmt::Display for FridaCommand {
+impl core::fmt::Display for PlawnekjxCommand {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            FridaCommand::CreateScript => write!(f, "CreateScript"),
-            FridaCommand::LoadScript => write!(f, "LoadScript"),
-            FridaCommand::DestroyScript => write!(f, "DestroyScript"),
-            FridaCommand::PostScriptMessage => write!(f, "PostScriptMessage"),
-            FridaCommand::Reply => write!(f, "Reply"),
-            FridaCommand::ScriptMessage => write!(f, "ScriptMessage"),
+            PlawnekjxCommand::CreateScript => write!(f, "CreateScript"),
+            PlawnekjxCommand::LoadScript => write!(f, "LoadScript"),
+            PlawnekjxCommand::DestroyScript => write!(f, "DestroyScript"),
+            PlawnekjxCommand::PostScriptMessage => write!(f, "PostScriptMessage"),
+            PlawnekjxCommand::Reply => write!(f, "Reply"),
+            PlawnekjxCommand::ScriptMessage => write!(f, "ScriptMessage"),
         }
     }
 }
@@ -139,15 +139,15 @@ pub unsafe extern "C" fn _start(config_data: *const u8, config_size: usize) {
     unsafe {
         CONFIG_DATA = core::slice::from_raw_parts(config_data, config_size);
 
-        xnu::kernel_thread_start(frida_agent_worker, 12345usize as *mut core::ffi::c_void);
+        xnu::kernel_thread_start(plawnekjx_agent_worker, 12345usize as *mut core::ffi::c_void);
     }
 }
 
-unsafe extern "C" fn frida_agent_worker(_parameter: *mut core::ffi::c_void, _wait_result: i32) {
+unsafe extern "C" fn plawnekjx_agent_worker(_parameter: *mut core::ffi::c_void, _wait_result: i32) {
     unsafe {
-        bindings::g_set_panic_handler(Some(frida_panic_handler), ptr::null_mut());
+        bindings::g_set_panic_handler(Some(plawnekjx_panic_handler), ptr::null_mut());
         bindings::gum_init_embedded();
-        bindings::g_log_set_default_handler(Some(frida_log_handler), ptr::null_mut());
+        bindings::g_log_set_default_handler(Some(plawnekjx_log_handler), ptr::null_mut());
 
         let (mmio, irq, kernel_base, module_info, symbol_table) =
             parse_config(core::ptr::addr_of!(CONFIG_DATA).read());
@@ -322,14 +322,14 @@ fn process_incoming_message(variant: *mut GVariant) {
                 &mut payload_variant,
             );
 
-            core::mem::transmute::<u8, FridaCommand>(cmd_value)
+            core::mem::transmute::<u8, PlawnekjxCommand>(cmd_value)
         };
 
         let response = match cmd {
-            FridaCommand::CreateScript => handle_create_script(payload_variant),
-            FridaCommand::LoadScript => handle_load_script(payload_variant),
-            FridaCommand::DestroyScript => handle_destroy_script(payload_variant),
-            FridaCommand::PostScriptMessage => handle_post_script_message(payload_variant),
+            PlawnekjxCommand::CreateScript => handle_create_script(payload_variant),
+            PlawnekjxCommand::LoadScript => handle_load_script(payload_variant),
+            PlawnekjxCommand::DestroyScript => handle_destroy_script(payload_variant),
+            PlawnekjxCommand::PostScriptMessage => handle_post_script_message(payload_variant),
             _ => HandlerResponse::error("Unknown command"),
         };
 
@@ -343,7 +343,7 @@ fn send_command_reply(request_id: u16, response: HandlerResponse) {
     unsafe {
         let message = g_variant_new(
             c"(yqv)".as_ptr(),
-            FridaCommand::Reply as u8 as u32,
+            PlawnekjxCommand::Reply as u8 as u32,
             request_id as u32,
             response.variant,
         );
@@ -388,7 +388,7 @@ fn handle_create_script(payload_variant: *mut GVariant) -> HandlerResponse {
         let script_id_ptr = Box::into_raw(Box::new(script_id));
         gum_script_set_message_handler(
             script,
-            Some(frida_message_handler),
+            Some(plawnekjx_message_handler),
             script_id_ptr as *mut c_void,
             None,
         );
@@ -402,7 +402,7 @@ fn handle_create_script(payload_variant: *mut GVariant) -> HandlerResponse {
     }
 }
 
-unsafe extern "C" fn frida_message_handler(
+unsafe extern "C" fn plawnekjx_message_handler(
     message: *const gchar,
     _data: *mut GBytes,
     user_data: gpointer,
@@ -412,7 +412,7 @@ unsafe extern "C" fn frida_message_handler(
 
         let message_variant = g_variant_new(
             c"(yqv)".as_ptr(),
-            FridaCommand::ScriptMessage as u8 as u32,
+            PlawnekjxCommand::ScriptMessage as u8 as u32,
             0u32,
             g_variant_new(c"(us)".as_ptr(), script_id, message),
         );
@@ -492,19 +492,19 @@ unsafe fn get_script_by_id(script_id: u32) -> Option<*mut GumScript> {
     }
 }
 
-unsafe extern "C" fn frida_panic_handler(message: *const u8, _user_data: *mut core::ffi::c_void) {
+unsafe extern "C" fn plawnekjx_panic_handler(message: *const u8, _user_data: *mut core::ffi::c_void) {
     let msg = unsafe { core::ffi::CStr::from_ptr(message).to_str().unwrap() };
-    panic!("[Frida] {}", msg);
+    panic!("[Plawnekjx] {}", msg);
 }
 
-unsafe extern "C" fn frida_log_handler(
+unsafe extern "C" fn plawnekjx_log_handler(
     _log_domain: *const core::ffi::c_char,
     _log_level: i32,
     message: *const core::ffi::c_char,
     _user_data: *mut core::ffi::c_void,
 ) {
     let msg = unsafe { core::ffi::CStr::from_ptr(message).to_str().unwrap() };
-    kprintln!("[Frida] {}", msg);
+    kprintln!("[Plawnekjx] {}", msg);
 }
 
 #[panic_handler]

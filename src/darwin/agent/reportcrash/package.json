@@ -1,7 +1,7 @@
 {
-  "name": "frida-reportcrash-agent",
+  "name": "plawnekjx-reportcrash-agent",
   "version": "1.0.0",
-  "description": "Agent used by Frida's Darwin backend on iOS/iPadOS/tvOS",
+  "description": "Agent used by Plawnekjx's Darwin backend on iOS/iPadOS/tvOS",
   "type": "module",
   "scripts": {
     "build": "esbuild index.js --outfile=reportcrash.js --bundle --platform=node --target=es2022 --minify"
@@ -10,6 +10,6 @@
     "esbuild": "^0.25.5"
   },
   "dependencies": {
-    "frida-objc-bridge": "^8.0.5"
+    "plawnekjx-objc-bridge": "^8.0.5"
   }
 }

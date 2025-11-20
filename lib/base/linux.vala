@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	private uint linux_major = 0;
 	private uint linux_minor = 0;
 

@@ -4,7 +4,7 @@ compiler_sources = files(
 )
 
 if have_compiler_backend
-  compiler_backend = custom_target('frida-compiler-backend',
+  compiler_backend = custom_target('plawnekjx-compiler-backend',
     input: [
       'go.mod',
       'go.sum',
@@ -17,8 +17,8 @@ if have_compiler_backend
       'package-lock.json',
     ],
     output: [
-      'frida-compiler-backend' + (compiler_backend_static_compilation ? '.a' : ('-raw' + shlib_suffix)),
-      'frida-compiler-backend.h',
+      'plawnekjx-compiler-backend' + (compiler_backend_static_compilation ? '.a' : ('-raw' + shlib_suffix)),
+      'plawnekjx-compiler-backend.h',
     ],
     command: [
       python,
@@ -34,29 +34,29 @@ if have_compiler_backend
   if compiler_backend_static_compilation
     backend_libs += compiler_backend[0]
   else
-    filename = 'frida-compiler-backend' + shlib_suffix
-    identity = (host_os_family == 'darwin') ? 'FridaCompilerBackend' : filename
-    compiler_backend_shlib = custom_target('frida-compiler-backend-shlib',
+    filename = 'plawnekjx-compiler-backend' + shlib_suffix
+    identity = (host_os_family == 'darwin') ? 'PlawnekjxCompilerBackend' : filename
+    compiler_backend_shlib = custom_target('plawnekjx-compiler-backend-shlib',
       input: compiler_backend[0],
       output: filename,
       command: post_process + ['shared-library', identity, 'elf-cleaner:off'],
     )
 
-    compiler_data = custom_target('frida-data-compiler',
+    compiler_data = custom_target('plawnekjx-data-compiler',
       input: [
         'compiler.resources',
         compiler_backend_shlib,
       ],
       output: [
-        'frida-data-compiler.vapi',
-        'frida-data-compiler.h',
-        'frida-data-compiler.c',
-        'frida-data-compiler-blob' + resource_blob_extension,
+        'plawnekjx-data-compiler.vapi',
+        'plawnekjx-data-compiler.h',
+        'plawnekjx-data-compiler.c',
+        'plawnekjx-data-compiler-blob' + resource_blob_extension,
       ],
       command: [
         resource_compiler_cmd_array,
         '-c', '@INPUT0@',
-        '-o', meson.current_build_dir() / 'frida-data-compiler',
+        '-o', meson.current_build_dir() / 'plawnekjx-data-compiler',
         '@INPUT1@',
       ],
     )

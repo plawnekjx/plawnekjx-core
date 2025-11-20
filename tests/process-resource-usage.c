@@ -1,9 +1,9 @@
-#include "frida-tests.h"
+#include "plawnekjx-tests.h"
 
 #ifdef HAVE_WINDOWS
 # include <windows.h>
 # include <psapi.h>
-typedef HANDLE FridaProcessHandle;
+typedef HANDLE PlawnekjxProcessHandle;
 #elif defined (HAVE_DARWIN)
 # if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
 #  define PROC_PIDLISTFDS 1
@@ -19,24 +19,24 @@ int proc_pid_rusage (int pid, int flavor, rusage_info_t * buffer);
 #  include <libproc.h>
 # endif
 # include <mach/mach.h>
-typedef mach_port_t FridaProcessHandle;
+typedef mach_port_t PlawnekjxProcessHandle;
 #else
-typedef gpointer FridaProcessHandle;
+typedef gpointer PlawnekjxProcessHandle;
 #endif
 
-typedef struct _FridaMetricCollectorEntry FridaMetricCollectorEntry;
-typedef guint (* FridaMetricCollector) (guint pid, FridaProcessHandle handle);
+typedef struct _PlawnekjxMetricCollectorEntry PlawnekjxMetricCollectorEntry;
+typedef guint (* PlawnekjxMetricCollector) (guint pid, PlawnekjxProcessHandle handle);
 
-struct _FridaMetricCollectorEntry
+struct _PlawnekjxMetricCollectorEntry
 {
   const gchar * name;
-  FridaMetricCollector collect;
+  PlawnekjxMetricCollector collect;
 };
 
 #ifdef HAVE_WINDOWS
 
-static FridaProcessHandle
-frida_open_process (guint pid, guint * real_pid)
+static PlawnekjxProcessHandle
+plawnekjx_open_process (guint pid, guint * real_pid)
 {
   HANDLE process;
 
@@ -58,14 +58,14 @@ frida_open_process (guint pid, guint * real_pid)
 }
 
 static void
-frida_close_process (FridaProcessHandle process, guint pid)
+plawnekjx_close_process (PlawnekjxProcessHandle process, guint pid)
 {
   if (pid != 0)
     CloseHandle (process);
 }
 
 static guint
-frida_collect_memory_footprint (guint pid, FridaProcessHandle process)
+plawnekjx_collect_memory_footprint (guint pid, PlawnekjxProcessHandle process)
 {
   PROCESS_MEMORY_COUNTERS_EX counters;
   BOOL success;
@@ -77,7 +77,7 @@ frida_collect_memory_footprint (guint pid, FridaProcessHandle process)
 }
 
 static guint
-frida_collect_handles (guint pid, FridaProcessHandle process)
+plawnekjx_collect_handles (guint pid, PlawnekjxProcessHandle process)
 {
   DWORD count;
   BOOL success;
@@ -92,8 +92,8 @@ frida_collect_handles (guint pid, FridaProcessHandle process)
 
 #ifdef HAVE_DARWIN
 
-static FridaProcessHandle
-frida_open_process (guint pid, guint * real_pid)
+static PlawnekjxProcessHandle
+plawnekjx_open_process (guint pid, guint * real_pid)
 {
   mach_port_t task;
 
@@ -115,7 +115,7 @@ frida_open_process (guint pid, guint * real_pid)
 }
 
 static void
-frida_close_process (FridaProcessHandle process, guint pid)
+plawnekjx_close_process (PlawnekjxProcessHandle process, guint pid)
 {
   if (pid != 0)
   {
@@ -125,7 +125,7 @@ frida_close_process (FridaProcessHandle process, guint pid)
 }
 
 static guint
-frida_collect_memory_footprint (guint pid, FridaProcessHandle process)
+plawnekjx_collect_memory_footprint (guint pid, PlawnekjxProcessHandle process)
 {
   struct rusage_info_v2 info;
   int res;
@@ -137,7 +137,7 @@ frida_collect_memory_footprint (guint pid, FridaProcessHandle process)
 }
 
 static guint
-frida_collect_mach_ports (guint pid, FridaProcessHandle process)
+plawnekjx_collect_mach_ports (guint pid, PlawnekjxProcessHandle process)
 {
   kern_return_t kr;
   ipc_info_space_basic_t info;
@@ -149,7 +149,7 @@ frida_collect_mach_ports (guint pid, FridaProcessHandle process)
 }
 
 static guint
-frida_collect_file_descriptors (guint pid, FridaProcessHandle process)
+plawnekjx_collect_file_descriptors (guint pid, PlawnekjxProcessHandle process)
 {
   return proc_pidinfo (pid, PROC_PIDLISTFDS, 0, NULL, 0) / PROC_PIDLISTFD_SIZE;
 }
@@ -158,8 +158,8 @@ frida_collect_file_descriptors (guint pid, FridaProcessHandle process)
 
 #ifdef HAVE_LINUX
 
-static FridaProcessHandle
-frida_open_process (guint pid, guint * real_pid)
+static PlawnekjxProcessHandle
+plawnekjx_open_process (guint pid, guint * real_pid)
 {
   *real_pid = (pid != 0) ? pid : getpid ();
 
@@ -167,12 +167,12 @@ frida_open_process (guint pid, guint * real_pid)
 }
 
 static void
-frida_close_process (FridaProcessHandle process, guint pid)
+plawnekjx_close_process (PlawnekjxProcessHandle process, guint pid)
 {
 }
 
 static guint
-frida_collect_memory_footprint (guint pid, FridaProcessHandle process)
+plawnekjx_collect_memory_footprint (guint pid, PlawnekjxProcessHandle process)
 {
   gchar * path, * stats;
   gboolean success;
@@ -192,7 +192,7 @@ frida_collect_memory_footprint (guint pid, FridaProcessHandle process)
 }
 
 static guint
-frida_collect_file_descriptors (guint pid, FridaProcessHandle process)
+plawnekjx_collect_file_descriptors (guint pid, PlawnekjxProcessHandle process)
 {
   gchar * path;
   GDir * dir;
@@ -218,8 +218,8 @@ frida_collect_file_descriptors (guint pid, FridaProcessHandle process)
 
 #if defined (HAVE_QNX) || defined (HAVE_FREEBSD)
 
-static FridaProcessHandle
-frida_open_process (guint pid, guint * real_pid)
+static PlawnekjxProcessHandle
+plawnekjx_open_process (guint pid, guint * real_pid)
 {
   *real_pid = (pid != 0) ? pid : getpid ();
 
@@ -227,50 +227,50 @@ frida_open_process (guint pid, guint * real_pid)
 }
 
 static void
-frida_close_process (FridaProcessHandle process, guint pid)
+plawnekjx_close_process (PlawnekjxProcessHandle process, guint pid)
 {
 }
 
 #endif
 
-static const FridaMetricCollectorEntry frida_metric_collectors[] =
+static const PlawnekjxMetricCollectorEntry plawnekjx_metric_collectors[] =
 {
 #ifdef HAVE_WINDOWS
-  { "memory", frida_collect_memory_footprint },
-  { "handles", frida_collect_handles },
+  { "memory", plawnekjx_collect_memory_footprint },
+  { "handles", plawnekjx_collect_handles },
 #endif
 #ifdef HAVE_DARWIN
-  { "memory", frida_collect_memory_footprint },
-  { "ports", frida_collect_mach_ports },
-  { "files", frida_collect_file_descriptors },
+  { "memory", plawnekjx_collect_memory_footprint },
+  { "ports", plawnekjx_collect_mach_ports },
+  { "files", plawnekjx_collect_file_descriptors },
 #endif
 #ifdef HAVE_LINUX
-  { "memory", frida_collect_memory_footprint },
-  { "files", frida_collect_file_descriptors },
+  { "memory", plawnekjx_collect_memory_footprint },
+  { "files", plawnekjx_collect_file_descriptors },
 #endif
   { NULL, NULL }
 };
 
-FridaTestResourceUsageSnapshot *
-frida_test_resource_usage_snapshot_create_for_pid (guint pid)
+PlawnekjxTestResourceUsageSnapshot *
+plawnekjx_test_resource_usage_snapshot_create_for_pid (guint pid)
 {
-  FridaTestResourceUsageSnapshot * snapshot;
-  FridaProcessHandle process;
+  PlawnekjxTestResourceUsageSnapshot * snapshot;
+  PlawnekjxProcessHandle process;
   guint real_pid;
-  const FridaMetricCollectorEntry * entry;
+  const PlawnekjxMetricCollectorEntry * entry;
 
-  snapshot = frida_test_resource_usage_snapshot_new ();
+  snapshot = plawnekjx_test_resource_usage_snapshot_new ();
 
-  process = frida_open_process (pid, &real_pid);
+  process = plawnekjx_open_process (pid, &real_pid);
 
-  for (entry = frida_metric_collectors; entry->name != NULL; entry++)
+  for (entry = plawnekjx_metric_collectors; entry->name != NULL; entry++)
   {
     guint value = entry->collect (real_pid, process);
 
-    _frida_test_resource_usage_snapshot_add (snapshot, entry->name, value);
+    _plawnekjx_test_resource_usage_snapshot_add (snapshot, entry->name, value);
   }
 
-  frida_close_process (process, pid);
+  plawnekjx_close_process (process, pid);
 
   return snapshot;
 }

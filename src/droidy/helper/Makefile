@@ -4,10 +4,10 @@ ANDROID_SDK_ROOT ?= $(shell echo ~/Library/Android/sdk)
 android_platform := android-$(ANDROID_API_LEVEL)
 android_jar := $(ANDROID_SDK_ROOT)/platforms/$(android_platform)/android.jar
 
-build/frida-helper.dex: build/frida-helper.jar
+build/plawnekjx-helper.dex: build/plawnekjx-helper.jar
 	dx --dex --output=$@ $<
 
-build/frida-helper.jar: re/frida/Helper.java
+build/plawnekjx-helper.jar: re/plawnekjx/Helper.java
 	javac \
 		-cp .:$(android_jar) \
 		-bootclasspath $(android_jar) \
@@ -17,4 +17,4 @@ build/frida-helper.jar: re/frida/Helper.java
 		-Xlint:unchecked \
 		$^ \
 		-d build/java/
-	jar cfe $@ re.frida.Helper -C build/java/ .
+	jar cfe $@ re.plawnekjx.Helper -C build/java/ .

@@ -1,5 +1,5 @@
-#ifndef __FRIDA_ELF_PARSER_H__
-#define __FRIDA_ELF_PARSER_H__
+#ifndef __PLAWNEKJX_ELF_PARSER_H__
+#define __PLAWNEKJX_ELF_PARSER_H__
 
 #include <elf.h>
 #include <stdbool.h>
@@ -23,24 +23,24 @@
 #endif
 
 #if __ELF_NATIVE_CLASS == 64
-# define FRIDA_ELF_ST_TYPE ELF64_ST_TYPE
-# define FRIDA_ELF_ST_BIND ELF64_ST_BIND
+# define PLAWNEKJX_ELF_ST_TYPE ELF64_ST_TYPE
+# define PLAWNEKJX_ELF_ST_BIND ELF64_ST_BIND
 #else
-# define FRIDA_ELF_ST_TYPE ELF32_ST_TYPE
-# define FRIDA_ELF_ST_BIND ELF32_ST_BIND
+# define PLAWNEKJX_ELF_ST_TYPE ELF32_ST_TYPE
+# define PLAWNEKJX_ELF_ST_BIND ELF32_ST_BIND
 #endif
 
-#define FRIDA_ELF_PAGE_ALIGN(value, page_size) \
+#define PLAWNEKJX_ELF_PAGE_ALIGN(value, page_size) \
     ((((ElfW(Addr)) (value)) + ((ElfW(Addr)) ((page_size) - 1))) & ~((ElfW(Addr)) ((page_size) - 1)))
-#define FRIDA_ELF_PAGE_START(value, page_size) \
+#define PLAWNEKJX_ELF_PAGE_START(value, page_size) \
     ((ElfW(Addr)) (value) & ~((ElfW(Addr)) ((page_size) - 1)))
-#define FRIDA_ELF_PAGE_OFFSET(value, page_size) \
+#define PLAWNEKJX_ELF_PAGE_OFFSET(value, page_size) \
     ((ElfW(Addr)) (value) & (ElfW(Addr)) (page_size - 1))
 
-typedef struct _FridaElfExportDetails FridaElfExportDetails;
-typedef bool (* FridaFoundElfSymbolFunc) (const FridaElfExportDetails * details, void * user_data);
+typedef struct _PlawnekjxElfExportDetails PlawnekjxElfExportDetails;
+typedef bool (* PlawnekjxFoundElfSymbolFunc) (const PlawnekjxElfExportDetails * details, void * user_data);
 
-struct _FridaElfExportDetails
+struct _PlawnekjxElfExportDetails
 {
   const char * name;
   void * address;
@@ -48,10 +48,10 @@ struct _FridaElfExportDetails
   uint8_t bind;
 };
 
-const ElfW(Dyn) * frida_elf_find_dynamic_section (const ElfW(Ehdr) * ehdr);
-const char * frida_elf_query_soname (const ElfW(Ehdr) * ehdr);
-void frida_elf_enumerate_exports (const ElfW(Ehdr) * ehdr, FridaFoundElfSymbolFunc func, void * user_data);
-void frida_elf_enumerate_symbols (const ElfW(Ehdr) * ehdr, void * loaded_base, FridaFoundElfSymbolFunc func, void * user_data);
-ElfW(Addr) frida_elf_compute_base_from_phdrs (const ElfW(Phdr) * phdrs, ElfW(Half) phdr_size, ElfW(Half) phdr_count, size_t page_size);
+const ElfW(Dyn) * plawnekjx_elf_find_dynamic_section (const ElfW(Ehdr) * ehdr);
+const char * plawnekjx_elf_query_soname (const ElfW(Ehdr) * ehdr);
+void plawnekjx_elf_enumerate_exports (const ElfW(Ehdr) * ehdr, PlawnekjxFoundElfSymbolFunc func, void * user_data);
+void plawnekjx_elf_enumerate_symbols (const ElfW(Ehdr) * ehdr, void * loaded_base, PlawnekjxFoundElfSymbolFunc func, void * user_data);
+ElfW(Addr) plawnekjx_elf_compute_base_from_phdrs (const ElfW(Phdr) * phdrs, ElfW(Half) phdr_size, ElfW(Half) phdr_count, size_t page_size);
 
 #endif

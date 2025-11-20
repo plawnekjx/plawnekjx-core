@@ -1,4 +1,4 @@
-import Java from 'frida-java-bridge';
+import Java from 'plawnekjx-java-bridge';
 
 let ApplicationInfo, Base64OutputStream, Bitmap, ByteArrayOutputStream, Canvas, ComponentName, ContextWrapper, Intent, ResolveInfo,
   RunningAppProcessInfo, RunningTaskInfo, UserHandle;

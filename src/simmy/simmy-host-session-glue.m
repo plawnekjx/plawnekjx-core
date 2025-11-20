@@ -1,12 +1,12 @@
-#include "frida-core.h"
+#include "plawnekjx-core.h"
 
 #include <dlfcn.h>
 
 #import <Foundation/Foundation.h>
 
-typedef struct _FridaSimmyContext FridaSimmyContext;
+typedef struct _PlawnekjxSimmyContext PlawnekjxSimmyContext;
 
-struct _FridaSimmyContext
+struct _PlawnekjxSimmyContext
 {
   dispatch_queue_t dispatch_queue;
 
@@ -26,15 +26,15 @@ struct _FridaSimmyContext
   NSString * SimDeviceSpawnKeyStdout;
   NSString * SimDeviceSpawnKeyWaitForDebugger;
 
-  FridaSimmyHostSessionBackendDeviceAddedFunc on_device_added;
+  PlawnekjxSimmyHostSessionBackendDeviceAddedFunc on_device_added;
   gpointer on_device_added_target;
 };
 
-static void frida_simmy_context_destroy (FridaSimmyContext * self);
-static void frida_simmy_context_emit_devices (FridaSimmyContext * self);
+static void plawnekjx_simmy_context_destroy (PlawnekjxSimmyContext * self);
+static void plawnekjx_simmy_context_emit_devices (PlawnekjxSimmyContext * self);
 
-static NSArray * frida_argv_to_arguments_array (gchar * const * argv, gint argv_length, gint start_index);
-static NSDictionary * frida_envp_to_environment_dictionary (gchar * const * envp, gint envp_length);
+static NSArray * plawnekjx_argv_to_arguments_array (gchar * const * argv, gint argv_length, gint start_index);
+static NSDictionary * plawnekjx_envp_to_environment_dictionary (gchar * const * envp, gint envp_length);
 
 @interface SimRuntime : NSObject
 @property (nonatomic, readonly, strong) NSString * identifier;
@@ -77,20 +77,20 @@ static NSDictionary * frida_envp_to_environment_dictionary (gchar * const * envp
 @end
 
 void *
-_frida_simmy_host_session_backend_start (FridaSimmyHostSessionBackendDeviceAddedFunc on_device_added, gpointer on_device_added_target,
-    FridaSimmyCompleteFunc on_complete, gpointer on_complete_target, GDestroyNotify on_complete_target_destroy_notify)
+_plawnekjx_simmy_host_session_backend_start (PlawnekjxSimmyHostSessionBackendDeviceAddedFunc on_device_added, gpointer on_device_added_target,
+    PlawnekjxSimmyCompleteFunc on_complete, gpointer on_complete_target, GDestroyNotify on_complete_target_destroy_notify)
 {
-  FridaSimmyContext * ctx;
+  PlawnekjxSimmyContext * ctx;
 
-  ctx = g_slice_new0 (FridaSimmyContext);
-  ctx->dispatch_queue = dispatch_queue_create ("re.frida.simmy.queue", DISPATCH_QUEUE_SERIAL);
+  ctx = g_slice_new0 (PlawnekjxSimmyContext);
+  ctx->dispatch_queue = dispatch_queue_create ("re.plawnekjx.simmy.queue", DISPATCH_QUEUE_SERIAL);
 
   ctx->on_device_added = on_device_added;
   ctx->on_device_added_target = on_device_added_target;
 
   dispatch_async (ctx->dispatch_queue, ^
   {
-    frida_simmy_context_emit_devices (ctx);
+    plawnekjx_simmy_context_emit_devices (ctx);
 
     on_complete (on_complete_target);
 
@@ -102,15 +102,15 @@ _frida_simmy_host_session_backend_start (FridaSimmyHostSessionBackendDeviceAdded
 }
 
 void
-_frida_simmy_host_session_backend_stop (void * simmy_context, FridaSimmyCompleteFunc on_complete,
+_plawnekjx_simmy_host_session_backend_stop (void * simmy_context, PlawnekjxSimmyCompleteFunc on_complete,
     gpointer on_complete_target, GDestroyNotify on_complete_target_destroy_notify)
 {
-  FridaSimmyContext * ctx = simmy_context;
+  PlawnekjxSimmyContext * ctx = simmy_context;
 
   dispatch_async (ctx->dispatch_queue, ^
   {
-    frida_simmy_context_destroy (ctx);
-    g_slice_free (FridaSimmyContext, ctx);
+    plawnekjx_simmy_context_destroy (ctx);
+    g_slice_free (PlawnekjxSimmyContext, ctx);
 
     on_complete (on_complete_target);
 
@@ -120,7 +120,7 @@ _frida_simmy_host_session_backend_stop (void * simmy_context, FridaSimmyComplete
 }
 
 static void
-frida_simmy_context_destroy (FridaSimmyContext * self)
+plawnekjx_simmy_context_destroy (PlawnekjxSimmyContext * self)
 {
   g_clear_pointer (&self->core_simulator, dlclose);
 
@@ -128,7 +128,7 @@ frida_simmy_context_destroy (FridaSimmyContext * self)
 }
 
 static void
-frida_simmy_context_emit_devices (FridaSimmyContext * self)
+plawnekjx_simmy_context_emit_devices (PlawnekjxSimmyContext * self)
 {
   void * xcselect_module;
   bool (* xcselect_get_developer_dir_path) (char *, size_t, bool *, bool *, bool *);
@@ -154,26 +154,26 @@ frida_simmy_context_emit_devices (FridaSimmyContext * self)
     goto beach;
   self->core_simulator = cs;
 
-#define FRIDA_ASSIGN_CS_CONSTANT(N) \
+#define PLAWNEKJX_ASSIGN_CS_CONSTANT(N) \
     str = dlsym (cs, G_STRINGIFY (N)); \
     g_assert (str != NULL); \
     self->N = *str
 
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyArguments);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyEnvironment);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyStandardErrPath);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyStandardOutPath);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyTerminateRunningProcess);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyWaitForDebugger);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyArguments);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyEnvironment);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyStandardErrPath);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyStandardOutPath);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyTerminateRunningProcess);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceLaunchApplicationKeyWaitForDebugger);
 
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyArguments);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyEnvironment);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyStderr);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyStdin);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyStdout);
-  FRIDA_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyWaitForDebugger);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyArguments);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyEnvironment);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyStderr);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyStdin);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyStdout);
+  PLAWNEKJX_ASSIGN_CS_CONSTANT (SimDeviceSpawnKeyWaitForDebugger);
 
-#undef FRIDA_ASSIGN_CS_CONSTANT
+#undef PLAWNEKJX_ASSIGN_CS_CONSTANT
 
   SimServiceContextClass = NSClassFromString (@"SimServiceContext");
 
@@ -183,15 +183,15 @@ frida_simmy_context_emit_devices (FridaSimmyContext * self)
 
   for (SimDevice * device in set.devices)
   {
-    FridaSimmyRuntime * runtime;
-    FridaSimmyDevice * d;
+    PlawnekjxSimmyRuntime * runtime;
+    PlawnekjxSimmyDevice * d;
 
     if (![device.stateString isEqualToString:@"Booted"])
       continue;
 
-    runtime = frida_simmy_runtime_new (device.runtime);
+    runtime = plawnekjx_simmy_runtime_new (device.runtime);
 
-    d = frida_simmy_device_new ([device retain], device.UDID.UUIDString.UTF8String, device.name.UTF8String,
+    d = plawnekjx_simmy_device_new ([device retain], device.UDID.UUIDString.UTF8String, device.name.UTF8String,
         [device getenv:@"SIMULATOR_MODEL_IDENTIFIER" error:nil].UTF8String, runtime, self);
     self->on_device_added (d, self->on_device_added_target);
     g_object_unref (d);
@@ -205,30 +205,30 @@ beach:
 }
 
 void
-_frida_simmy_device_list_applications (FridaSimmyDevice * self, FridaSimmyDeviceListApplicationsCompleteFunc on_complete,
+_plawnekjx_simmy_device_list_applications (PlawnekjxSimmyDevice * self, PlawnekjxSimmyDeviceListApplicationsCompleteFunc on_complete,
     gpointer on_complete_target, GDestroyNotify on_complete_target_destroy_notify)
 {
-  FridaSimmyContext * ctx = frida_simmy_device_get_simmy_context (self);
+  PlawnekjxSimmyContext * ctx = plawnekjx_simmy_device_get_simmy_context (self);
 
   dispatch_async (ctx->dispatch_queue, ^
   {
     GeeArrayList * applications;
     SimDevice * device;
 
-    applications = gee_array_list_new (FRIDA_SIMMY_TYPE_APPLICATION, g_object_ref, g_object_unref, NULL, NULL, NULL);
+    applications = gee_array_list_new (PLAWNEKJX_SIMMY_TYPE_APPLICATION, g_object_ref, g_object_unref, NULL, NULL, NULL);
 
-    device = frida_simmy_device_get_handle (self);
+    device = plawnekjx_simmy_device_get_handle (self);
     NSDictionary<NSString *, NSDictionary<NSString *, id> *> * bundles = [device installedAppsWithError:nil];
     for (NSString * identifier in bundles)
     {
       NSDictionary<NSString *, id> * bundle;
       NSString * display_name;
-      FridaSimmyApplication * app;
+      PlawnekjxSimmyApplication * app;
 
       bundle = bundles[identifier];
       display_name = bundle[@"CFBundleDisplayName"];
 
-      app = frida_simmy_application_new (identifier.UTF8String, display_name.UTF8String);
+      app = plawnekjx_simmy_application_new (identifier.UTF8String, display_name.UTF8String);
       gee_collection_add (GEE_COLLECTION (applications), app);
       g_object_unref (app);
     }
@@ -243,25 +243,25 @@ _frida_simmy_device_list_applications (FridaSimmyDevice * self, FridaSimmyDevice
 }
 
 void
-_frida_simmy_device_launch_application (FridaSimmyDevice * self, const gchar * identifier, FridaHostSpawnOptions * opts,
-    FridaSimmyDeviceLaunchApplicationCompleteFunc on_complete, gpointer on_complete_target,
+_plawnekjx_simmy_device_launch_application (PlawnekjxSimmyDevice * self, const gchar * identifier, PlawnekjxHostSpawnOptions * opts,
+    PlawnekjxSimmyDeviceLaunchApplicationCompleteFunc on_complete, gpointer on_complete_target,
     GDestroyNotify on_complete_target_destroy_notify)
 {
   SimDevice * device;
-  FridaSimmyContext * ctx;
-  __block FridaStdioPipes * pipes;
-  __block FridaFileDescriptor * out_fd, * err_fd;
+  PlawnekjxSimmyContext * ctx;
+  __block PlawnekjxStdioPipes * pipes;
+  __block PlawnekjxFileDescriptor * out_fd, * err_fd;
   gchar * out_name, * err_name;
   GError * error = NULL;
   __block GMainContext * main_context;
 
-  device = frida_simmy_device_get_handle (self);
-  ctx = frida_simmy_device_get_simmy_context (self);
+  device = plawnekjx_simmy_device_get_handle (self);
+  ctx = plawnekjx_simmy_device_get_simmy_context (self);
 
   if (opts->has_envp)
     goto envp_not_supported;
 
-  pipes = frida_make_stdio_pipes (opts->stdio, FALSE, NULL, NULL, &out_fd, &out_name, &err_fd, &err_name, &error);
+  pipes = plawnekjx_make_stdio_pipes (opts->stdio, FALSE, NULL, NULL, &out_fd, &out_name, &err_fd, &err_name, &error);
   if (error != NULL)
     goto propagate_error;
 
@@ -277,12 +277,12 @@ _frida_simmy_device_launch_application (FridaSimmyDevice * self, const gchar * i
     } mutableCopy];
 
     if (opts->has_argv)
-      launch_opts[ctx->SimDeviceLaunchApplicationKeyArguments] = frida_argv_to_arguments_array (opts->argv, opts->argv_length1, 1);
+      launch_opts[ctx->SimDeviceLaunchApplicationKeyArguments] = plawnekjx_argv_to_arguments_array (opts->argv, opts->argv_length1, 1);
 
     if (opts->has_env)
-      launch_opts[ctx->SimDeviceLaunchApplicationKeyEnvironment] = frida_envp_to_environment_dictionary (opts->env, opts->env_length1);
+      launch_opts[ctx->SimDeviceLaunchApplicationKeyEnvironment] = plawnekjx_envp_to_environment_dictionary (opts->env, opts->env_length1);
 
-    if (opts->stdio == FRIDA_STDIO_PIPE)
+    if (opts->stdio == PLAWNEKJX_STDIO_PIPE)
     {
       launch_opts[ctx->SimDeviceLaunchApplicationKeyStandardOutPath] = @(out_name);
       launch_opts[ctx->SimDeviceLaunchApplicationKeyStandardErrPath] = @(err_name);
@@ -294,10 +294,10 @@ _frida_simmy_device_launch_application (FridaSimmyDevice * self, const gchar * i
                        completionHandler:
       ^(NSError * error, int pid)
       {
-        FridaSimmySpawnedProcess * process = NULL;
+        PlawnekjxSimmySpawnedProcess * process = NULL;
 
         if (error == nil)
-          process = frida_simmy_spawned_process_new (pid, pipes, main_context);
+          process = plawnekjx_simmy_spawned_process_new (pid, pipes, main_context);
 
         g_main_context_unref (main_context);
         main_context = NULL;
@@ -323,8 +323,8 @@ _frida_simmy_device_launch_application (FridaSimmyDevice * self, const gchar * i
 envp_not_supported:
   {
     error = g_error_new_literal (
-        FRIDA_ERROR,
-        FRIDA_ERROR_NOT_SUPPORTED,
+        PLAWNEKJX_ERROR,
+        PLAWNEKJX_ERROR_NOT_SUPPORTED,
         "The 'envp' option is not supported when spawning Simmy apps, use the 'env' option instead");
     goto propagate_error;
   }
@@ -345,25 +345,25 @@ propagate_error:
 }
 
 void
-_frida_simmy_device_spawn_program (FridaSimmyDevice * self, const gchar * program, FridaHostSpawnOptions * opts,
-    FridaSimmyDeviceSpawnProgramCompleteFunc on_complete, gpointer on_complete_target,
+_plawnekjx_simmy_device_spawn_program (PlawnekjxSimmyDevice * self, const gchar * program, PlawnekjxHostSpawnOptions * opts,
+    PlawnekjxSimmyDeviceSpawnProgramCompleteFunc on_complete, gpointer on_complete_target,
     GDestroyNotify on_complete_target_destroy_notify)
 {
-  const FridaStdio stdio = opts->stdio;
+  const PlawnekjxStdio stdio = opts->stdio;
   SimDevice * device;
-  FridaSimmyContext * ctx;
-  __block FridaStdioPipes * pipes;
-  __block FridaFileDescriptor * in_fd, * out_fd, * err_fd;
+  PlawnekjxSimmyContext * ctx;
+  __block PlawnekjxStdioPipes * pipes;
+  __block PlawnekjxFileDescriptor * in_fd, * out_fd, * err_fd;
   GError * error = NULL;
   __block GMainContext * main_context;
 
-  device = frida_simmy_device_get_handle (self);
-  ctx = frida_simmy_device_get_simmy_context (self);
+  device = plawnekjx_simmy_device_get_handle (self);
+  ctx = plawnekjx_simmy_device_get_simmy_context (self);
 
   if (opts->has_envp)
     goto envp_not_supported;
 
-  pipes = frida_make_stdio_pipes (opts->stdio, TRUE, &in_fd, NULL, &out_fd, NULL, &err_fd, NULL, &error);
+  pipes = plawnekjx_make_stdio_pipes (opts->stdio, TRUE, &in_fd, NULL, &out_fd, NULL, &err_fd, NULL, &error);
   if (error != NULL)
     goto propagate_error;
 
@@ -372,19 +372,19 @@ _frida_simmy_device_spawn_program (FridaSimmyDevice * self, const gchar * progra
   @autoreleasepool
   {
     NSMutableDictionary<NSString *, id> * spawn_opts;
-    __block FridaSimmySpawnedProcess * process = NULL;
+    __block PlawnekjxSimmySpawnedProcess * process = NULL;
 
     spawn_opts = [@{
       ctx->SimDeviceSpawnKeyWaitForDebugger: @YES,
     } mutableCopy];
 
     if (opts->has_argv)
-      spawn_opts[ctx->SimDeviceSpawnKeyArguments] = frida_argv_to_arguments_array (opts->argv, opts->argv_length1, 0);
+      spawn_opts[ctx->SimDeviceSpawnKeyArguments] = plawnekjx_argv_to_arguments_array (opts->argv, opts->argv_length1, 0);
 
     if (opts->has_env)
-      spawn_opts[ctx->SimDeviceSpawnKeyEnvironment] = frida_envp_to_environment_dictionary (opts->env, opts->env_length1);
+      spawn_opts[ctx->SimDeviceSpawnKeyEnvironment] = plawnekjx_envp_to_environment_dictionary (opts->env, opts->env_length1);
 
-    if (stdio == FRIDA_STDIO_PIPE)
+    if (stdio == PLAWNEKJX_STDIO_PIPE)
     {
       spawn_opts[ctx->SimDeviceSpawnKeyStdin] = @(in_fd->handle);
       spawn_opts[ctx->SimDeviceSpawnKeyStdout] = @(out_fd->handle);
@@ -397,7 +397,7 @@ _frida_simmy_device_spawn_program (FridaSimmyDevice * self, const gchar * progra
             terminationHandler:
       ^(int status)
       {
-        _frida_simmy_spawned_process_on_termination (process, status);
+        _plawnekjx_simmy_spawned_process_on_termination (process, status);
 
         g_object_unref (process);
         process = NULL;
@@ -407,7 +407,7 @@ _frida_simmy_device_spawn_program (FridaSimmyDevice * self, const gchar * progra
       ^(NSError * error, int pid)
       {
         if (error == nil)
-          process = frida_simmy_spawned_process_new (pid, pipes, main_context);
+          process = plawnekjx_simmy_spawned_process_new (pid, pipes, main_context);
 
         g_main_context_unref (main_context);
         main_context = NULL;
@@ -429,8 +429,8 @@ _frida_simmy_device_spawn_program (FridaSimmyDevice * self, const gchar * progra
 envp_not_supported:
   {
     error = g_error_new_literal (
-        FRIDA_ERROR,
-        FRIDA_ERROR_NOT_SUPPORTED,
+        PLAWNEKJX_ERROR,
+        PLAWNEKJX_ERROR_NOT_SUPPORTED,
         "The 'envp' option is not supported when spawning Simmy programs, use the 'env' option instead");
     goto propagate_error;
   }
@@ -450,31 +450,31 @@ propagate_error:
 }
 
 const gchar *
-_frida_simmy_runtime_get_identifier (FridaSimmyRuntime * self)
+_plawnekjx_simmy_runtime_get_identifier (PlawnekjxSimmyRuntime * self)
 {
-  return ((SimRuntime *) frida_simmy_runtime_get_handle (self)).identifier.UTF8String;
+  return ((SimRuntime *) plawnekjx_simmy_runtime_get_handle (self)).identifier.UTF8String;
 }
 
 const gchar *
-_frida_simmy_runtime_get_short_name (FridaSimmyRuntime * self)
+_plawnekjx_simmy_runtime_get_short_name (PlawnekjxSimmyRuntime * self)
 {
-  return ((SimRuntime *) frida_simmy_runtime_get_handle (self)).shortName.UTF8String;
+  return ((SimRuntime *) plawnekjx_simmy_runtime_get_handle (self)).shortName.UTF8String;
 }
 
 const gchar *
-_frida_simmy_runtime_get_version_string (FridaSimmyRuntime * self)
+_plawnekjx_simmy_runtime_get_version_string (PlawnekjxSimmyRuntime * self)
 {
-  return ((SimRuntime *) frida_simmy_runtime_get_handle (self)).versionString.UTF8String;
+  return ((SimRuntime *) plawnekjx_simmy_runtime_get_handle (self)).versionString.UTF8String;
 }
 
 const gchar *
-_frida_simmy_runtime_get_root (FridaSimmyRuntime * self)
+_plawnekjx_simmy_runtime_get_root (PlawnekjxSimmyRuntime * self)
 {
-  return ((SimRuntime *) frida_simmy_runtime_get_handle (self)).root.UTF8String;
+  return ((SimRuntime *) plawnekjx_simmy_runtime_get_handle (self)).root.UTF8String;
 }
 
 static NSArray *
-frida_argv_to_arguments_array (gchar * const * argv, gint argv_length, gint start_index)
+plawnekjx_argv_to_arguments_array (gchar * const * argv, gint argv_length, gint start_index)
 {
   NSMutableArray * result;
   gint i;
@@ -487,7 +487,7 @@ frida_argv_to_arguments_array (gchar * const * argv, gint argv_length, gint star
 }
 
 static NSDictionary *
-frida_envp_to_environment_dictionary (gchar * const * envp, gint envp_length)
+plawnekjx_envp_to_environment_dictionary (gchar * const * envp, gint envp_length)
 {
   NSMutableDictionary * result;
   gint i;

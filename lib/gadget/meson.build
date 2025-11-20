@@ -36,16 +36,16 @@ endif
 
 if host_os_family == 'windows'
   if host_toolchain != 'microsoft'
-    symfile = 'frida-gadget.symbols'
+    symfile = 'plawnekjx-gadget.symbols'
     extra_link_args += '-Wl,--retain-symbols-file,' + meson.current_source_dir() / symfile
     extra_link_depends += symfile
   endif
 elif host_os_family == 'darwin'
-  symlist = 'frida-gadget.symbols'
+  symlist = 'plawnekjx-gadget.symbols'
   extra_link_args += '-Wl,-exported_symbols_list,' + meson.current_source_dir() / symlist
   extra_link_depends += symlist
 else
-  symscript = 'frida-gadget.version'
+  symscript = 'plawnekjx-gadget.version'
   extra_link_args += '-Wl,--version-script,' + meson.current_source_dir() / symscript
   extra_link_depends += symscript
 endif
@@ -55,45 +55,45 @@ if host_os_family in ['linux', 'qnx']
   extra_link_args += ['-Wl,-Bsymbolic']
 endif
 
-raw_gadget = shared_library('frida-gadget-raw', gadget_sources,
+raw_gadget = shared_library('plawnekjx-gadget-raw', gadget_sources,
   name_prefix: 'lib',
   vala_args: [base_vala_args, payload_vala_args, extra_vala_args],
-  vala_header: 'frida-gadget.h',
-  c_args: frida_component_cflags,
+  vala_header: 'plawnekjx-gadget.h',
+  c_args: plawnekjx_component_cflags,
   objc_args: extra_objc_args,
   link_args: extra_link_args,
   link_depends: extra_link_depends,
-  vs_module_defs: 'frida-gadget.def',
+  vs_module_defs: 'plawnekjx-gadget.def',
   override_options: ['b_asneeded=true'],
   dependencies: [gio_dep, gee_dep, json_glib_dep, gum_dep, gumjs_dep, base_dep, netif_dep, tls_provider_dep, payload_dep] + platform_deps,
 )
 
 operations = [
-  '--move', 'constructor', 'frida_init_memory', 'first',
-  '--move', 'constructor', 'frida_on_load', 'last',
+  '--move', 'constructor', 'plawnekjx_init_memory', 'first',
+  '--move', 'constructor', 'plawnekjx_on_load', 'last',
 ]
 if host_os_family != 'darwin'
   operations += [
-    '--move', 'destructor', 'frida_deinit_memory', 'first',
-    '--move', 'destructor', 'frida_on_unload', 'last',
+    '--move', 'destructor', 'plawnekjx_deinit_memory', 'first',
+    '--move', 'destructor', 'plawnekjx_on_unload', 'last',
   ]
 endif
-modulated_gadget = custom_target('frida-gadget-modulated',
+modulated_gadget = custom_target('plawnekjx-gadget-modulated',
   input: raw_gadget,
-  output: 'libfrida-gadget-modulated' + shlib_suffix,
+  output: 'libplawnekjx-gadget-modulated' + shlib_suffix,
   command: modulate + operations,
 )
 
 need_universal_gadget = host_os_family == 'darwin' and gadget_compat != ''
 
 if host_os == 'macos'
-  identity = '@executable_path/../Frameworks/FridaGadget.dylib'
+  identity = '@executable_path/../Frameworks/PlawnekjxGadget.dylib'
 elif host_os in ['ios', 'tvos']
-  identity = '@executable_path/Frameworks/FridaGadget.dylib'
+  identity = '@executable_path/Frameworks/PlawnekjxGadget.dylib'
 else
   identity = gadget_name
 endif
-gadget_for_host_arch = custom_target('frida-gadget',
+gadget_for_host_arch = custom_target('plawnekjx-gadget',
   input: modulated_gadget,
   output: need_universal_gadget ? f'@gadget_name@-@host_abi@' : gadget_name,
   command: post_process + ['shared-library', identity],
@@ -102,7 +102,7 @@ gadget_for_host_arch = custom_target('frida-gadget',
 )
 
 if need_universal_gadget
-  gadget = custom_target('frida-gadget-universal',
+  gadget = custom_target('plawnekjx-gadget-universal',
     input: gadget_for_host_arch,
     output: gadget_name,
     command: [

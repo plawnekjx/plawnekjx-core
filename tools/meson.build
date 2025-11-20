@@ -10,7 +10,7 @@ elif build_os_family != 'windows'
   extra_link_depends += [symscript]
 endif
 
-resource_compiler = executable('frida-resource-compiler', 'resource-compiler.vala',
+resource_compiler = executable('plawnekjx-resource-compiler', 'resource-compiler.vala',
   vala_args: [
     '--pkg=gio-2.0',
     '--pkg=libbrotlienc',

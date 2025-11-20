@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class Compiler : Object {
 		public signal void starting ();
 		public signal void finished ();
@@ -20,7 +20,7 @@ namespace Frida {
 		}
 
 		construct {
-			main_context = Frida.get_main_context ();
+			main_context = Plawnekjx.get_main_context ();
 		}
 
 		~Compiler () {
@@ -41,7 +41,7 @@ namespace Frida {
 				CompilerBackend.BuildCompleteFunc on_complete = (b, e) => {
 					bundle = b;
 					error_message = e;
-					schedule_on_frida_thread (build.callback);
+					schedule_on_plawnekjx_thread (build.callback);
 				};
 
 				CompilerBackend.build (project_root, entrypoint, opts.output_format, opts.bundle_format,
@@ -92,7 +92,7 @@ namespace Frida {
 			CompilerBackend.WatchReadyFunc on_ready = (h, e) => {
 				session_handle = h;
 				error_message = e;
-				schedule_on_frida_thread (watch.callback);
+				schedule_on_plawnekjx_thread (watch.callback);
 			};
 
 			CompilerBackend.watch (project_root, entrypoint, opts.output_format, opts.bundle_format,
@@ -133,21 +133,21 @@ namespace Frida {
 		}
 
 		private void on_starting () {
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				starting ();
 				return Source.REMOVE;
 			});
 		}
 
 		private void on_finished () {
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				finished ();
 				return Source.REMOVE;
 			});
 		}
 
 		private void on_output (owned string bundle) {
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				output (bundle);
 				return Source.REMOVE;
 			});
@@ -171,7 +171,7 @@ namespace Frida {
 			}
 
 			if (schedule_emit) {
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					emit_pending_diagnostics ();
 					return Source.REMOVE;
 				});
@@ -209,7 +209,7 @@ namespace Frida {
 			return Object.new (typeof (T), parent: this);
 		}
 
-		protected void schedule_on_frida_thread (owned SourceFunc function) {
+		protected void schedule_on_plawnekjx_thread (owned SourceFunc function) {
 			var source = new IdleSource ();
 			source.set_callback ((owned) function);
 			source.attach (main_context);
@@ -241,15 +241,15 @@ namespace Frida {
 			watch = (WatchFunc) _watch;
 			WatchSession.dispose = (WatchSession.DisposeFunc) WatchSession._dispose;
 #else
-			unowned uint8[] backend_so = Frida.Data.Compiler.get_frida_compiler_backend_so_blob ().data;
+			unowned uint8[] backend_so = Plawnekjx.Data.Compiler.get_plawnekjx_compiler_backend_so_blob ().data;
 
 			FileDescriptor fd;
 			if (MemoryFileDescriptor.is_supported ()) {
-				fd = MemoryFileDescriptor.from_bytes ("frida-compiler-backend.so", new Bytes.static (backend_so));
+				fd = MemoryFileDescriptor.from_bytes ("plawnekjx-compiler-backend.so", new Bytes.static (backend_so));
 			} else {
 				string name_used;
 				try {
-					fd = new FileDescriptor (FileUtils.open_tmp ("frida-compiler-backend-XXXXXX.so", out name_used));
+					fd = new FileDescriptor (FileUtils.open_tmp ("plawnekjx-compiler-backend-XXXXXX.so", out name_used));
 					FileUtils.unlink (name_used);
 
 					var output = new UnixOutputStream (fd.handle, false);
@@ -267,9 +267,9 @@ namespace Frida {
 			} catch (ModuleError e) {
 				assert_not_reached ();
 			}
-			build = resolve_symbol (backend, "_frida_compiler_backend_build");
-			watch = resolve_symbol (backend, "_frida_compiler_backend_watch");
-			WatchSession.dispose = resolve_symbol (backend, "_frida_compiler_backend_watch_session_dispose");
+			build = resolve_symbol (backend, "_plawnekjx_compiler_backend_build");
+			watch = resolve_symbol (backend, "_plawnekjx_compiler_backend_watch");
+			WatchSession.dispose = resolve_symbol (backend, "_plawnekjx_compiler_backend_watch_session_dispose");
 #endif
 #endif
 		}

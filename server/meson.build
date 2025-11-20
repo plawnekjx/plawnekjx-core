@@ -15,40 +15,40 @@ endif
 extra_link_args = []
 extra_link_depends = []
 if host_os_family == 'darwin'
-  symlist = 'frida-server.symbols'
+  symlist = 'plawnekjx-server.symbols'
   extra_link_args += ['-Wl,-exported_symbols_list,' + meson.current_source_dir() / symlist]
   extra_link_depends += [symlist]
 elif host_os_family != 'windows'
-  symscript = 'frida-server.version'
+  symscript = 'plawnekjx-server.version'
   extra_link_args += ['-Wl,--version-script,' + meson.current_source_dir() / symscript]
   extra_link_depends += [symscript]
 endif
 if host_os == 'macos'
-  server_plist = 'frida-server.plist'
+  server_plist = 'plawnekjx-server.plist'
   extra_link_args += ['-Wl,-sectcreate,__TEXT,__info_plist,' + meson.current_source_dir() / server_plist]
   extra_link_depends += [server_plist]
 endif
 
-raw_server = executable('frida-server-raw', server_sources,
+raw_server = executable('plawnekjx-server-raw', server_sources,
   vala_args: [core_vala_args, '--pkg=posix'],
   link_args: extra_link_args,
   link_depends: extra_link_depends,
   dependencies: [core_dep],
 )
 
-server_name = 'frida-server' + exe_suffix
+server_name = 'plawnekjx-server' + exe_suffix
 need_universal_server = get_option('assets') == 'installed' and server_compat != ''
 
-server = custom_target('frida-server',
-  input: [raw_server, 'frida-server.xcent'],
+server = custom_target('plawnekjx-server',
+  input: [raw_server, 'plawnekjx-server.xcent'],
   output: need_universal_server ? f'@server_name@-@host_abi@' : server_name,
-  command: post_process + ['executable', 're.frida.Server', '@INPUT1@'],
+  command: post_process + ['executable', 're.plawnekjx.Server', '@INPUT1@'],
   install: true,
   install_dir: get_option('bindir'),
 )
 
 if need_universal_server
-  custom_target('frida-server-universal',
+  custom_target('plawnekjx-server-universal',
     input: server,
     output: server_name,
     command: [

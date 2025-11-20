@@ -3,28 +3,28 @@ fs = import('fs')
 generate_api = [python, files('generate.py')]
 
 generate_api_args = [
-  frida_version,
-  frida_major_version.to_string(),
-  frida_minor_version.to_string(),
-  frida_micro_version.to_string(),
-  frida_nano_version.to_string(),
+  plawnekjx_version,
+  plawnekjx_major_version.to_string(),
+  plawnekjx_minor_version.to_string(),
+  plawnekjx_micro_version.to_string(),
+  plawnekjx_nano_version.to_string(),
   api_version,
-  core_build_dir / 'frida-core.h',
+  core_build_dir / 'plawnekjx-core.h',
   core_build_dir / core_gir_name,
-  core_build_dir / 'frida-core.vapi',
-  base_build_dir / 'frida-base.h',
+  core_build_dir / 'plawnekjx-core.vapi',
+  base_build_dir / 'plawnekjx-base.h',
   base_build_dir / base_gir_name,
-  base_build_dir / f'frida-base-@api_version@.vapi',
+  base_build_dir / f'plawnekjx-base-@api_version@.vapi',
   meson.current_build_dir(),
 ]
 
-core_api = custom_target('frida-core-api',
+core_api = custom_target('plawnekjx-core-api',
   input: [core, base],
   output: [
-    'frida-core.h',
+    'plawnekjx-core.h',
     core_gir_name,
-    f'frida-core-@api_version@.vapi',
-    f'frida-core-@api_version@.deps',
+    f'plawnekjx-core-@api_version@.vapi',
+    f'plawnekjx-core-@api_version@.deps',
   ],
   command: [
     generate_api,
@@ -44,9 +44,9 @@ glib_gir = fs.copyfile('GLib-2.0.gir', install: install_glib_girs, install_dir: 
 gobject_gir = fs.copyfile('GObject-2.0.gir', install: install_glib_girs, install_dir: girdir)
 gio_gir = fs.copyfile('Gio-2.0.gir', install: install_glib_girs, install_dir: girdir)
 
-core_public_vapi_stamp = custom_target('frida-core-vapi-stamp',
+core_public_vapi_stamp = custom_target('plawnekjx-core-vapi-stamp',
   input: core_public_vapi,
-  output: f'frida-core-@api_version@.vapi.stamp',
+  output: f'plawnekjx-core-@api_version@.vapi.stamp',
   command: [
     generate_api,
     '--output=vapi-stamp',
@@ -54,9 +54,9 @@ core_public_vapi_stamp = custom_target('frida-core-vapi-stamp',
   ],
 )
 
-core_public_lib = custom_target('frida-core-library',
+core_public_lib = custom_target('plawnekjx-core-library',
   input: [core] + internal_libs,
-  output: f'libfrida-core-@api_version@.a',
+  output: f'libplawnekjx-core-@api_version@.a',
   command: [
     python,
     files('merge.py'),
@@ -73,7 +73,7 @@ core_public_lib = custom_target('frida-core-library',
 
 core_public_extra_headers = []
 if host_os == 'android'
-  core_public_extra_headers += fs.copyfile(frida_selinux_h)
+  core_public_extra_headers += fs.copyfile(plawnekjx_selinux_h)
 endif
 
 if build_machine.system() == 'windows'
@@ -85,15 +85,15 @@ uninstalled_girdir = uninstalled_incdir
 uninstalled_vapidir = uninstalled_incdir
 
 uninstalled_variables = {
-  'frida_includedir': uninstalled_incdir,
-  'frida_girdir': uninstalled_girdir,
-  'frida_vapidir': uninstalled_vapidir,
+  'plawnekjx_includedir': uninstalled_incdir,
+  'plawnekjx_girdir': uninstalled_girdir,
+  'plawnekjx_vapidir': uninstalled_vapidir,
 }
 
 installed_variables = {
-  'frida_includedir': '${includedir}',
-  'frida_girdir': girdir,
-  'frida_vapidir': vapidir,
+  'plawnekjx_includedir': '${includedir}',
+  'plawnekjx_girdir': girdir,
+  'plawnekjx_vapidir': vapidir,
 }
 
 core_public_dep = declare_dependency(
@@ -107,18 +107,18 @@ core_public_dep = declare_dependency(
 
 pkg = import('pkgconfig')
 pkg.generate(
-  filebase: f'frida-core-@api_version@',
-  name: 'Frida Core Library',
-  version: frida_version,
+  filebase: f'plawnekjx-core-@api_version@',
+  name: 'Plawnekjx Core Library',
+  version: plawnekjx_version,
   description: 'Instrumentation toolkit for developers, reverse-engineers, and security researchers',
   requires: ['glib-2.0', 'gobject-2.0', 'gio-2.0', 'json-glib-1.0'],
-  requires_private: ['gmodule-2.0', 'gee-0.8', 'libsoup-3.0', 'frida-gum-1.0', 'frida-gumjs-inspector-1.0', 'libbrotlidec'] + backend_reqs_private,
-  subdirs: f'frida-@api_version@',
+  requires_private: ['gmodule-2.0', 'gee-0.8', 'libsoup-3.0', 'plawnekjx-gum-1.0', 'plawnekjx-gumjs-inspector-1.0', 'libbrotlidec'] + backend_reqs_private,
+  subdirs: f'plawnekjx-@api_version@',
   libraries: core_public_lib,
   libraries_private: backend_libs_private,
-  extra_cflags: ['-I${frida_includedir}'],
+  extra_cflags: ['-I${plawnekjx_includedir}'],
   variables: installed_variables,
   uninstalled_variables: uninstalled_variables,
 )
 
-meson.override_dependency(f'frida-core-@api_version@', core_public_dep)
+meson.override_dependency(f'plawnekjx-core-@api_version@', core_public_dep)

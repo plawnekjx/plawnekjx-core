@@ -1,7 +1,7 @@
 #!/bin/bash
 
 QEMUAppleSilicon/build/qemu-system-aarch64 \
-    -M t8030,memory-backend=ram,trustcache=iPhone11_8_iPhone12_1_14.0_18A5351d_Restore/Firmware/038-44135-124.dmg.trustcache,ticket=root_ticket.der,sep-fw=sep-firmware.n104.RELEASE.new.img4,sep-rom=AppleSEPROM-Cebu-B1,kaslr-off=true,usb-conn-type=unix,usb-conn-addr=/Users/oleavr/src/frida-barebone-ios/usb.socket \
+    -M t8030,memory-backend=ram,trustcache=iPhone11_8_iPhone12_1_14.0_18A5351d_Restore/Firmware/038-44135-124.dmg.trustcache,ticket=root_ticket.der,sep-fw=sep-firmware.n104.RELEASE.new.img4,sep-rom=AppleSEPROM-Cebu-B1,kaslr-off=true,usb-conn-type=unix,usb-conn-addr=/Users/oleavr/src/plawnekjx-barebone-ios/usb.socket \
     -object memory-backend-file,id=ram,size=4G,mem-path="/Volumes/RAM Disk/ios-dram",share=on \
     -kernel iPhone11_8_iPhone12_1_14.0_18A5351d_Restore/kernelcache.research.iphone12b \
     -dtb iPhone11_8_iPhone12_1_14.0_18A5351d_Restore/Firmware/all_flash/DeviceTree.n104ap.im4p \

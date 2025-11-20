@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class PackageManager : Object {
 		public signal void install_progress (PackageInstallPhase phase, double fraction, string? details = null);
 
@@ -11,7 +11,7 @@ namespace Frida {
 		private Soup.Session session;
 
 		public PackageManager () {
-			string cache_dir = Path.build_filename (Environment.get_user_cache_dir (), "frida", "package-manager");
+			string cache_dir = Path.build_filename (Environment.get_user_cache_dir (), "plawnekjx", "package-manager");
 			var cache = new Soup.Cache (cache_dir, Soup.CacheType.SINGLE_USER);
 			session = (Soup.Session) Object.new (typeof (Soup.Session),
 				"max-conns-per-host", 15);
@@ -22,7 +22,7 @@ namespace Frida {
 				Cancellable? cancellable = null) throws Error, IOError {
 			var opts = (options != null) ? options : new PackageSearchOptions ();
 
-			var text = string.join (" ", query, "keywords:frida-gum");
+			var text = string.join (" ", query, "keywords:plawnekjx-gum");
 			Json.Reader reader = yield fetch ("/-/v1/search?text=%s&from=%u&size=%u"
 				.printf (Uri.escape_string (text), opts.offset, opts.limit), cancellable);
 

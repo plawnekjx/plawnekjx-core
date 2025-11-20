@@ -23,21 +23,21 @@
 
 ## Development loop
 
-    export FRIDA_BAREBONE_CONFIG=$PWD/etc/xnu.json
-    cargo build --release && make -C ~/src/frida-python && killall -9 qemu-system-aarch64 && sleep 2 && frida -D barebone -p 0
+    export PLAWNEKJX_BAREBONE_CONFIG=$PWD/etc/xnu.json
+    cargo build --release && make -C ~/src/plawnekjx-python && killall -9 qemu-system-aarch64 && sleep 2 && plawnekjx -D barebone -p 0
 
 ## Speeding up loop
 
     ./configure \
         -- \
-        -Dfrida-core:compat=disabled \
-        -Dfrida-core:local_backend=disabled \
-        -Dfrida-core:fruity_backend=disabled \
-        -Dfrida-core:droidy_backend=disabled \
-        -Dfrida-core:socket_backend=disabled \
-        -Dfrida-core:compiler_backend=disabled \
-        -Dfrida-core:gadget=disabled \
-        -Dfrida-core:server=disabled \
-        -Dfrida-core:portal=disabled \
-        -Dfrida-core:inject=disabled \
-        -Dfrida-core:tests=enabled
+        -Dplawnekjx-core:compat=disabled \
+        -Dplawnekjx-core:local_backend=disabled \
+        -Dplawnekjx-core:fruity_backend=disabled \
+        -Dplawnekjx-core:droidy_backend=disabled \
+        -Dplawnekjx-core:socket_backend=disabled \
+        -Dplawnekjx-core:compiler_backend=disabled \
+        -Dplawnekjx-core:gadget=disabled \
+        -Dplawnekjx-core:server=disabled \
+        -Dplawnekjx-core:portal=disabled \
+        -Dplawnekjx-core:inject=disabled \
+        -Dplawnekjx-core:tests=enabled

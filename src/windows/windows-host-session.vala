@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class WindowsHostSessionBackend : LocalHostSessionBackend {
 		protected override LocalHostSessionProvider make_provider () {
 			return new WindowsHostSessionProvider ();
@@ -46,23 +46,23 @@ namespace Frida {
 			injector = new Winjector (helper, false, tempdir);
 			injector.uninjected.connect (on_uninjected);
 
-			agent = new AgentDescriptor (PathTemplate ("<arch>\\frida-agent.dll"),
-				new Bytes.static (Frida.Data.Agent.get_frida_agent_arm64_dll_blob ().data),
-				new Bytes.static (Frida.Data.Agent.get_frida_agent_x86_64_dll_blob ().data),
-				new Bytes.static (Frida.Data.Agent.get_frida_agent_x86_dll_blob ().data),
+			agent = new AgentDescriptor (PathTemplate ("<arch>\\plawnekjx-agent.dll"),
+				new Bytes.static (Plawnekjx.Data.Agent.get_plawnekjx_agent_arm64_dll_blob ().data),
+				new Bytes.static (Plawnekjx.Data.Agent.get_plawnekjx_agent_x86_64_dll_blob ().data),
+				new Bytes.static (Plawnekjx.Data.Agent.get_plawnekjx_agent_x86_dll_blob ().data),
 				new AgentResource[] {
 					new AgentResource ("arm64\\dbghelp.dll",
-						new Bytes.static (Frida.Data.Agent.get_dbghelp_arm64_dll_blob ().data), tempdir),
+						new Bytes.static (Plawnekjx.Data.Agent.get_dbghelp_arm64_dll_blob ().data), tempdir),
 					new AgentResource ("arm64\\symsrv.dll",
-						new Bytes.static (Frida.Data.Agent.get_symsrv_arm64_dll_blob ().data), tempdir),
+						new Bytes.static (Plawnekjx.Data.Agent.get_symsrv_arm64_dll_blob ().data), tempdir),
 					new AgentResource ("x86_64\\dbghelp.dll",
-						new Bytes.static (Frida.Data.Agent.get_dbghelp_x86_64_dll_blob ().data), tempdir),
+						new Bytes.static (Plawnekjx.Data.Agent.get_dbghelp_x86_64_dll_blob ().data), tempdir),
 					new AgentResource ("x86_64\\symsrv.dll",
-						new Bytes.static (Frida.Data.Agent.get_symsrv_x86_64_dll_blob ().data), tempdir),
+						new Bytes.static (Plawnekjx.Data.Agent.get_symsrv_x86_64_dll_blob ().data), tempdir),
 					new AgentResource ("x86\\dbghelp.dll",
-						new Bytes.static (Frida.Data.Agent.get_dbghelp_x86_dll_blob ().data), tempdir),
+						new Bytes.static (Plawnekjx.Data.Agent.get_dbghelp_x86_dll_blob ().data), tempdir),
 					new AgentResource ("x86\\symsrv.dll",
-						new Bytes.static (Frida.Data.Agent.get_symsrv_x86_dll_blob ().data), tempdir),
+						new Bytes.static (Plawnekjx.Data.Agent.get_symsrv_x86_dll_blob ().data), tempdir),
 				},
 				tempdir
 			);
@@ -225,7 +225,7 @@ namespace Frida {
 			var stream_request = Pipe.open (t.local_address, cancellable);
 
 			var winjector = injector as Winjector;
-			var id = yield winjector.inject_library_resource (pid, agent, "frida_agent_main",
+			var id = yield winjector.inject_library_resource (pid, agent, "plawnekjx_agent_main",
 				make_agent_parameters (pid, t.remote_address, options), cancellable);
 			injectee_by_pid[pid] = id;
 

@@ -1,7 +1,7 @@
-#include "frida-base.h"
+#include "plawnekjx-base.h"
 
 GBytes *
-frida_make_bytes_with_owner (GType t_type,
+plawnekjx_make_bytes_with_owner (GType t_type,
                              GBoxedCopyFunc t_dup_func,
                              GDestroyNotify t_destroy_func,
                              void * data,

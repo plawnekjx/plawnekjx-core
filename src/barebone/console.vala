@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaBarebone", gir_version = "1.0")]
-namespace Frida.Barebone {
+[CCode (gir_namespace = "PlawnekjxBarebone", gir_version = "1.0")]
+namespace Plawnekjx.Barebone {
 	private class ConsoleLogHandler : Object, CallbackHandler {
 		public signal void output (string message);
 

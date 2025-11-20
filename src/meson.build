@@ -1,6 +1,6 @@
 base_sources = [
-  'frida.vala',
-  'frida-glue.c',
+  'plawnekjx.vala',
+  'plawnekjx-glue.c',
   'package-manager.vala',
   'control-service.vala',
   'portal-service.vala',
@@ -30,7 +30,7 @@ backend_libs = []
 backend_deps = []
 
 if have_local_backend
-  post_process_helper = post_process + ['executable', 're.frida.Helper']
+  post_process_helper = post_process + ['executable', 're.plawnekjx.Helper']
 
   embed_helper = [
     python,
@@ -59,40 +59,40 @@ if have_local_backend
       'windows' / 'windows-host-session-glue.c',
       'windows' / 'winjector.vala',
       'windows' / 'winjector-glue.c',
-      'windows' / 'frida-helper-process.vala',
-      'windows' / 'frida-helper-process-glue.c',
+      'windows' / 'plawnekjx-helper-process.vala',
+      'windows' / 'plawnekjx-helper-process-glue.c',
       'windows' / 'access-helpers.c',
     ]
-    backend_vala_args += '--pkg=frida-gum-windows-1.0'
+    backend_vala_args += '--pkg=plawnekjx-gum-windows-1.0'
 
     helper_backend_sources = [
-      'windows' / 'frida-helper-backend.vala',
-      'windows' / 'frida-helper-backend-glue.c',
-      'windows' / 'frida-helper-types.vala',
+      'windows' / 'plawnekjx-helper-backend.vala',
+      'windows' / 'plawnekjx-helper-backend-glue.c',
+      'windows' / 'plawnekjx-helper-types.vala',
       'windows' / 'wait-handle-source.c',
     ]
     helper_backend_vala_args = [
       base_vala_args,
-      '--pkg=frida-gum-windows-1.0',
+      '--pkg=plawnekjx-gum-windows-1.0',
     ]
-    helper_backend = static_library('frida-helper-backend', helper_backend_sources,
+    helper_backend = static_library('plawnekjx-helper-backend', helper_backend_sources,
       vala_args: helper_backend_vala_args,
-      c_args: frida_component_cflags,
+      c_args: plawnekjx_component_cflags,
       dependencies: [gio_dep, gee_dep, gum_dep, base_dep],
     )
     backend_libs += helper_backend
 
     helper_sources = [
-      'windows' / 'frida-helper-service.vala',
-      'windows' / 'frida-helper-service-glue.c',
+      'windows' / 'plawnekjx-helper-service.vala',
+      'windows' / 'plawnekjx-helper-service-glue.c',
     ]
-    raw_helper = executable('frida-helper-raw', helper_sources,
+    raw_helper = executable('plawnekjx-helper-raw', helper_sources,
       vala_args: helper_backend_vala_args,
       link_with: helper_backend,
       dependencies: [gio_dep, gee_dep, gum_dep, base_dep, pipe_dep],
     )
 
-    helper = custom_target('frida-helper',
+    helper = custom_target('plawnekjx-helper',
       input: raw_helper,
       output: helper_name,
       command: post_process_helper,
@@ -110,13 +110,13 @@ if have_local_backend
         helper_legacy = host_is_modern ? '' : helper
       endif
 
-      helper_process_data = custom_target('frida-data-helper-process',
+      helper_process_data = custom_target('plawnekjx-data-helper-process',
         input: 'helper.resources',
         output: [
-          'frida-data-helper-process.vapi',
-          'frida-data-helper-process.h',
-          'frida-data-helper-process.c',
-          'frida-data-helper-process-blob' + resource_blob_extension,
+          'plawnekjx-data-helper-process.vapi',
+          'plawnekjx-data-helper-process.h',
+          'plawnekjx-data-helper-process.c',
+          'plawnekjx-data-helper-process-blob' + resource_blob_extension,
         ],
         command: embed_helper + [helper_modern, helper_legacy, helper_emulated_modern, helper_emulated_legacy],
         depends: helper_depends,
@@ -133,27 +133,27 @@ if have_local_backend
       'darwin' / 'darwin-host-session.vala',
       'darwin' / 'darwin-host-session-glue.m',
       'darwin' / 'fruitjector.vala',
-      'darwin' / 'frida-helper-process.vala',
+      'darwin' / 'plawnekjx-helper-process.vala',
     ]
 
-    darwin_data = custom_target('frida-data-darwin',
+    darwin_data = custom_target('plawnekjx-data-darwin',
       input: [
-        'darwin' / 'frida-darwin.resources',
+        'darwin' / 'plawnekjx-darwin.resources',
         'darwin' / 'agent' / 'launchd.js',
         'darwin' / 'agent' / 'xpcproxy.js',
         reportcrash_js,
         osanalytics_js,
       ],
       output: [
-        'frida-data-darwin.vapi',
-        'frida-data-darwin.h',
-        'frida-data-darwin.c',
-        'frida-data-darwin-blob' + resource_blob_extension,
+        'plawnekjx-data-darwin.vapi',
+        'plawnekjx-data-darwin.h',
+        'plawnekjx-data-darwin.c',
+        'plawnekjx-data-darwin-blob' + resource_blob_extension,
       ],
       command: [
         resource_compiler_cmd_array,
         '-c', '@INPUT0@',
-        '-o', meson.current_build_dir() / 'frida-data-darwin',
+        '-o', meson.current_build_dir() / 'plawnekjx-data-darwin',
         '@INPUT1@',
         '@INPUT2@',
         '@INPUT3@',
@@ -163,20 +163,20 @@ if have_local_backend
     backend_sources += [darwin_data]
 
     helper_backend_sources = [
-      'darwin' / 'frida-helper-types.vala',
+      'darwin' / 'plawnekjx-helper-types.vala',
       'darwin' / 'policy-softener.vala',
       'darwin' / 'policy-softener-glue.c',
     ]
     if host_os in ['macos', 'ios', 'tvos', 'xros']
       helper_backend_sources += [
-        'darwin' / 'frida-helper-backend.vala',
-        'darwin' / 'frida-helper-backend-glue.m',
+        'darwin' / 'plawnekjx-helper-backend.vala',
+        'darwin' / 'plawnekjx-helper-backend-glue.m',
         'darwin' / 'policyd.c',
         'darwin' / 'policyd-client.c',
       ]
     else
       helper_backend_sources += [
-        'darwin' / 'frida-helper-null-backend.vala',
+        'darwin' / 'plawnekjx-helper-null-backend.vala',
       ]
     endif
     if host_os in ['ios', 'tvos', 'xros']
@@ -187,12 +187,12 @@ if have_local_backend
       ]
     endif
     helper_backend_vala_args = base_vala_args
-    helper_backend = static_library('frida-helper-backend', helper_backend_sources,
-      c_args: frida_component_cflags,
+    helper_backend = static_library('plawnekjx-helper-backend', helper_backend_sources,
+      c_args: plawnekjx_component_cflags,
       vala_args: [
         helper_backend_vala_args,
         gum_vala_args,
-        '--pkg=frida-gum-darwin-1.0',
+        '--pkg=plawnekjx-gum-darwin-1.0',
         '--pkg=gmodule-2.0',
         '--pkg=gio-unix-2.0',
         '--pkg=posix',
@@ -202,18 +202,18 @@ if have_local_backend
     backend_libs += [helper_backend]
 
     helper_sources = [
-      'darwin' / 'frida-helper-service.vala',
-      'darwin' / 'frida-helper-service-glue.m',
+      'darwin' / 'plawnekjx-helper-service.vala',
+      'darwin' / 'plawnekjx-helper-service-glue.m',
     ]
-    helper_symlist = 'darwin' / 'frida-helper.symbols'
+    helper_symlist = 'darwin' / 'plawnekjx-helper.symbols'
     helper_link_args = ['-Wl,-exported_symbols_list,' + meson.current_source_dir() / helper_symlist]
     helper_link_depends = [helper_symlist]
     if host_os == 'macos'
-      helper_plist = 'darwin' / 'frida-helper.plist'
+      helper_plist = 'darwin' / 'plawnekjx-helper.plist'
       helper_link_args += ['-Wl,-sectcreate,__TEXT,__info_plist,' + meson.current_source_dir() / helper_plist]
       helper_link_depends += [helper_plist]
     endif
-    raw_helper = executable('frida-helper-raw', helper_sources,
+    raw_helper = executable('plawnekjx-helper-raw', helper_sources,
       vala_args: [helper_backend_vala_args, '--pkg=posix'],
       link_args: [helper_link_args, backend_libs_private],
       link_depends: helper_link_depends,
@@ -224,10 +224,10 @@ if have_local_backend
 
     need_universal_helper = get_option('assets') == 'installed' and helper_compat != ''
 
-    helper = custom_target('frida-helper',
+    helper = custom_target('plawnekjx-helper',
       input: [
         raw_helper,
-        'darwin' / 'frida-helper.xcent',
+        'darwin' / 'plawnekjx-helper.xcent',
       ],
       output: need_universal_helper ? f'@helper_name@-@host_abi@' : helper_name,
       command: post_process_helper + '@INPUT1@',
@@ -237,7 +237,7 @@ if have_local_backend
     )
 
     if need_universal_helper
-      custom_target('frida-helper-universal',
+      custom_target('plawnekjx-helper-universal',
         input: helper,
         output: helper_name,
         command: [
@@ -262,13 +262,13 @@ if have_local_backend
         helper_legacy = host_is_modern ? '' : helper
       endif
 
-      helper_process_data = custom_target('frida-data-helper-process',
+      helper_process_data = custom_target('plawnekjx-data-helper-process',
         input: 'helper.resources',
         output: [
-          'frida-data-helper-process.vapi',
-          'frida-data-helper-process.h',
-          'frida-data-helper-process.c',
-          'frida-data-helper-process-blob' + resource_blob_extension,
+          'plawnekjx-data-helper-process.vapi',
+          'plawnekjx-data-helper-process.h',
+          'plawnekjx-data-helper-process.c',
+          'plawnekjx-data-helper-process-blob' + resource_blob_extension,
         ],
         command: embed_helper + [helper_modern, helper_legacy, helper_emulated_modern, helper_emulated_legacy],
         depends: helper_depends,
@@ -282,32 +282,32 @@ if have_local_backend
       'linux' / 'linux-host-session.vala',
       'linux' / 'linjector.vala',
       'linux' / 'linjector-glue.c',
-      'linux' / 'frida-helper-process.vala',
+      'linux' / 'plawnekjx-helper-process.vala',
       'linux' / 'supersu.vala',
     ]
 
     if host_os == 'android'
       subdir('linux' / 'agent' / 'system-server')
 
-      backend_vala_args_private += frida_selinux_vala_args
-      backend_libs += frida_selinux
-      backend_deps += frida_selinux_dep
+      backend_vala_args_private += plawnekjx_selinux_vala_args
+      backend_libs += plawnekjx_selinux
+      backend_deps += plawnekjx_selinux_dep
 
-      android_data = custom_target('frida-data-android',
+      android_data = custom_target('plawnekjx-data-android',
         input: [
-          'linux' / 'frida-android.resources',
+          'linux' / 'plawnekjx-android.resources',
           system_server_js,
         ],
         output: [
-          'frida-data-android.vapi',
-          'frida-data-android.h',
-          'frida-data-android.c',
-          'frida-data-android-blob' + resource_blob_extension,
+          'plawnekjx-data-android.vapi',
+          'plawnekjx-data-android.h',
+          'plawnekjx-data-android.c',
+          'plawnekjx-data-android-blob' + resource_blob_extension,
         ],
         command: [
           resource_compiler_cmd_array,
           '-c', '@INPUT0@',
-          '-o', meson.current_build_dir() / 'frida-data-android',
+          '-o', meson.current_build_dir() / 'plawnekjx-data-android',
           '@INPUT1@',
         ],
       )
@@ -315,10 +315,10 @@ if have_local_backend
     endif
 
     helper_backend_sources = [
-      'linux' / 'frida-helper-backend.vala',
-      'linux' / 'frida-helper-backend-glue.c',
-      'linux' / 'frida-helper-backend-types.c',
-      'linux' / 'frida-helper-types.vala',
+      'linux' / 'plawnekjx-helper-backend.vala',
+      'linux' / 'plawnekjx-helper-backend-glue.c',
+      'linux' / 'plawnekjx-helper-backend-types.c',
+      'linux' / 'plawnekjx-helper-types.vala',
     ]
     if host_abi == 'armhf'
       host_lowlevel_abi = 'arm'
@@ -331,9 +331,9 @@ if have_local_backend
       host_lowlevel_abi = 'arm64be'
     endif
     fs = import('fs')
-    helper_backend_data = custom_target('frida-data-helper-backend',
+    helper_backend_data = custom_target('plawnekjx-data-helper-backend',
       input: [
-        'linux' / 'frida-helper-backend.resources',
+        'linux' / 'plawnekjx-helper-backend.resources',
         fs.copyfile(
           'linux' / 'helpers' / f'bootstrapper-@host_lowlevel_abi@.bin',
           'bootstrapper.bin',
@@ -344,15 +344,15 @@ if have_local_backend
         ),
       ],
       output: [
-        'frida-data-helper-backend.vapi',
-        'frida-data-helper-backend.h',
-        'frida-data-helper-backend.c',
-        'frida-data-helper-backend-blob' + resource_blob_extension,
+        'plawnekjx-data-helper-backend.vapi',
+        'plawnekjx-data-helper-backend.h',
+        'plawnekjx-data-helper-backend.c',
+        'plawnekjx-data-helper-backend-blob' + resource_blob_extension,
       ],
       command: [
         resource_compiler_cmd_array,
         '-c', '@INPUT0@',
-        '-o', meson.current_build_dir() / 'frida-data-helper-backend',
+        '-o', meson.current_build_dir() / 'plawnekjx-data-helper-backend',
         '@INPUT1@',
         '@INPUT2@',
       ],
@@ -360,20 +360,20 @@ if have_local_backend
     helper_backend_sources += [helper_backend_data]
     helper_backend_extra_deps = []
     if host_os == 'android'
-      helper_backend_extra_deps += [frida_selinux_dep]
+      helper_backend_extra_deps += [plawnekjx_selinux_dep]
     endif
     helper_backend_vala_args = [
       base_vala_args,
       gum_vala_args,
       '--pkg=posix',
     ]
-    helper_backend = static_library('frida-helper-backend', helper_backend_sources,
-      c_args: frida_component_cflags,
+    helper_backend = static_library('plawnekjx-helper-backend', helper_backend_sources,
+      c_args: plawnekjx_component_cflags,
       vala_args: [
         helper_backend_vala_args,
         '--pkg=linux',
         '--pkg=linux-system',
-        '--pkg=frida-gum-linux-1.0',
+        '--pkg=plawnekjx-gum-linux-1.0',
       ],
       dependencies: [gio_dep, gio_unix_dep, gee_dep, gum_dep, base_dep] + helper_backend_extra_deps,
     )
@@ -381,12 +381,12 @@ if have_local_backend
     backend_libs += [helper_backend]
 
     helper_sources = [
-      'linux' / 'frida-helper-service.vala',
+      'linux' / 'plawnekjx-helper-service.vala',
     ]
-    helper_symscript = 'linux' / 'frida-helper.version'
+    helper_symscript = 'linux' / 'plawnekjx-helper.version'
     helper_link_args = ['-Wl,--version-script,' + meson.current_source_dir() / helper_symscript]
     helper_link_depends = [helper_symscript]
-    raw_helper = executable('frida-helper-raw', helper_sources,
+    raw_helper = executable('plawnekjx-helper-raw', helper_sources,
       vala_args: helper_backend_vala_args,
       link_args: helper_link_args,
       link_depends: helper_link_depends,
@@ -394,7 +394,7 @@ if have_local_backend
       dependencies: [gio_dep, gio_unix_dep, gee_dep, gum_dep, base_dep],
     )
 
-    helper = custom_target('frida-helper',
+    helper = custom_target('plawnekjx-helper',
       input: raw_helper,
       output: helper_name,
       command: post_process_helper,
@@ -420,13 +420,13 @@ if have_local_backend
         helper_legacy = ''
       endif
 
-      helper_process_data = custom_target('frida-data-helper-process',
+      helper_process_data = custom_target('plawnekjx-data-helper-process',
         input: 'helper.resources',
         output: [
-          'frida-data-helper-process.vapi',
-          'frida-data-helper-process.h',
-          'frida-data-helper-process.c',
-          'frida-data-helper-process-blob' + resource_blob_extension,
+          'plawnekjx-data-helper-process.vapi',
+          'plawnekjx-data-helper-process.h',
+          'plawnekjx-data-helper-process.c',
+          'plawnekjx-data-helper-process-blob' + resource_blob_extension,
         ],
         command: embed_helper + [helper_modern, helper_legacy, helper_emulated_modern, helper_emulated_legacy],
         depends: helper_depends,
@@ -441,7 +441,7 @@ if have_local_backend
       'freebsd' / 'binjector.vala',
       'freebsd' / 'binjector-glue.c',
     ]
-    backend_vala_args_private += '--pkg=frida-gum-freebsd-1.0'
+    backend_vala_args_private += '--pkg=plawnekjx-gum-freebsd-1.0'
   endif
 
   if host_os_family == 'qnx'
@@ -469,13 +469,13 @@ if have_local_backend
       agent_emulated_legacy = ''
     endif
 
-    backend_sources += custom_target('frida-data-agent',
+    backend_sources += custom_target('plawnekjx-data-agent',
       input: 'agent.resources',
       output: [
-        'frida-data-agent-blob' + resource_blob_extension,
-        'frida-data-agent.vapi',
-        'frida-data-agent.h',
-        'frida-data-agent.c',
+        'plawnekjx-data-agent-blob' + resource_blob_extension,
+        'plawnekjx-data-agent.vapi',
+        'plawnekjx-data-agent.h',
+        'plawnekjx-data-agent.c',
       ],
       command: [
         python,
@@ -492,8 +492,8 @@ if have_local_backend
         agent_legacy,
         agent_emulated_modern,
         agent_emulated_legacy,
-        gum_dep.get_variable('frida_dbghelp_prefix'),
-        gum_dep.get_variable('frida_symsrv_prefix'),
+        gum_dep.get_variable('plawnekjx_dbghelp_prefix'),
+        gum_dep.get_variable('plawnekjx_symsrv_prefix'),
       ],
       depends: agent_depends,
     )
@@ -507,21 +507,21 @@ if have_simmy_backend
     'simmy' / 'text-plist.vala',
   ]
 
-  simmy_data = custom_target('frida-data-simmy',
+  simmy_data = custom_target('plawnekjx-data-simmy',
     input: [
-      'simmy' / 'frida-simmy.resources',
+      'simmy' / 'plawnekjx-simmy.resources',
       'simmy' / 'agent' / 'springboard.js',
     ],
     output: [
-      'frida-data-simmy.vapi',
-      'frida-data-simmy.h',
-      'frida-data-simmy.c',
-      'frida-data-simmy-blob' + resource_blob_extension,
+      'plawnekjx-data-simmy.vapi',
+      'plawnekjx-data-simmy.h',
+      'plawnekjx-data-simmy.c',
+      'plawnekjx-data-simmy-blob' + resource_blob_extension,
     ],
     command: [
       resource_compiler_cmd_array,
       '-c', '@INPUT0@',
-      '-o', meson.current_build_dir() / 'frida-data-simmy',
+      '-o', meson.current_build_dir() / 'plawnekjx-data-simmy',
       '@INPUT1@',
     ],
   )
@@ -652,10 +652,10 @@ core_vala_args = [
   '--pkg=json-glib-1.0',
 ]
 
-core_gir_name = f'Frida-@api_version@.gir'
+core_gir_name = f'Plawnekjx-@api_version@.gir'
 
-core = library('frida-core', core_sources,
-  c_args: frida_component_cflags,
+core = library('plawnekjx-core', core_sources,
+  c_args: plawnekjx_component_cflags,
   vala_args: [
     core_vala_args,
     backend_vala_args_private,

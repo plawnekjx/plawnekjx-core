@@ -16,19 +16,19 @@ if host_os_family != 'windows'
   extra_vala_args += '--pkg=posix'
 endif
 if host_os_family == 'darwin'
-  extra_vala_args += '--pkg=frida-gum-darwin-1.0'
+  extra_vala_args += '--pkg=plawnekjx-gum-darwin-1.0'
 endif
 
 if host_os_family == 'windows'
   if host_toolchain != 'microsoft'
-    symfile = (host_arch == 'x86') ? 'frida-agent-x86.symbols' : 'frida-agent.symbols'
+    symfile = (host_arch == 'x86') ? 'plawnekjx-agent-x86.symbols' : 'plawnekjx-agent.symbols'
     extra_link_args += '-Wl,--retain-symbols-file,' + meson.current_source_dir() / symfile
     extra_link_depends += symfile
   endif
 elif host_os_family == 'darwin'
-  extra_link_args += '-Wl,-exported_symbol,_frida_agent_main'
+  extra_link_args += '-Wl,-exported_symbol,_plawnekjx_agent_main'
 else
-  symscript = (host_os == 'android') ? 'frida-agent-android.version' : 'frida-agent.version'
+  symscript = (host_os == 'android') ? 'plawnekjx-agent-android.version' : 'plawnekjx-agent.version'
   extra_link_args += '-Wl,--version-script,' + meson.current_source_dir() / symscript
   extra_link_depends += symscript
 endif
@@ -38,25 +38,25 @@ if host_os_family in ['linux', 'qnx']
   extra_link_args += '-Wl,-Bsymbolic'
 endif
 
-raw_agent = shared_library('frida-agent-raw', agent_sources,
+raw_agent = shared_library('plawnekjx-agent-raw', agent_sources,
   name_prefix: 'lib',
-  c_args: frida_component_cflags,
-  vala_header: 'frida-agent.h',
+  c_args: plawnekjx_component_cflags,
+  vala_header: 'plawnekjx-agent.h',
   vala_args: [base_vala_args, payload_vala_args, extra_vala_args],
   link_args: extra_link_args,
   link_depends: extra_link_depends,
-  vs_module_defs: 'frida-agent.def',
+  vs_module_defs: 'plawnekjx-agent.def',
   override_options: ['b_asneeded=true'],
   dependencies: [gio_dep, gee_dep, gum_dep, gumjs_dep, base_dep, pipe_dep, tls_provider_dep, payload_dep],
 )
 
-operations = ['--move', 'constructor', 'frida_init_memory', 'first']
+operations = ['--move', 'constructor', 'plawnekjx_init_memory', 'first']
 if host_os_family != 'darwin'
-  operations += ['--move', 'destructor', 'frida_deinit_memory', 'first']
+  operations += ['--move', 'destructor', 'plawnekjx_deinit_memory', 'first']
 endif
-modulated_agent = custom_target('frida-agent-modulated',
+modulated_agent = custom_target('plawnekjx-agent-modulated',
   input: raw_agent,
-  output: 'libfrida-agent-modulated' + shlib_suffix,
+  output: 'libplawnekjx-agent-modulated' + shlib_suffix,
   command: modulate + operations,
 )
 
@@ -65,11 +65,11 @@ need_universal_agent = host_os_family == 'darwin' \
     and agent_compat != ''
 
 if host_os_family == 'darwin'
-  identity = 'FridaAgent'
+  identity = 'PlawnekjxAgent'
 else
   identity = agent_name
 endif
-agent = custom_target('frida-agent',
+agent = custom_target('plawnekjx-agent',
   input: modulated_agent,
   output: need_universal_agent ? f'@agent_name@-@host_abi@' : agent_name,
   command: post_process + ['shared-library', identity],
@@ -81,7 +81,7 @@ agent = custom_target('frida-agent',
 agent_dep = declare_dependency(link_with: agent)
 
 if need_universal_agent
-  custom_target('frida-agent-universal',
+  custom_target('plawnekjx-agent-universal',
     input: agent,
     output: agent_name,
     command: [

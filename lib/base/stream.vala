@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public abstract class VirtualStream : IOStream {
 		public override InputStream input_stream {
 			get {

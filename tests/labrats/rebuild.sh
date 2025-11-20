@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is responsible for building Frida helpers for various Linux
+# This script is responsible for building Plawnekjx helpers for various Linux
 # architectures. It can build helpers for a single specified architecture on the
 # local machine, or for supported architectures in a container. The script uses
 # Docker containers to ensure consistent build environments for each
@@ -14,15 +14,15 @@ set -euo pipefail
 
 CURRENT_FILE="${BASH_SOURCE[0]}"
 HELPERS_DIR="$(cd "$(dirname "$CURRENT_FILE")" && pwd)"
-FRIDA_CORE_DIR="$(cd "$HELPERS_DIR/../.." && pwd)"
-RELENG_DIR="$FRIDA_CORE_DIR/releng"
-BUILD_DIR="$FRIDA_CORE_DIR/build"
-RELATIVE_TO_FRIDA_CORE_DIR=$(realpath --relative-to="$FRIDA_CORE_DIR" "$CURRENT_FILE")
+PLAWNEKJX_CORE_DIR="$(cd "$HELPERS_DIR/../.." && pwd)"
+RELENG_DIR="$PLAWNEKJX_CORE_DIR/releng"
+BUILD_DIR="$PLAWNEKJX_CORE_DIR/build"
+RELATIVE_TO_PLAWNEKJX_CORE_DIR=$(realpath --relative-to="$PLAWNEKJX_CORE_DIR" "$CURRENT_FILE")
 
 TMP_MESON_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_MESON_DIR"' EXIT
 
-CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-ghcr.io/frida}"
+CONTAINER_REGISTRY="${CONTAINER_REGISTRY:-ghcr.io/plawnekjx}"
 
 main () {
   if [ "$#" -eq 0 ]; then
@@ -69,31 +69,31 @@ build_arch () {
     exit 1
   fi
 
-  export FRIDA_HOST=linux-$ARCH
+  export PLAWNEKJX_HOST=linux-$ARCH
 
   EXTRA_FLAGS=()
-  if [ "$FRIDA_HOST" == "linux-x86" ]; then
+  if [ "$PLAWNEKJX_HOST" == "linux-x86" ]; then
     EXTRA_FLAGS+=("--build=linux-x86")
     export CC="gcc -m32" CXX="g++ -m32" STRIP="strip"
   fi
 
-  cd "$FRIDA_CORE_DIR"
+  cd "$PLAWNEKJX_CORE_DIR"
 
   rm -rf "$BUILD_DIR"
   # Note that $XTOOLS_HOST is set by the container.
   ./configure --host="$XTOOLS_HOST" "${EXTRA_FLAGS[@]}"
-  make -C tests/labrats -f Makefile.linux.mk -B "$FRIDA_HOST"
+  make -C tests/labrats -f Makefile.linux.mk -B "$PLAWNEKJX_HOST"
 }
 
 build_arches_in_container () {
   for ARCH in "${ARCHS[@]}"; do
     docker run \
-      -w /frida-core \
+      -w /plawnekjx-core \
       -i -t \
       --rm \
-      -v "$FRIDA_CORE_DIR:/frida-core" \
+      -v "$PLAWNEKJX_CORE_DIR:/plawnekjx-core" \
       "$CONTAINER_REGISTRY/core-linux-helpers-$ARCH:latest" \
-      "/frida-core/$RELATIVE_TO_FRIDA_CORE_DIR" "$ARCH"
+      "/plawnekjx-core/$RELATIVE_TO_PLAWNEKJX_CORE_DIR" "$ARCH"
   done
 }
 

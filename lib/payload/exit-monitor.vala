@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class ExitMonitor : Object, Gum.InvocationListener {
 		public weak ExitHandler handler {
 			get;

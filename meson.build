@@ -1,4 +1,4 @@
-project('frida-core', 'vala', 'c', 'cpp',
+project('plawnekjx-core', 'vala', 'c', 'cpp',
   version: run_command(find_program('python3'), files('tools' / 'detect-version.py'),
     capture: true,
     check: true).stdout().strip(),
@@ -8,16 +8,7 @@ project('frida-core', 'vala', 'c', 'cpp',
 
 fs = import('fs')
 
-if not meson.get_compiler('vala').version().endswith('-frida')
-  error('''Incompatible Vala compiler detected.
 
-Frida currently relies on features not yet upstream. Grab the Frida-optimized
-Vala sources from:
-
-    https://github.com/frida/vala
-
-and compile them with Meson.''')
-endif
 
 c_languages = ['c', 'cpp']
 cc = meson.get_compiler('c')
@@ -28,26 +19,26 @@ if not fs.exists(releng)
   releng = meson.project_source_root() / 'releng'
 endif
 
-frida_version = get_option('frida_version')
-if frida_version == ''
-  frida_version = run_command(releng / 'frida_version.py', meson.project_source_root(), check: true).stdout().strip()
+plawnekjx_version = get_option('plawnekjx_version')
+if plawnekjx_version == ''
+  plawnekjx_version = run_command(releng / 'plawnekjx_version.py', meson.project_source_root(), check: true).stdout().strip()
 endif
-tokens = frida_version.split('.')
-frida_major_version = tokens[0].to_int()
-frida_minor_version = tokens[1].to_int()
+tokens = plawnekjx_version.split('.')
+plawnekjx_major_version = tokens[0].to_int()
+plawnekjx_minor_version = tokens[1].to_int()
 if tokens.length() == 4
-  frida_micro_version = tokens[2].split('-')[0].to_int() - 1
-  frida_nano_version = tokens[3].to_int() + 1
+  plawnekjx_micro_version = tokens[2].split('-')[0].to_int() - 1
+  plawnekjx_nano_version = tokens[3].to_int() + 1
 else
   assert(tokens.length() == 3)
-  frida_micro_version = tokens[2].to_int()
-  frida_nano_version = 0
+  plawnekjx_micro_version = tokens[2].to_int()
+  plawnekjx_nano_version = 0
 endif
-frida_profile = (frida_version != '0.0.0' and frida_nano_version == 0) ? 'prod' : 'dev'
+plawnekjx_profile = (plawnekjx_version != '0.0.0' and plawnekjx_nano_version == 0) ? 'prod' : 'dev'
 
 api_version = '1.0'
 
-header_install_dir = get_option('includedir') / f'frida-@api_version@'
+header_install_dir = get_option('includedir') / f'plawnekjx-@api_version@'
 
 build_os = build_machine.system()
 if build_os == 'android'
@@ -120,11 +111,11 @@ endif
 
 vala_flags = []
 
-frida_component_cflags = []
+plawnekjx_component_cflags = []
 ndebug = get_option('b_ndebug')
 optimize_for_prod = ndebug == 'true' or (ndebug == 'if-release' and not get_option('debug'))
 if optimize_for_prod
-  frida_component_cflags += [
+  plawnekjx_component_cflags += [
     '-DG_DISABLE_ASSERT',
     '-DG_DISABLE_CHECKS',
     '-DG_DISABLE_CAST_CHECKS',
@@ -177,17 +168,17 @@ endif
 
 cdata = configuration_data()
 
-cdata.set_quoted('FRIDA_VERSION', frida_version)
-cdata.set('FRIDA_MAJOR_VERSION', frida_major_version)
-cdata.set('FRIDA_MINOR_VERSION', frida_minor_version)
-cdata.set('FRIDA_MICRO_VERSION', frida_micro_version)
-cdata.set('FRIDA_NANO_VERSION', frida_nano_version)
+cdata.set_quoted('PLAWNEKJX_VERSION', plawnekjx_version)
+cdata.set('PLAWNEKJX_MAJOR_VERSION', plawnekjx_major_version)
+cdata.set('PLAWNEKJX_MINOR_VERSION', plawnekjx_minor_version)
+cdata.set('PLAWNEKJX_MICRO_VERSION', plawnekjx_micro_version)
+cdata.set('PLAWNEKJX_NANO_VERSION', plawnekjx_nano_version)
 
 escaped_prefix = get_option('prefix')
 if host_os_family == 'windows'
   escaped_prefix = escaped_prefix.replace('\\', '\\\\')
 endif
-cdata.set_quoted('FRIDA_PREFIX', escaped_prefix)
+cdata.set_quoted('PLAWNEKJX_PREFIX', escaped_prefix)
 
 exe_suffix = (host_os_family == 'windows') ? '.exe' : ''
 if host_os_family == 'windows'
@@ -198,19 +189,19 @@ else
   shlib_suffix = '.so'
 endif
 
-helper_name = 'frida-helper' + exe_suffix
-agent_name = 'frida-agent' + shlib_suffix
-gadget_name = 'frida-gadget' + shlib_suffix
+helper_name = 'plawnekjx-helper' + exe_suffix
+agent_name = 'plawnekjx-agent' + shlib_suffix
+gadget_name = 'plawnekjx-gadget' + shlib_suffix
 
-root_asset_dir = get_option('libdir') / 'frida'
+root_asset_dir = get_option('libdir') / 'plawnekjx'
 if host_os_family == 'darwin'
   asset_dir = root_asset_dir
-  default_asset_path_template = get_option('prefix') / get_option('libdir') / 'frida'
+  default_asset_path_template = get_option('prefix') / get_option('libdir') / 'plawnekjx'
 else
   asset_dir = root_asset_dir / host_cpu_mode
   asset_dir_modern = root_asset_dir / '64'
   asset_dir_legacy = root_asset_dir / '32'
-  default_asset_path_template = get_option('prefix') / get_option('libdir') / 'frida' / '<arch>'
+  default_asset_path_template = get_option('prefix') / get_option('libdir') / 'plawnekjx' / '<arch>'
 endif
 
 asset_path_template = get_option('asset_path_template')
@@ -221,8 +212,8 @@ endif
 if get_option('assets') == 'embedded'
   vala_flags += '--define=HAVE_EMBEDDED_ASSETS'
 else
-  cdata.set_quoted('FRIDA_HELPER_PATH', asset_path_template / helper_name)
-  cdata.set_quoted('FRIDA_AGENT_PATH', asset_path_template / agent_name)
+  cdata.set_quoted('PLAWNEKJX_HELPER_PATH', asset_path_template / helper_name)
+  cdata.set_quoted('PLAWNEKJX_AGENT_PATH', asset_path_template / agent_name)
 endif
 
 cdata.set('HAVE_' + host_os_family.to_upper(), 1)
@@ -285,12 +276,12 @@ if get_option('b_sanitize') == 'address'
   cdata.set('HAVE_ASAN', 1)
 endif
 
-gum_dep = dependency('frida-gum-1.0', default_options: [
-  f'frida_version=@frida_version@',
+gum_dep = dependency('plawnekjx-gum-1.0', default_options: [
+  f'plawnekjx_version=@plawnekjx_version@',
   'gumjs=enabled',
 ])
-gumjs_dep = dependency('frida-gumjs-1.0')
-gumjs_inspector_dep = dependency('frida-gumjs-inspector-1.0')
+gumjs_dep = dependency('plawnekjx-gumjs-1.0')
+gumjs_inspector_dep = dependency('plawnekjx-gumjs-inspector-1.0')
 
 glib_options = [
   'cocoa=disabled',
@@ -473,19 +464,19 @@ build_gadget = get_option('gadget') \
     .allowed()
 
 build_server = get_option('server') \
-    .disable_if(not have_local_backend, error_message: 'frida-server requires the local backend to be included') \
-    .disable_if(host_os == 'watchos', error_message: 'frida-server not yet supported on watchOS') \
+    .disable_if(not have_local_backend, error_message: 'plawnekjx-server requires the local backend to be included') \
+    .disable_if(host_os == 'watchos', error_message: 'plawnekjx-server not yet supported on watchOS') \
     .disable_auto_if(meson.is_subproject()) \
     .allowed()
 
 build_portal = get_option('portal') \
-    .disable_if(host_os == 'watchos', error_message: 'frida-portal not yet supported on watchOS') \
+    .disable_if(host_os == 'watchos', error_message: 'plawnekjx-portal not yet supported on watchOS') \
     .disable_auto_if(meson.is_subproject()) \
     .allowed()
 
 build_inject = get_option('inject') \
-    .disable_if(not have_local_backend, error_message: 'frida-inject requires the local backend to be included') \
-    .disable_if(host_os == 'watchos', error_message: 'frida-inject not yet supported on watchOS') \
+    .disable_if(not have_local_backend, error_message: 'plawnekjx-inject requires the local backend to be included') \
+    .disable_if(host_os == 'watchos', error_message: 'plawnekjx-inject not yet supported on watchOS') \
     .disable_auto_if(meson.is_subproject()) \
     .allowed()
 
@@ -527,11 +518,11 @@ endif
 vapidir = get_option('prefix') / get_option('datadir') / 'vala' / 'vapi'
 
 gum_vala_args = [
-  '--pkg=frida-gum-1.0',
-  '--vapidir=' + gum_dep.get_variable('frida_vapidir'),
+  '--pkg=plawnekjx-gum-1.0',
+  '--vapidir=' + gum_dep.get_variable('plawnekjx_vapidir'),
 ]
-gumjs_vala_args = ['--pkg=frida-gumjs-1.0', '--pkg=gio-2.0', gum_vala_args]
-gumjs_inspector_vala_args = ['--pkg=frida-gumjs-inspector-1.0', gum_vala_args]
+gumjs_vala_args = ['--pkg=plawnekjx-gumjs-1.0', '--pkg=gio-2.0', gum_vala_args]
+gumjs_inspector_vala_args = ['--pkg=plawnekjx-gumjs-inspector-1.0', gum_vala_args]
 
 have_v8 = gumjs_dep.get_variable('gumjs_v8') == 'enabled'
 if have_v8
@@ -738,7 +729,7 @@ configure_file(
 
 add_project_arguments(
   (cc.get_argument_syntax() == 'msvc') ? '/FI' : '-include', meson.current_build_dir() / 'config.h',
-  '-DG_LOG_DOMAIN="Frida"',
+  '-DG_LOG_DOMAIN="Plawnekjx"',
   '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_56',
   '-DG_DISABLE_DEPRECATED',
   language: c_languages)

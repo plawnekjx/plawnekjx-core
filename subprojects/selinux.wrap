@@ -1,5 +1,5 @@
 [wrap-git]
-url = https://github.com/frida/selinux.git
+url = https://github.com/plawnekjx/selinux.git
 revision = 6d5513fd8069e9ff9b7aa10970d34457b32970c8
 depth = 1
 

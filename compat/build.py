@@ -33,7 +33,7 @@ def main(argv):
     command.add_argument("role", help="project vs subproject", choices=["project", "subproject"])
     command.add_argument("builddir", help="build directory", type=Path)
     command.add_argument("top_builddir", help="top build directory", type=Path)
-    command.add_argument("frida_version", help="the Frida version")
+    command.add_argument("plawnekjx_version", help="the Plawnekjx version")
     command.add_argument("host_os", help="operating system binaries are being built for")
     command.add_argument("host_arch", help="architecture binaries are being built for")
     command.add_argument("host_config", help="configuration binaries are being built for")
@@ -46,7 +46,7 @@ def main(argv):
     command.set_defaults(func=lambda args: setup(args.role,
                                                  args.builddir,
                                                  args.top_builddir,
-                                                 args.frida_version,
+                                                 args.plawnekjx_version,
                                                  args.host_os,
                                                  args.host_arch,
                                                  args.host_config if args.host_config else None,
@@ -111,7 +111,7 @@ def pop_cmd_array_arg(args: list[str]) -> list[str]:
 def setup(role: Role,
           builddir: Path,
           top_builddir: Path,
-          frida_version: str,
+          plawnekjx_version: str,
           host_os: str,
           host_arch: str,
           host_config: Optional[str],
@@ -209,25 +209,25 @@ def setup(role: Role,
                 group = OutputGroup(other_arch)
                 outputs[group] = [
                     Output(identifier=f"helper_{kind}",
-                           name=f"frida-helper-{other_arch}",
+                           name=f"plawnekjx-helper-{other_arch}",
                            file=HELPER_FILE_UNIX,
                            target=HELPER_TARGET),
                     Output(identifier=f"agent_{kind}",
-                           name=f"frida-agent-{other_arch}.dylib",
+                           name=f"plawnekjx-agent-{other_arch}.dylib",
                            file=AGENT_FILE_DARWIN,
                            target=AGENT_TARGET),
                 ]
                 if "gadget" in components:
                     outputs[group] += [
                         Output(identifier=f"gadget_{kind}",
-                               name=f"frida-gadget-{other_arch}.dylib",
+                               name=f"plawnekjx-gadget-{other_arch}.dylib",
                                file=GADGET_FILE_DARWIN,
                                target=GADGET_TARGET),
                     ]
                 if "server" in components and assets == "installed":
                     outputs[group] += [
                         Output(identifier=f"server_{kind}",
-                               name=f"frida-server-{other_arch}",
+                               name=f"plawnekjx-server-{other_arch}",
                                file=SERVER_FILE_UNIX,
                                target=SERVER_TARGET),
                     ]
@@ -298,22 +298,22 @@ def setup(role: Role,
             if host_os == "android" and host_arch in {"x86_64", "x86"}:
                 outputs[OutputGroup("arm")] = [
                     Output(identifier="agent_emulated_legacy",
-                           name="frida-agent-arm.so",
+                           name="plawnekjx-agent-arm.so",
                            file=AGENT_FILE_ELF,
                            target=AGENT_TARGET),
                 ]
                 if host_arch == "x86_64":
                     outputs[OutputGroup("arm64")] = [
                         Output(identifier="agent_emulated_modern",
-                               name="frida-agent-arm64.so",
+                               name="plawnekjx-agent-arm64.so",
                                file=AGENT_FILE_ELF,
                                target=AGENT_TARGET),
                     ]
 
-        raw_allowed_prebuilds = os.environ.get("FRIDA_ALLOWED_PREBUILDS")
+        raw_allowed_prebuilds = os.environ.get("PLAWNEKJX_ALLOWED_PREBUILDS")
         allowed_prebuilds = set(raw_allowed_prebuilds.split(",")) if raw_allowed_prebuilds is not None else None
 
-        state = State(role, builddir, top_builddir, frida_version, host_os, host_config, allowed_prebuilds, outputs)
+        state = State(role, builddir, top_builddir, plawnekjx_version, host_os, host_config, allowed_prebuilds, outputs)
         serialized_state = base64.b64encode(pickle.dumps(state)).decode('ascii')
 
         if missing:
@@ -347,7 +347,7 @@ class State:
     role: Role
     builddir: Path
     top_builddir: Path
-    frida_version: str
+    plawnekjx_version: str
     host_os: str
     host_config: Optional[str]
     allowed_prebuilds: Optional[set[str]]
@@ -409,7 +409,7 @@ def compile(privdir: Path, state: State):
 
     options: Optional[Sequence[str]] = None
     build_env = scrub_environment(os.environ)
-    build_env["FRIDA_RELENG"] = str(releng_location)
+    build_env["PLAWNEKJX_RELENG"] = str(releng_location)
     top_builddir = state.top_builddir
     depfile_lines = []
     for group, outputs in state.outputs.items():
@@ -423,9 +423,9 @@ def compile(privdir: Path, state: State):
         if not (workdir / "build.ninja").exists():
             if options is None:
                 options = load_meson_options(top_builddir, state.role, set(subprojects.keys()))
-                version_opt = next((opt for opt in options if opt.startswith("-Dfrida_version=")), None)
+                version_opt = next((opt for opt in options if opt.startswith("-Dplawnekjx_version=")), None)
                 if version_opt is None:
-                    options += [f"-Dfrida_version={state.frida_version}"]
+                    options += [f"-Dplawnekjx_version={state.plawnekjx_version}"]
 
             host_machine = MachineSpec(state.host_os, group.arch, state.host_config, group.triplet)
 
@@ -483,7 +483,7 @@ def load_meson_options(top_builddir: Path,
 
 
 def adapt_key(k: "OptionKey", role: Role) -> "OptionKey":
-    if role == "subproject" and k.subproject == "frida-core":
+    if role == "subproject" and k.subproject == "plawnekjx-core":
         return k.as_root()
     return k
 
@@ -494,7 +494,7 @@ def option_should_be_forwarded(k: "OptionKey",
                                subprojects: set[str]) -> bool:
     from mesonbuild import coredata
 
-    our_project_id = "frida-core" if role == "subproject" else ""
+    our_project_id = "plawnekjx-core" if role == "subproject" else ""
     is_for_us = k.subproject == our_project_id
     is_for_child = k.subproject in subprojects
 
@@ -584,7 +584,7 @@ def ensure_submodules_checked_out(releng_location: Path):
 
 def detect_relevant_subprojects(releng_location: Path) -> dict[str, Path]:
     subprojects = detect_relevant_subprojects_in(REPO_ROOT, releng_location)
-    gum_location = subprojects.get("frida-gum")
+    gum_location = subprojects.get("plawnekjx-gum")
     if gum_location is not None:
         subprojects.update(detect_relevant_subprojects_in(gum_location, releng_location))
     return subprojects
@@ -635,22 +635,22 @@ def detect_mingw_toolchain_for(arch: str) -> Tuple[bool, Optional[str]]:
 STATE_FILENAME = "state.dat"
 DEPFILE_FILENAME = "compat.deps"
 
-HELPER_TARGET = "frida-helper"
-HELPER_FILE_WINDOWS = Path("src") / "frida-helper.exe"
-HELPER_FILE_UNIX = Path("src") / "frida-helper"
+HELPER_TARGET = "plawnekjx-helper"
+HELPER_FILE_WINDOWS = Path("src") / "plawnekjx-helper.exe"
+HELPER_FILE_UNIX = Path("src") / "plawnekjx-helper"
 
-AGENT_TARGET = "frida-agent"
-AGENT_FILE_WINDOWS = Path("lib") / "agent" / "frida-agent.dll"
-AGENT_FILE_DARWIN = Path("lib") / "agent" / "frida-agent.dylib"
-AGENT_FILE_ELF = Path("lib") / "agent" / "frida-agent.so"
+AGENT_TARGET = "plawnekjx-agent"
+AGENT_FILE_WINDOWS = Path("lib") / "agent" / "plawnekjx-agent.dll"
+AGENT_FILE_DARWIN = Path("lib") / "agent" / "plawnekjx-agent.dylib"
+AGENT_FILE_ELF = Path("lib") / "agent" / "plawnekjx-agent.so"
 
-GADGET_TARGET = "frida-gadget"
-GADGET_FILE_WINDOWS = Path("lib") / "gadget" / "frida-gadget.dll"
-GADGET_FILE_DARWIN = Path("lib") / "gadget" / "frida-gadget.dylib"
-GADGET_FILE_ELF = Path("lib") / "gadget" / "frida-gadget.so"
+GADGET_TARGET = "plawnekjx-gadget"
+GADGET_FILE_WINDOWS = Path("lib") / "gadget" / "plawnekjx-gadget.dll"
+GADGET_FILE_DARWIN = Path("lib") / "gadget" / "plawnekjx-gadget.dylib"
+GADGET_FILE_ELF = Path("lib") / "gadget" / "plawnekjx-gadget.so"
 
-SERVER_TARGET = "frida-server"
-SERVER_FILE_UNIX = Path("server") / "frida-server"
+SERVER_TARGET = "plawnekjx-server"
+SERVER_FILE_UNIX = Path("server") / "plawnekjx-server"
 
 MSVS_ENVVARS = {
     "PLATFORM",

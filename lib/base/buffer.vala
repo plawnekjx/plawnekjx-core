@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class BufferBuilder : Object {
 		public ByteOrder byte_order {
 			get;

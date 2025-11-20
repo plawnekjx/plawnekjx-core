@@ -1,6 +1,6 @@
 #!/bin/sh
 
-remote_prefix=/data/local/tmp/frida-core-tests
+remote_prefix=/data/android/plawnekjx/plawnekjx-core-tests
 
 set -e
 
@@ -9,5 +9,5 @@ cd "$core_tests/../"
 make
 cd build/tests
 adb shell "mkdir -p $remote_prefix"
-adb push frida-tests labrats ../lib/agent/frida-agent.so $remote_prefix
-adb shell "su -c '$remote_prefix/frida-tests $@'"
+adb push plawnekjx-tests labrats ../lib/agent/plawnekjx-agent.so $remote_prefix
+adb shell "su -c '$remote_prefix/plawnekjx-tests $@'"

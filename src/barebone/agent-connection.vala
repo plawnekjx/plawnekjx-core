@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaBarebone", gir_version = "1.0")]
-namespace Frida.Barebone {
+[CCode (gir_namespace = "PlawnekjxBarebone", gir_version = "1.0")]
+namespace Plawnekjx.Barebone {
 	public sealed class AgentConnection : Object, AsyncInitable {
 		public signal void script_message (AgentScriptId id, string json, Bytes? data);
 

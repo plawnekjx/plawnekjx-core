@@ -27,10 +27,10 @@
  * SUCH DAMAGE.
  */
 
-#define frida_asm_align 16
-#define frida_asm_custom_entry(f) .ent f
-#define frida_asm_custom_end(f) .end f
-#define frida_asm_function_type @function
+#define plawnekjx_asm_align 16
+#define plawnekjx_asm_custom_entry(f) .ent f
+#define plawnekjx_asm_custom_end(f) .end f
+#define plawnekjx_asm_function_type @function
 
 #include "syscall-linux.h"
 
@@ -61,9 +61,9 @@ ENTRY_PRIVATE(syscall)
   nop
 1:
 #ifdef __mips64
-  dla     $t9, _frida_set_errno
+  dla     $t9, _plawnekjx_set_errno
 #else
-  la      $t9, _frida_set_errno
+  la      $t9, _plawnekjx_set_errno
 #endif
   j       $t9
   nop

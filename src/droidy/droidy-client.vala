@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaDroidy", gir_version = "1.0")]
-namespace Frida.Droidy {
+[CCode (gir_namespace = "PlawnekjxDroidy", gir_version = "1.0")]
+namespace Plawnekjx.Droidy {
 	public sealed class DeviceTracker : Object {
 		public signal void device_attached (DeviceDetails details);
 		public signal void device_detached (string serial);

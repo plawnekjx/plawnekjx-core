@@ -1,6 +1,6 @@
 {
   global:
-    _frida_compiler_backend_*;
+    _plawnekjx_compiler_backend_*;
 
   local:
     *;

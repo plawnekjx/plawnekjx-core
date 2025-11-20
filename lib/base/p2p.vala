@@ -1,5 +1,5 @@
 #if HAVE_NICE
-namespace Frida {
+namespace Plawnekjx {
 	namespace PeerConnection {
 		public async void configure_agent (Nice.Agent agent, uint stream_id, uint component_id, PeerOptions? options,
 				Cancellable? cancellable) throws Error, IOError {
@@ -889,7 +889,7 @@ namespace Frida {
 		string? result_cert_pem = null;
 		string? result_key_pem = null;
 
-		new Thread<bool> ("frida-generate-certificate", () => {
+		new Thread<bool> ("plawnekjx-generate-certificate", () => {
 			uint8[] local_cert_der;
 			string local_cert_pem;
 			string local_key_pem;

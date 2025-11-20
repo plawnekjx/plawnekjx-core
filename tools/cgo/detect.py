@@ -17,11 +17,11 @@ if platform.system() == "Windows":
     import winreg
 
 
-FRIDA_OS_TO_GO_OS = {
+PLAWNEKJX_OS_TO_GO_OS = {
     "macos": "darwin",
 }
 
-FRIDA_ABI_TO_GO_ARCH = {
+PLAWNEKJX_ABI_TO_GO_ARCH = {
     "armbe8": "armbe",
     "armhf": "arm",
     "mips64el": "mips64le",
@@ -30,13 +30,13 @@ FRIDA_ABI_TO_GO_ARCH = {
     "x86_64": "amd64",
 }
 
-FRIDA_ABI_TO_MINGW_FLAVOR = {
+PLAWNEKJX_ABI_TO_MINGW_FLAVOR = {
     "arm64": "clangarm64",
     "x86": "mingw32",
     "x86_64": "mingw64",
 }
 
-FRIDA_ABI_TO_MINGW_ARCH = {
+PLAWNEKJX_ABI_TO_MINGW_ARCH = {
     "arm64": "aarch64",
     "x86": "i686",
     "x86_64": "x86_64",
@@ -154,8 +154,8 @@ def detect_config(
             check=True,
         )
 
-    goos = FRIDA_OS_TO_GO_OS.get(host_os, host_os)
-    goarch = FRIDA_ABI_TO_GO_ARCH.get(host_abi, host_abi)
+    goos = PLAWNEKJX_OS_TO_GO_OS.get(host_os, host_os)
+    goarch = PLAWNEKJX_ABI_TO_GO_ARCH.get(host_abi, host_abi)
     needed = f"{goos}/{goarch}"
     supported = run("go", "tool", "dist", "list").stdout.splitlines()
     if needed not in supported:
@@ -262,7 +262,7 @@ class MinGWToolchain:
             )
 
         actual_mingw_arch = triplet.split("-", 1)[0]
-        expected_mingw_arch = FRIDA_ABI_TO_MINGW_ARCH[host_abi]
+        expected_mingw_arch = PLAWNEKJX_ABI_TO_MINGW_ARCH[host_abi]
         if actual_mingw_arch != expected_mingw_arch:
             raise MinGWNotFoundError(
                 f"compiler at {cc_path} is for {actual_mingw_arch}, expected {expected_mingw_arch}"
@@ -303,7 +303,7 @@ class MinGWNotFoundError(Exception):
 
 def host_abi_to_mingw_flavor(abi: str) -> str:
     try:
-        return FRIDA_ABI_TO_MINGW_FLAVOR[abi]
+        return PLAWNEKJX_ABI_TO_MINGW_FLAVOR[abi]
     except KeyError:
         raise MinGWNotFoundError(f"unsupported host_abi: {abi}")
 

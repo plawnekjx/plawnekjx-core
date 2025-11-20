@@ -1,5 +1,5 @@
 [package]
-name = "frida-barebone-agent"
+name = "plawnekjx-barebone-agent"
 version = "1.0.0"
 edition = "2024"
 build = "build.rs"

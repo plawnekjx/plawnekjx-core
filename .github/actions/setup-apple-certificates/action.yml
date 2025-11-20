@@ -20,7 +20,7 @@ runs:
         KEYCHAIN_PASSWORD: ${{ inputs.keychain-password }}
       run: |
         CERTIFICATE_PATH=$RUNNER_TEMP/apple-certificates.p12
-        KEYCHAIN_PATH=$RUNNER_TEMP/frida-signing.keychain-db
+        KEYCHAIN_PATH=$RUNNER_TEMP/plawnekjx-signing.keychain-db
         echo -n "$CERTIFICATES_P12" | base64 -d -o $CERTIFICATE_PATH
         security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
         security set-keychain-settings -lut 21600 $KEYCHAIN_PATH

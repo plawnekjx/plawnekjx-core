@@ -1,4 +1,4 @@
-project('frida-linux-helpers', 'c',
+project('plawnekjx-linux-helpers', 'c',
   default_options: [
     'c_std=gnu99',
     'optimization=s',
@@ -81,7 +81,7 @@ custom_target('bootstrapper-bin',
   input: [bootstrapper],
   output: ['bootstrapper.bin'],
   command: [objcopy, common_objcopy_flags, '@INPUT0@', '@OUTPUT0@'],
-  install_dir: 'share' / 'frida-helpers',
+  install_dir: 'share' / 'plawnekjx-helpers',
   install: true,
 )
 test('bootstrapper', executable('test-bootstrapper', bootstrapper_sources,
@@ -100,6 +100,6 @@ custom_target('loader-bin',
   input: [loader],
   output: ['loader.bin'],
   command: [objcopy, common_objcopy_flags, '@INPUT0@', '@OUTPUT0@'],
-  install_dir: 'share' / 'frida-helpers',
+  install_dir: 'share' / 'plawnekjx-helpers',
   install: true,
 )

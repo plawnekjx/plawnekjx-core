@@ -1,7 +1,7 @@
-[CCode (gir_namespace = "FridaBarebone", gir_version = "1.0")]
-namespace Frida.Barebone {
+[CCode (gir_namespace = "PlawnekjxBarebone", gir_version = "1.0")]
+namespace Plawnekjx.Barebone {
 	/**
-	 * Barebone backend configuration. This is specified via the FRIDA_BAREBONE_CONFIG environment
+	 * Barebone backend configuration. This is specified via the PLAWNEKJX_BAREBONE_CONFIG environment
 	 * variable, which should point to the filesystem path of a JSON-encoded configuration file.
 	 *
 	 * Example JSON configurations:
@@ -42,7 +42,7 @@ namespace Frida.Barebone {
 	 * 4. Injecting a remote agent:
 	 *  {
 	 *    "agent": {
-	 *      "path": "/path/to/target/aarch64-unknown-none/release/frida-barebone-agent",
+	 *      "path": "/path/to/target/aarch64-unknown-none/release/plawnekjx-barebone-agent",
 	 *      "transport": {
 	 *        "type": "hostlink",
 	 *        "qmp": "unix:/path/to/qmp.sock"

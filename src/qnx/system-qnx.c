@@ -1,47 +1,47 @@
-#include "frida-core.h"
+#include "plawnekjx-core.h"
 
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/procfs.h>
 
-typedef struct _FridaEnumerateProcessesOperation FridaEnumerateProcessesOperation;
+typedef struct _PlawnekjxEnumerateProcessesOperation PlawnekjxEnumerateProcessesOperation;
 
-struct _FridaEnumerateProcessesOperation
+struct _PlawnekjxEnumerateProcessesOperation
 {
-  FridaScope scope;
+  PlawnekjxScope scope;
   GArray * result;
 };
 
-static void frida_collect_process_info (guint pid, FridaEnumerateProcessesOperation * op);
+static void plawnekjx_collect_process_info (guint pid, PlawnekjxEnumerateProcessesOperation * op);
 
 void
-frida_system_get_frontmost_application (FridaFrontmostQueryOptions * options, FridaHostApplicationInfo * result, GError ** error)
+plawnekjx_system_get_frontmost_application (PlawnekjxFrontmostQueryOptions * options, PlawnekjxHostApplicationInfo * result, GError ** error)
 {
   g_set_error (error,
-      FRIDA_ERROR,
-      FRIDA_ERROR_NOT_SUPPORTED,
+      PLAWNEKJX_ERROR,
+      PLAWNEKJX_ERROR_NOT_SUPPORTED,
       "Not implemented");
 }
 
-FridaHostApplicationInfo *
-frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int * result_length)
+PlawnekjxHostApplicationInfo *
+plawnekjx_system_enumerate_applications (PlawnekjxApplicationQueryOptions * options, int * result_length)
 {
   *result_length = 0;
 
   return NULL;
 }
 
-FridaHostProcessInfo *
-frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * result_length)
+PlawnekjxHostProcessInfo *
+plawnekjx_system_enumerate_processes (PlawnekjxProcessQueryOptions * options, int * result_length)
 {
-  FridaEnumerateProcessesOperation op;
+  PlawnekjxEnumerateProcessesOperation op;
 
-  op.scope = frida_process_query_options_get_scope (options);
-  op.result = g_array_new (FALSE, FALSE, sizeof (FridaHostProcessInfo));
+  op.scope = plawnekjx_process_query_options_get_scope (options);
+  op.result = g_array_new (FALSE, FALSE, sizeof (PlawnekjxHostProcessInfo));
 
-  if (frida_process_query_options_has_selected_pids (options))
+  if (plawnekjx_process_query_options_has_selected_pids (options))
   {
-    frida_process_query_options_enumerate_selected_pids (options, (GFunc) frida_collect_process_info, &op);
+    plawnekjx_process_query_options_enumerate_selected_pids (options, (GFunc) plawnekjx_collect_process_info, &op);
   }
   else
   {
@@ -57,7 +57,7 @@ frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * resu
 
       pid = strtoul (proc_name, &end, 10);
       if (*end == '\0')
-        frida_collect_process_info (pid, &op);
+        plawnekjx_collect_process_info (pid, &op);
     }
 
     g_dir_close (proc_dir);
@@ -65,13 +65,13 @@ frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * resu
 
   *result_length = op.result->len;
 
-  return (FridaHostProcessInfo *) g_array_free (op.result, FALSE);
+  return (PlawnekjxHostProcessInfo *) g_array_free (op.result, FALSE);
 }
 
 static void
-frida_collect_process_info (guint pid, FridaEnumerateProcessesOperation * op)
+plawnekjx_collect_process_info (guint pid, PlawnekjxEnumerateProcessesOperation * op)
 {
-  FridaHostProcessInfo info = { 0, };
+  PlawnekjxHostProcessInfo info = { 0, };
   gchar * as_path;
   gint fd;
   static struct
@@ -92,9 +92,9 @@ frida_collect_process_info (guint pid, FridaEnumerateProcessesOperation * op)
   info.pid = pid;
   info.name = g_path_get_basename (procfs_name.info.path);
 
-  info.parameters = frida_make_parameters_dict ();
+  info.parameters = plawnekjx_make_parameters_dict ();
 
-  if (op->scope != FRIDA_SCOPE_MINIMAL)
+  if (op->scope != PLAWNEKJX_SCOPE_MINIMAL)
   {
     g_hash_table_insert (info.parameters, g_strdup ("path"), g_variant_ref_sink (g_variant_new_string (procfs_name.info.path)));
   }
@@ -109,13 +109,13 @@ beach:
 }
 
 void
-frida_system_kill (guint pid)
+plawnekjx_system_kill (guint pid)
 {
   kill (pid, SIGKILL);
 }
 
 gchar *
-frida_temporary_directory_get_system_tmp (void)
+plawnekjx_temporary_directory_get_system_tmp (void)
 {
   return g_strdup (g_get_tmp_dir ());
 }

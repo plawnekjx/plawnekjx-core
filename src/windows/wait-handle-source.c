@@ -1,12 +1,12 @@
-#include "frida-helper-backend.h"
+#include "plawnekjx-helper-backend.h"
 
 #include <windows.h>
 
-#define FRIDA_WAIT_HANDLE_SOURCE(s) ((FridaWaitHandleSource *) (s))
+#define PLAWNEKJX_WAIT_HANDLE_SOURCE(s) ((PlawnekjxWaitHandleSource *) (s))
 
-typedef struct _FridaWaitHandleSource FridaWaitHandleSource;
+typedef struct _PlawnekjxWaitHandleSource PlawnekjxWaitHandleSource;
 
-struct _FridaWaitHandleSource
+struct _PlawnekjxWaitHandleSource
 {
   GSource source;
 
@@ -15,35 +15,35 @@ struct _FridaWaitHandleSource
   GPollFD handle_poll_fd;
 };
 
-static void frida_wait_handle_source_finalize (GSource * source);
+static void plawnekjx_wait_handle_source_finalize (GSource * source);
 
-static gboolean frida_wait_handle_source_prepare (GSource * source,
+static gboolean plawnekjx_wait_handle_source_prepare (GSource * source,
     gint * timeout);
-static gboolean frida_wait_handle_source_check (GSource * source);
-static gboolean frida_wait_handle_source_dispatch (GSource * source,
+static gboolean plawnekjx_wait_handle_source_check (GSource * source);
+static gboolean plawnekjx_wait_handle_source_dispatch (GSource * source,
     GSourceFunc callback, gpointer user_data);
 
-static GSourceFuncs frida_wait_handle_source_funcs = {
-  frida_wait_handle_source_prepare,
-  frida_wait_handle_source_check,
-  frida_wait_handle_source_dispatch,
-  frida_wait_handle_source_finalize
+static GSourceFuncs plawnekjx_wait_handle_source_funcs = {
+  plawnekjx_wait_handle_source_prepare,
+  plawnekjx_wait_handle_source_check,
+  plawnekjx_wait_handle_source_dispatch,
+  plawnekjx_wait_handle_source_finalize
 };
 
 GSource *
-frida_wait_handle_source_create (void * handle, gboolean owns_handle)
+plawnekjx_wait_handle_source_create (void * handle, gboolean owns_handle)
 {
   GSource * source;
   GPollFD * pfd;
-  FridaWaitHandleSource * whsrc;
+  PlawnekjxWaitHandleSource * whsrc;
 
-  source = g_source_new (&frida_wait_handle_source_funcs,
-      sizeof (FridaWaitHandleSource));
-  whsrc = FRIDA_WAIT_HANDLE_SOURCE (source);
+  source = g_source_new (&plawnekjx_wait_handle_source_funcs,
+      sizeof (PlawnekjxWaitHandleSource));
+  whsrc = PLAWNEKJX_WAIT_HANDLE_SOURCE (source);
   whsrc->handle = handle;
   whsrc->owns_handle = owns_handle;
 
-  pfd = &FRIDA_WAIT_HANDLE_SOURCE (source)->handle_poll_fd;
+  pfd = &PLAWNEKJX_WAIT_HANDLE_SOURCE (source)->handle_poll_fd;
 #if GLIB_SIZEOF_VOID_P == 8
   pfd->fd = (gint64) handle;
 #else
@@ -57,18 +57,18 @@ frida_wait_handle_source_create (void * handle, gboolean owns_handle)
 }
 
 static void
-frida_wait_handle_source_finalize (GSource * source)
+plawnekjx_wait_handle_source_finalize (GSource * source)
 {
-  FridaWaitHandleSource * self = FRIDA_WAIT_HANDLE_SOURCE (source);
+  PlawnekjxWaitHandleSource * self = PLAWNEKJX_WAIT_HANDLE_SOURCE (source);
 
   if (self->owns_handle)
     CloseHandle (self->handle);
 }
 
 static gboolean
-frida_wait_handle_source_prepare (GSource * source, gint * timeout)
+plawnekjx_wait_handle_source_prepare (GSource * source, gint * timeout)
 {
-  FridaWaitHandleSource * self = FRIDA_WAIT_HANDLE_SOURCE (source);
+  PlawnekjxWaitHandleSource * self = PLAWNEKJX_WAIT_HANDLE_SOURCE (source);
 
   *timeout = -1;
 
@@ -76,18 +76,18 @@ frida_wait_handle_source_prepare (GSource * source, gint * timeout)
 }
 
 static gboolean
-frida_wait_handle_source_check (GSource * source)
+plawnekjx_wait_handle_source_check (GSource * source)
 {
-  FridaWaitHandleSource * self = FRIDA_WAIT_HANDLE_SOURCE (source);
+  PlawnekjxWaitHandleSource * self = PLAWNEKJX_WAIT_HANDLE_SOURCE (source);
 
   return WaitForSingleObject (self->handle, 0) == WAIT_OBJECT_0;
 }
 
 static gboolean
-frida_wait_handle_source_dispatch (GSource * source, GSourceFunc callback,
+plawnekjx_wait_handle_source_dispatch (GSource * source, GSourceFunc callback,
     gpointer user_data)
 {
-  g_assert (WaitForSingleObject (FRIDA_WAIT_HANDLE_SOURCE (source)->handle, 0) == WAIT_OBJECT_0);
+  g_assert (WaitForSingleObject (PLAWNEKJX_WAIT_HANDLE_SOURCE (source)->handle, 0) == WAIT_OBJECT_0);
 
   return callback (user_data);
 }

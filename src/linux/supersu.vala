@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaSuperSU", gir_version = "1.0")]
-namespace Frida.SuperSU {
+[CCode (gir_namespace = "PlawnekjxSuperSU", gir_version = "1.0")]
+namespace Plawnekjx.SuperSU {
 	public async Process spawn (string working_directory, string[] argv, string[]? envp = null, bool capture_output = false,
 			Cancellable? cancellable = null) throws Error, IOError {
 		try {

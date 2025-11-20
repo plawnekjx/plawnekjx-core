@@ -4,27 +4,27 @@ package main
 #include <stdint.h>
 
 typedef enum {
-  FRIDA_OUTPUT_UNESCAPED,
-  FRIDA_OUTPUT_HEX_BYTES,
-  FRIDA_OUTPUT_C_STRING,
-} FridaOutputFormat;
+  PLAWNEKJX_OUTPUT_UNESCAPED,
+  PLAWNEKJX_OUTPUT_HEX_BYTES,
+  PLAWNEKJX_OUTPUT_C_STRING,
+} PlawnekjxOutputFormat;
 
 typedef enum {
-  FRIDA_BUNDLE_ESM,
-  FRIDA_BUNDLE_IIFE,
-} FridaBundleFormat;
+  PLAWNEKJX_BUNDLE_ESM,
+  PLAWNEKJX_BUNDLE_IIFE,
+} PlawnekjxBundleFormat;
 
-typedef void (* FridaBuildCompleteFunc) (char * bundle, char * error_message, void * user_data);
-typedef void (* FridaWatchReadyFunc) (uintptr_t session_handle, char * error_message, void * user_data);
-typedef void (* FridaStartingFunc) (void * user_data);
-typedef void (* FridaFinishedFunc) (void * user_data);
-typedef void (* FridaOutputFunc) (char * bundle, void * user_data);
-typedef void (* FridaDiagnosticFunc) (char * category, int code, char * path, int line, int character, char * text,
+typedef void (* PlawnekjxBuildCompleteFunc) (char * bundle, char * error_message, void * user_data);
+typedef void (* PlawnekjxWatchReadyFunc) (uintptr_t session_handle, char * error_message, void * user_data);
+typedef void (* PlawnekjxStartingFunc) (void * user_data);
+typedef void (* PlawnekjxFinishedFunc) (void * user_data);
+typedef void (* PlawnekjxOutputFunc) (char * bundle, void * user_data);
+typedef void (* PlawnekjxDiagnosticFunc) (char * category, int code, char * path, int line, int character, char * text,
     void * user_data);
-typedef void (* FridaDestroyFunc) (void * user_data);
+typedef void (* PlawnekjxDestroyFunc) (void * user_data);
 
 static inline void
-invoke_build_complete_func (FridaBuildCompleteFunc fn,
+invoke_build_complete_func (PlawnekjxBuildCompleteFunc fn,
                             char * bundle,
                             char * error_message,
                             void * user_data)
@@ -33,7 +33,7 @@ invoke_build_complete_func (FridaBuildCompleteFunc fn,
 }
 
 static inline void
-invoke_watch_ready_func (FridaWatchReadyFunc fn,
+invoke_watch_ready_func (PlawnekjxWatchReadyFunc fn,
                          uintptr_t session_handle,
                          char * error_message,
                          void * user_data)
@@ -42,21 +42,21 @@ invoke_watch_ready_func (FridaWatchReadyFunc fn,
 }
 
 static inline void
-invoke_starting_func (FridaStartingFunc fn,
+invoke_starting_func (PlawnekjxStartingFunc fn,
                       void * user_data)
 {
   fn (user_data);
 }
 
 static inline void
-invoke_finished_func (FridaFinishedFunc fn,
+invoke_finished_func (PlawnekjxFinishedFunc fn,
                       void * user_data)
 {
   fn (user_data);
 }
 
 static inline void
-invoke_output_func (FridaOutputFunc fn,
+invoke_output_func (PlawnekjxOutputFunc fn,
                     char * bundle,
                     void * user_data)
 {
@@ -64,7 +64,7 @@ invoke_output_func (FridaOutputFunc fn,
 }
 
 static inline void
-invoke_diagnostic_func (FridaDiagnosticFunc fn,
+invoke_diagnostic_func (PlawnekjxDiagnosticFunc fn,
                         char * category,
                         int code,
                         char * path,
@@ -77,7 +77,7 @@ invoke_diagnostic_func (FridaDiagnosticFunc fn,
 }
 
 static inline void
-invoke_destroy_func (FridaDestroyFunc fn,
+invoke_destroy_func (PlawnekjxDestroyFunc fn,
                      void * user_data)
 {
   fn (user_data);
@@ -95,7 +95,7 @@ import (
 	"unsafe"
 
 	esbuild "github.com/evanw/esbuild/pkg/api"
-	tsscanner "github.com/frida/typescript-go/pkg/scanner"
+	tsscanner "github.com/plawnekjx/typescript-go/pkg/scanner"
 )
 
 type BuildOptions struct {
@@ -110,19 +110,19 @@ type BuildOptions struct {
 	Externals        []string
 }
 
-type OutputFormat C.FridaOutputFormat
+type OutputFormat C.PlawnekjxOutputFormat
 
 const (
-	OutputFormatUnescaped OutputFormat = OutputFormat(C.FRIDA_OUTPUT_UNESCAPED)
-	OutputFormatHexBytes  OutputFormat = OutputFormat(C.FRIDA_OUTPUT_HEX_BYTES)
-	OutputFormatCString   OutputFormat = OutputFormat(C.FRIDA_OUTPUT_C_STRING)
+	OutputFormatUnescaped OutputFormat = OutputFormat(C.PLAWNEKJX_OUTPUT_UNESCAPED)
+	OutputFormatHexBytes  OutputFormat = OutputFormat(C.PLAWNEKJX_OUTPUT_HEX_BYTES)
+	OutputFormatCString   OutputFormat = OutputFormat(C.PLAWNEKJX_OUTPUT_C_STRING)
 )
 
-type BundleFormat C.FridaBundleFormat
+type BundleFormat C.PlawnekjxBundleFormat
 
 const (
-	BundleFormatESM  BundleFormat = BundleFormat(C.FRIDA_BUNDLE_ESM)
-	BundleFormatIIFE BundleFormat = BundleFormat(C.FRIDA_BUNDLE_IIFE)
+	BundleFormatESM  BundleFormat = BundleFormat(C.PLAWNEKJX_BUNDLE_ESM)
+	BundleFormatIIFE BundleFormat = BundleFormat(C.PLAWNEKJX_BUNDLE_IIFE)
 )
 
 type Diagnostic struct {
@@ -146,11 +146,11 @@ type BuildEndCallback func()
 type BuildOutputCallback func(bundle string)
 type BuildDiagnosticCallback func(d Diagnostic)
 
-//export _frida_compiler_backend_build
-func _frida_compiler_backend_build(cProjectRoot, cEntrypoint *C.char, outputFormat C.FridaOutputFormat, bundleFormat C.FridaBundleFormat,
+//export _plawnekjx_compiler_backend_build
+func _plawnekjx_compiler_backend_build(cProjectRoot, cEntrypoint *C.char, outputFormat C.PlawnekjxOutputFormat, bundleFormat C.PlawnekjxBundleFormat,
 	disableTypeCheck, sourceMap, compress uintptr, cPlatform *C.char, cExternals **C.char, numExternals C.int,
-	onCompleteFn C.FridaBuildCompleteFunc, onCompleteData unsafe.Pointer, onCompleteDataDestroy C.FridaDestroyFunc,
-	onDiagnosticFn C.FridaDiagnosticFunc, onDiagnosticData unsafe.Pointer) {
+	onCompleteFn C.PlawnekjxBuildCompleteFunc, onCompleteData unsafe.Pointer, onCompleteDataDestroy C.PlawnekjxDestroyFunc,
+	onDiagnosticFn C.PlawnekjxDiagnosticFunc, onDiagnosticData unsafe.Pointer) {
 	options := BuildOptions{
 		ProjectRoot:      C.GoString(cProjectRoot),
 		Entrypoint:       C.GoString(cEntrypoint),
@@ -159,7 +159,7 @@ func _frida_compiler_backend_build(cProjectRoot, cEntrypoint *C.char, outputForm
 		DisableTypeCheck: disableTypeCheck != 0,
 		SourceMap:        sourceMap != 0,
 		Compress:         compress != 0,
-		Platform:         platformFromFrida(C.GoString(cPlatform)),
+		Platform:         platformFromPlawnekjx(C.GoString(cPlatform)),
 		Externals:        parseCExternals(cExternals, numExternals),
 	}
 	onComplete := NewCDelegate(onCompleteFn, onCompleteData, onCompleteDataDestroy)
@@ -183,14 +183,14 @@ func _frida_compiler_backend_build(cProjectRoot, cEntrypoint *C.char, outputForm
 	}()
 }
 
-//export _frida_compiler_backend_watch
-func _frida_compiler_backend_watch(cProjectRoot, cEntrypoint *C.char, outputFormat C.FridaOutputFormat, bundleFormat C.FridaBundleFormat,
+//export _plawnekjx_compiler_backend_watch
+func _plawnekjx_compiler_backend_watch(cProjectRoot, cEntrypoint *C.char, outputFormat C.PlawnekjxOutputFormat, bundleFormat C.PlawnekjxBundleFormat,
 	disableTypeCheck, sourceMap, compress uintptr, cPlatform *C.char, cExternals **C.char, numExternals C.int,
-	onReadyFn C.FridaWatchReadyFunc, onReadyData unsafe.Pointer, onReadyDataDestroy C.FridaDestroyFunc,
-	onStartingFn C.FridaStartingFunc, onStartingData unsafe.Pointer,
-	onFinishedFn C.FridaFinishedFunc, onFinishedData unsafe.Pointer,
-	onOutputFn C.FridaOutputFunc, onOutputData unsafe.Pointer,
-	onDiagnosticFn C.FridaDiagnosticFunc, onDiagnosticData unsafe.Pointer) {
+	onReadyFn C.PlawnekjxWatchReadyFunc, onReadyData unsafe.Pointer, onReadyDataDestroy C.PlawnekjxDestroyFunc,
+	onStartingFn C.PlawnekjxStartingFunc, onStartingData unsafe.Pointer,
+	onFinishedFn C.PlawnekjxFinishedFunc, onFinishedData unsafe.Pointer,
+	onOutputFn C.PlawnekjxOutputFunc, onOutputData unsafe.Pointer,
+	onDiagnosticFn C.PlawnekjxDiagnosticFunc, onDiagnosticData unsafe.Pointer) {
 	options := BuildOptions{
 		ProjectRoot:      C.GoString(cProjectRoot),
 		Entrypoint:       C.GoString(cEntrypoint),
@@ -199,7 +199,7 @@ func _frida_compiler_backend_watch(cProjectRoot, cEntrypoint *C.char, outputForm
 		DisableTypeCheck: disableTypeCheck != 0,
 		SourceMap:        sourceMap != 0,
 		Compress:         compress != 0,
-		Platform:         platformFromFrida(C.GoString(cPlatform)),
+		Platform:         platformFromPlawnekjx(C.GoString(cPlatform)),
 		Externals:        parseCExternals(cExternals, numExternals),
 	}
 	onReady := NewCDelegate(onReadyFn, onReadyData, onReadyDataDestroy)
@@ -244,15 +244,15 @@ func _frida_compiler_backend_watch(cProjectRoot, cEntrypoint *C.char, outputForm
 	}()
 }
 
-//export _frida_compiler_backend_watch_session_dispose
-func _frida_compiler_backend_watch_session_dispose(h uintptr) {
+//export _plawnekjx_compiler_backend_watch_session_dispose
+func _plawnekjx_compiler_backend_watch_session_dispose(h uintptr) {
 	handle := cgo.Handle(h)
 	session := handle.Value().(*WatchSession)
 	session.Dispose()
 	handle.Delete()
 }
 
-func platformFromFrida(s string) esbuild.Platform {
+func platformFromPlawnekjx(s string) esbuild.Platform {
 	switch s {
 	case "gum":
 		return esbuild.PlatformNode
@@ -281,7 +281,7 @@ func parseCExternals(cExternals **C.char, numExternals C.int) []string {
 	return externals
 }
 
-func makeCBuildDiagnosticCallback(onDiagnostic *CDelegate[C.FridaDiagnosticFunc]) BuildDiagnosticCallback {
+func makeCBuildDiagnosticCallback(onDiagnostic *CDelegate[C.PlawnekjxDiagnosticFunc]) BuildDiagnosticCallback {
 	return func(d Diagnostic) {
 		var cPath *C.char
 		if d.path != "" {
@@ -467,7 +467,7 @@ func makeContext(options BuildOptions, callbacks BuildEventCallbacks) (ctx esbui
 		plugins = append(plugins, makeTypeScriptPlugin(tsCompiler))
 	}
 
-	plugins = append(plugins, makeFridaShimsPlugin())
+	plugins = append(plugins, makePlawnekjxShimsPlugin())
 
 	buildOpts := esbuild.BuildOptions{
 		Sourcemap:         sourcemapOption,
@@ -482,7 +482,7 @@ func makeContext(options BuildOptions, callbacks BuildEventCallbacks) (ctx esbui
 		AbsWorkingDir:     projectRoot,
 		Platform:          options.Platform,
 		Format:            format,
-		Inject:            []string{"frida-builtins:///node-globals.js"},
+		Inject:            []string{"plawnekjx-builtins:///node-globals.js"},
 		External:          options.Externals,
 		EntryPoints:       []string{entrypoint},
 		Write:             false,
@@ -518,7 +518,7 @@ func emitDiagnostic(category string, message esbuild.Message, onDiagnostic Build
 		d.character = l.Column
 	}
 
-	if message.PluginName == "frida-custom-ts" && len(message.Notes) == 2 {
+	if message.PluginName == "plawnekjx-custom-ts" && len(message.Notes) == 2 {
 		d.category = message.Notes[0].Text
 		fmt.Sscan(message.Notes[1].Text, &d.code)
 	}
@@ -534,7 +534,7 @@ func changeToJS(p string) string {
 
 func makeBuildObserverPlugin(projectRoot, entrypoint string, options BuildOptions, callbacks BuildEventCallbacks) esbuild.Plugin {
 	return esbuild.Plugin{
-		Name: "frida-build-observer",
+		Name: "plawnekjx-build-observer",
 		Setup: func(build esbuild.PluginBuild) {
 			if callbacks.OnStart != nil {
 				build.OnStart(func() (esbuild.OnStartResult, error) {
@@ -764,7 +764,7 @@ func encodeStringToCString(s string) string {
 
 func makeTypeScriptPlugin(compiler *TSCompiler) esbuild.Plugin {
 	return esbuild.Plugin{
-		Name: "frida-custom-ts",
+		Name: "plawnekjx-custom-ts",
 		Setup: func(build esbuild.PluginBuild) {
 			build.OnStart(func() (esbuild.OnStartResult, error) {
 				compiler.EnsureProgramUpToDate()
@@ -833,10 +833,10 @@ type CDelegate[F any] struct {
 	Func        F
 	null        F
 	Data        unsafe.Pointer
-	dataDestroy C.FridaDestroyFunc
+	dataDestroy C.PlawnekjxDestroyFunc
 }
 
-func NewCDelegate[F any](function F, data unsafe.Pointer, dataDestroy C.FridaDestroyFunc) *CDelegate[F] {
+func NewCDelegate[F any](function F, data unsafe.Pointer, dataDestroy C.PlawnekjxDestroyFunc) *CDelegate[F] {
 	return &CDelegate[F]{Func: function, Data: data, dataDestroy: dataDestroy}
 }
 

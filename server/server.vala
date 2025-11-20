@@ -1,7 +1,7 @@
-namespace Frida.Server {
+namespace Plawnekjx.Server {
 	private static Application application;
 
-	private const string DEFAULT_DIRECTORY = "re.frida.server";
+	private const string DEFAULT_DIRECTORY = "re.plawnekjx.server";
 	private static bool output_version = false;
 	private static string? device_id = null;
 	private static string? listen_address = null;
@@ -55,7 +55,7 @@ namespace Frida.Server {
 		Environment.init ();
 
 #if DARWIN
-		if (Path.get_basename (args[0]) == "frida-policyd") {
+		if (Path.get_basename (args[0]) == "plawnekjx-policyd") {
 			return Policyd._main ();
 		}
 #endif
@@ -103,7 +103,7 @@ namespace Frida.Server {
 			}
 			return true;
 		});
-		int prefix_pos = program_path.last_index_of (Config.FRIDA_PREFIX + "/");
+		int prefix_pos = program_path.last_index_of (Config.PLAWNEKJX_PREFIX + "/");
 		if (prefix_pos != -1 && prefix_pos != 0) {
 			options.sysroot = program_path[:prefix_pos];
 		}
@@ -179,7 +179,7 @@ namespace Frida.Server {
 		Environment.configure ();
 
 #if DARWIN
-		var worker = new Thread<int> ("frida-server-main-loop", () => {
+		var worker = new Thread<int> ("plawnekjx-server-main-loop", () => {
 			var exit_code = run_application (device_id, endpoint_params, options, on_ready);
 
 			_stop_run_loop ();

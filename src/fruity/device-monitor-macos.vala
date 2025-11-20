@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaFruity", gir_version = "1.0")]
-namespace Frida.Fruity {
+[CCode (gir_namespace = "PlawnekjxFruity", gir_version = "1.0")]
+namespace Plawnekjx.Fruity {
 	public sealed class MacOSCoreDeviceBackend : Object, Backend {
 		private Gee.Map<string, MacOSCoreDeviceTransport> transports = new Gee.HashMap<string, MacOSCoreDeviceTransport> ();
 
@@ -8,7 +8,7 @@ namespace Frida.Fruity {
 
 		private XpcClient? pairingd;
 		private Darwin.GCD.DispatchQueue queue =
-			new Darwin.GCD.DispatchQueue ("re.frida.fruity.remotepairing", Darwin.GCD.DispatchQueueAttr.SERIAL);
+			new Darwin.GCD.DispatchQueue ("re.plawnekjx.fruity.remotepairing", Darwin.GCD.DispatchQueueAttr.SERIAL);
 
 		public async void start (Cancellable? cancellable) throws IOError {
 			pairingd = XpcClient.make_for_mach_service ("com.apple.CoreDevice.remotepairingd", queue);

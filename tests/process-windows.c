@@ -1,14 +1,14 @@
-#include "frida-tests.h"
+#include "plawnekjx-tests.h"
 
 #include <windows.h>
 #include <psapi.h>
 
-static WCHAR * frida_command_line_from_argv (gchar ** argv, gint argv_length);
-static WCHAR * frida_environment_block_from_envp (gchar ** envp, gint envp_length);
-static void frida_append_n_backslashes (GString * str, guint n);
+static WCHAR * plawnekjx_command_line_from_argv (gchar ** argv, gint argv_length);
+static WCHAR * plawnekjx_environment_block_from_envp (gchar ** envp, gint envp_length);
+static void plawnekjx_append_n_backslashes (GString * str, guint n);
 
 char *
-frida_test_process_backend_filename_of (void * handle)
+plawnekjx_test_process_backend_filename_of (void * handle)
 {
   WCHAR filename_utf16[MAX_PATH + 1];
 
@@ -18,20 +18,20 @@ frida_test_process_backend_filename_of (void * handle)
 }
 
 void *
-frida_test_process_backend_self_handle (void)
+plawnekjx_test_process_backend_self_handle (void)
 {
   return GetCurrentProcess ();
 }
 
 guint
-frida_test_process_backend_self_id (void)
+plawnekjx_test_process_backend_self_id (void)
 {
   return GetCurrentProcessId ();
 }
 
 void
-frida_test_process_backend_create (const char * path, gchar ** argv,
-    int argv_length, gchar ** envp, int envp_length, FridaTestArch arch,
+plawnekjx_test_process_backend_create (const char * path, gchar ** argv,
+    int argv_length, gchar ** envp, int envp_length, PlawnekjxTestArch arch,
     gboolean suspended, void ** handle, guint * id, GError ** error)
 {
   WCHAR * application_name, * command_line, * environment;
@@ -43,8 +43,8 @@ frida_test_process_backend_create (const char * path, gchar ** argv,
   (void) suspended;
 
   application_name = (WCHAR *) g_utf8_to_utf16 (path, -1, NULL, NULL, NULL);
-  command_line = frida_command_line_from_argv (argv, argv_length);
-  environment = frida_environment_block_from_envp (envp, envp_length);
+  command_line = plawnekjx_command_line_from_argv (argv, argv_length);
+  environment = plawnekjx_environment_block_from_envp (envp, envp_length);
 
   startup_info.cb = sizeof (startup_info);
 
@@ -70,8 +70,8 @@ frida_test_process_backend_create (const char * path, gchar ** argv,
   else
   {
     g_set_error (error,
-        FRIDA_ERROR,
-        FRIDA_ERROR_NOT_SUPPORTED,
+        PLAWNEKJX_ERROR,
+        PLAWNEKJX_ERROR_NOT_SUPPORTED,
         "Unable to spawn executable at '%s': 0x%08lx\n",
         path, GetLastError ());
   }
@@ -82,7 +82,7 @@ frida_test_process_backend_create (const char * path, gchar ** argv,
 }
 
 int
-frida_test_process_backend_join (void * handle, guint timeout_msec, GError ** error)
+plawnekjx_test_process_backend_join (void * handle, guint timeout_msec, GError ** error)
 {
   DWORD exit_code;
 
@@ -90,8 +90,8 @@ frida_test_process_backend_join (void * handle, guint timeout_msec, GError ** er
       (timeout_msec != 0) ? timeout_msec : INFINITE) == WAIT_TIMEOUT)
   {
     g_set_error (error,
-        FRIDA_ERROR,
-        FRIDA_ERROR_TIMED_OUT,
+        PLAWNEKJX_ERROR,
+        PLAWNEKJX_ERROR_TIMED_OUT,
         "Timed out while waiting for process to exit");
     return -1;
   }
@@ -103,25 +103,25 @@ frida_test_process_backend_join (void * handle, guint timeout_msec, GError ** er
 }
 
 void
-frida_test_process_backend_resume (void * handle, GError ** error)
+plawnekjx_test_process_backend_resume (void * handle, GError ** error)
 {
   (void) handle;
 
   g_set_error (error,
-      FRIDA_ERROR,
-      FRIDA_ERROR_NOT_SUPPORTED,
+      PLAWNEKJX_ERROR,
+      PLAWNEKJX_ERROR_NOT_SUPPORTED,
       "Not implemented on this OS");
 }
 
 void
-frida_test_process_backend_kill (void * handle)
+plawnekjx_test_process_backend_kill (void * handle)
 {
   TerminateProcess (handle, 1);
   CloseHandle (handle);
 }
 
 static WCHAR *
-frida_command_line_from_argv (gchar ** argv, gint argv_length)
+plawnekjx_command_line_from_argv (gchar ** argv, gint argv_length)
 {
   GString * line;
   WCHAR * line_utf16;
@@ -165,17 +165,17 @@ frida_command_line_from_argv (gchar ** argv, gint argv_length)
 
         if (*c == '\0')
         {
-          frida_append_n_backslashes (line, num_backslashes * 2);
+          plawnekjx_append_n_backslashes (line, num_backslashes * 2);
           break;
         }
         else if (*c == '"')
         {
-          frida_append_n_backslashes (line, (num_backslashes * 2) + 1);
+          plawnekjx_append_n_backslashes (line, (num_backslashes * 2) + 1);
           g_string_append_c (line, *c);
         }
         else
         {
-          frida_append_n_backslashes (line, num_backslashes);
+          plawnekjx_append_n_backslashes (line, num_backslashes);
           g_string_append_unichar (line, g_utf8_get_char (c));
         }
       }
@@ -192,7 +192,7 @@ frida_command_line_from_argv (gchar ** argv, gint argv_length)
 }
 
 static WCHAR *
-frida_environment_block_from_envp (gchar ** envp, gint envp_length)
+plawnekjx_environment_block_from_envp (gchar ** envp, gint envp_length)
 {
   GString * block;
   gint i;
@@ -222,7 +222,7 @@ frida_environment_block_from_envp (gchar ** envp, gint envp_length)
 }
 
 static void
-frida_append_n_backslashes (GString * str, guint n)
+plawnekjx_append_n_backslashes (GString * str, guint n)
 {
   guint i;
 

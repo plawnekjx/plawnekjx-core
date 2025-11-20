@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	private sealed class BareboneScript : Object {
 		public signal void message (string json, Bytes? data);
 
@@ -84,8 +84,8 @@ namespace Frida {
 		public static BareboneScript create (AgentScriptId id, string source, Barebone.Services services) throws Error {
 			var script = new BareboneScript (id, services);
 
-			unowned string runtime_js = (string) Frida.Data.Barebone.get_script_runtime_js_blob ().data;
-			script.add_program (runtime_js, "/_frida.js");
+			unowned string runtime_js = (string) Plawnekjx.Data.Barebone.get_script_runtime_js_blob ().data;
+			script.add_program (runtime_js, "/_plawnekjx.js");
 			script.add_program (source, "/agent.js");
 
 			return script;

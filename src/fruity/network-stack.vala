@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaFruity", gir_version = "1.0")]
-namespace Frida.Fruity {
+[CCode (gir_namespace = "PlawnekjxFruity", gir_version = "1.0")]
+namespace Plawnekjx.Fruity {
 	public interface NetworkStack : Object {
 		public abstract InetAddress listener_ip {
 			get;
@@ -331,7 +331,7 @@ namespace Frida.Fruity {
 			if (datagrams.is_empty)
 				return;
 
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				if (state == STARTED)
 					outgoing_datagrams (datagrams);
 				return Source.REMOVE;
@@ -348,7 +348,7 @@ namespace Frida.Fruity {
 				return;
 			}
 
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				if (state == STARTED) {
 					var datagrams = new Gee.ArrayQueue<Bytes> ();
 					datagrams.offer (datagram);
@@ -425,7 +425,7 @@ namespace Frida.Fruity {
 			}
 		}
 
-		private void schedule_on_frida_thread (owned SourceFunc function) {
+		private void schedule_on_plawnekjx_thread (owned SourceFunc function) {
 			var source = new IdleSource ();
 			source.set_callback ((owned) function);
 			source.attach (main_context);
@@ -538,7 +538,7 @@ namespace Frida.Fruity {
 					return OK;
 				});
 				if (err != OK) {
-					schedule_on_frida_thread (() => {
+					schedule_on_plawnekjx_thread (() => {
 						established.reject (parse_error (err));
 						return Source.REMOVE;
 					});
@@ -573,7 +573,7 @@ namespace Frida.Fruity {
 					update_pending_io ();
 				});
 
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					state = OPEN;
 
 					if (!established.future.ready)
@@ -637,7 +637,7 @@ namespace Frida.Fruity {
 					update_pending_io ();
 				});
 
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					if (!established.future.ready)
 						established.reject (parse_error (err));
 
@@ -766,7 +766,7 @@ namespace Frida.Fruity {
 				return n;
 			}
 
-			private void schedule_on_frida_thread (owned SourceFunc function) {
+			private void schedule_on_plawnekjx_thread (owned SourceFunc function) {
 				var source = new IdleSource ();
 				source.set_callback ((owned) function);
 				source.attach (main_context);

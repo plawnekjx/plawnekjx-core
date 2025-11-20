@@ -31,7 +31,7 @@ def main(argv):
         envvar_name = f"{host_os.upper()}_CERTID"
         certid = os.environ.get(envvar_name, None)
         if certid is None:
-            print(f"{envvar_name} not set, see https://github.com/frida/frida#apple-oses",
+            print(f"{envvar_name} not set, see https://github.com/plawnekjx/plawnekjx#apple-oses",
                   file=sys.stderr)
             sys.exit(1)
     else:

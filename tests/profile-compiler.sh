@@ -19,11 +19,11 @@ clean_up () {
 }
 trap clean_up EXIT
 
-export FRIDA_TEST_LOG=$test_log
-export FRIDA_V8_EXTRA_FLAGS="--logfile=$v8_log --no-logfile-per-isolate --log-code --interpreted-frames-native-stack"
+export PLAWNEKJX_TEST_LOG=$test_log
+export PLAWNEKJX_V8_EXTRA_FLAGS="--logfile=$v8_log --no-logfile-per-isolate --log-code --interpreted-frames-native-stack"
 
-sudo --preserve-env=FRIDA_TEST_LOG,FRIDA_V8_EXTRA_FLAGS dtrace \
-  -c "$builddir/tests/frida-tests -p /Compiler/Performance/build-simple-agent" \
+sudo --preserve-env=PLAWNEKJX_TEST_LOG,PLAWNEKJX_V8_EXTRA_FLAGS dtrace \
+  -c "$builddir/tests/plawnekjx-tests -p /Compiler/Performance/build-simple-agent" \
   -x ustackframes=100 \
   -n 'profile-97 /pid == $target/ { @[ustack()] = count(); }' \
   -o "$stacks_raw"
@@ -32,7 +32,7 @@ sudo --preserve-env=FRIDA_TEST_LOG,FRIDA_V8_EXTRA_FLAGS dtrace \
   --output "$stacks_symbolicated" \
   --test-log "$test_log" \
   --v8-log "$v8_log" \
-  --agent "$builddir/lib/agent/libfrida-agent-modulated.dylib"
+  --agent "$builddir/lib/agent/libplawnekjx-agent-modulated.dylib"
 "$flamegraph/stackcollapse.pl" "$stacks_symbolicated" \
   | grep gum_script_scheduler_run_js_loop \
   > "$stacks_folded"

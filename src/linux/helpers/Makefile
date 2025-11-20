@@ -4,14 +4,14 @@ releng := $(top_srcdir)/releng
 BUILDDIR ?= $(top_srcdir)/build
 MESON ?= $(releng)/meson/meson.py
 
-ifdef FRIDA_HOST
-host_machine := $(FRIDA_HOST)
+ifdef PLAWNEKJX_HOST
+host_machine := $(PLAWNEKJX_HOST)
 else
-host_machine := $(shell basename $$(ls -1 $(BUILDDIR)/frida-linux-*.txt | tail -1) | cut -d"." -f1 | cut -d"-" -f2-)
+host_machine := $(shell basename $$(ls -1 $(BUILDDIR)/plawnekjx-linux-*.txt | tail -1) | cut -d"." -f1 | cut -d"-" -f2-)
 endif
 host_arch := $(shell echo $(host_machine) | cut -d"-" -f2)
 
-crossfile := $(BUILDDIR)/frida-$(host_machine).txt
+crossfile := $(BUILDDIR)/plawnekjx-$(host_machine).txt
 
 build: ext/linux/tools/include/nolibc/nolibc.h
 	rm -rf build

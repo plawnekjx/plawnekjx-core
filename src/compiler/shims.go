@@ -15,33 +15,33 @@ export { Buffer } from 'node:buffer';
 export { default as process } from 'node:process';
 `
 
-//go:embed node_modules/@frida/*/package.json
-//go:embed node_modules/@frida/*/*.js
-//go:embed node_modules/@frida/*/*/*.js
-//go:embed node_modules/@frida/*/*/*/*.js
-//go:embed node_modules/frida-fs/package.json
-//go:embed node_modules/frida-fs/*/*.js
+//go:embed node_modules/@plawnekjx/*/package.json
+//go:embed node_modules/@plawnekjx/*/*.js
+//go:embed node_modules/@plawnekjx/*/*/*.js
+//go:embed node_modules/@plawnekjx/*/*/*/*.js
+//go:embed node_modules/plawnekjx-fs/package.json
+//go:embed node_modules/plawnekjx-fs/*/*.js
 var embeddedShims embed.FS
 
-func makeFridaShimsPlugin() esbuild.Plugin {
+func makePlawnekjxShimsPlugin() esbuild.Plugin {
 	const (
-		nsBuiltins = "frida-builtins"
-		nsShim     = "frida-shim"
+		nsBuiltins = "plawnekjx-builtins"
+		nsShim     = "plawnekjx-shim"
 	)
 
 	const (
-		builtinFilter        = `^frida-builtins://(.+)$`
+		builtinFilter        = `^plawnekjx-builtins://(.+)$`
 		shimFilter           = `^(assert|base64-js|buffer|crypto|diagnostics_channel|events|fs|http|https|http-parser-js|ieee754|net|os|path|process|punycode|querystring|readable-stream|stream|string_decoder|timers|tty|url|util|vm)$`
 		shimNodePrefixFilter = `^node:(assert|buffer|crypto|diagnostics_channel|events|fs|http|https|net|os|path|process|punycode|querystring|stream|string_decoder|timers|tty|url|util|vm)$`
 	)
 
 	return esbuild.Plugin{
-		Name: "frida-custom-shims",
+		Name: "plawnekjx-custom-shims",
 		Setup: func(build esbuild.PluginBuild) {
 			build.OnResolve(esbuild.OnResolveOptions{Filter: builtinFilter},
 				func(args esbuild.OnResolveArgs) (esbuild.OnResolveResult, error) {
 					return esbuild.OnResolveResult{
-						Path:        strings.TrimPrefix(args.Path, "frida-builtins://"),
+						Path:        strings.TrimPrefix(args.Path, "plawnekjx-builtins://"),
 						Namespace:   nsBuiltins,
 						SideEffects: esbuild.SideEffectsFalse,
 					}, nil
@@ -122,36 +122,36 @@ func loaderFor(path string) esbuild.Loader {
 	case ".json":
 		return esbuild.LoaderJSON
 	default:
-		panic(fmt.Sprintf("frida-shims: unsupported file type %q", ext))
+		panic(fmt.Sprintf("plawnekjx-shims: unsupported file type %q", ext))
 	}
 }
 
 var shimMap = map[string]string{
-	"assert":              "@frida/assert",
-	"base64-js":           "@frida/base64-js",
-	"buffer":              "@frida/buffer",
-	"crypto":              "@frida/crypto",
-	"diagnostics_channel": "@frida/diagnostics_channel",
-	"events":              "@frida/events",
-	"fs":                  "frida-fs",
-	"http":                "@frida/http",
-	"https":               "@frida/https",
-	"http-parser-js":      "@frida/http-parser-js",
-	"ieee754":             "@frida/ieee754",
-	"net":                 "@frida/net",
-	"os":                  "@frida/os",
-	"path":                "@frida/path",
-	"process":             "@frida/process",
-	"punycode":            "@frida/punycode",
-	"querystring":         "@frida/querystring",
-	"readable-stream":     "@frida/readable-stream",
-	"stream":              "@frida/stream",
-	"string_decoder":      "@frida/string_decoder",
-	"timers":              "@frida/timers",
-	"tty":                 "@frida/tty",
-	"url":                 "@frida/url",
-	"util":                "@frida/util",
-	"vm":                  "@frida/vm",
+	"assert":              "@plawnekjx/assert",
+	"base64-js":           "@plawnekjx/base64-js",
+	"buffer":              "@plawnekjx/buffer",
+	"crypto":              "@plawnekjx/crypto",
+	"diagnostics_channel": "@plawnekjx/diagnostics_channel",
+	"events":              "@plawnekjx/events",
+	"fs":                  "plawnekjx-fs",
+	"http":                "@plawnekjx/http",
+	"https":               "@plawnekjx/https",
+	"http-parser-js":      "@plawnekjx/http-parser-js",
+	"ieee754":             "@plawnekjx/ieee754",
+	"net":                 "@plawnekjx/net",
+	"os":                  "@plawnekjx/os",
+	"path":                "@plawnekjx/path",
+	"process":             "@plawnekjx/process",
+	"punycode":            "@plawnekjx/punycode",
+	"querystring":         "@plawnekjx/querystring",
+	"readable-stream":     "@plawnekjx/readable-stream",
+	"stream":              "@plawnekjx/stream",
+	"string_decoder":      "@plawnekjx/string_decoder",
+	"timers":              "@plawnekjx/timers",
+	"tty":                 "@plawnekjx/tty",
+	"url":                 "@plawnekjx/url",
+	"util":                "@plawnekjx/util",
+	"vm":                  "@plawnekjx/vm",
 }
 
 type PackageJSON struct {
@@ -161,7 +161,7 @@ type PackageJSON struct {
 
 func resolveShim(shimName string) (string, []esbuild.Message) {
 	var subDir string
-	if strings.HasPrefix(shimName, "@frida/") {
+	if strings.HasPrefix(shimName, "@plawnekjx/") {
 		subDir = shimName
 	} else {
 		actualShimName := strings.TrimPrefix(shimName, "node:")

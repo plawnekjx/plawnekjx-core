@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class StdioPipes : Object {
 		public OutputStream input {
 			get;

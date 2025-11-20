@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 #if WINDOWS
 	public sealed class FileDescriptorGuard : Object {
 		public Gum.MemoryRange agent_range {
@@ -52,8 +52,8 @@ namespace Frida {
 
 				var caller = (Gum.Address) context.get_return_address ();
 				var range = parent.agent_range;
-				bool caller_is_frida = (caller >= range.base_address && caller < range.base_address + range.size);
-				if (caller_is_frida) {
+				bool caller_is_plawnekjx = (caller >= range.base_address && caller < range.base_address + range.size);
+				if (caller_is_plawnekjx) {
 					invocation.is_cloaked = false;
 					return;
 				}

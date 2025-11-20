@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	[CCode (cheader_filename = "dlfcn.h", cname = "dlopen")]
 	public void * dlopen (string filename, int flags);
 

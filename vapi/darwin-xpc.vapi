@@ -6,18 +6,18 @@ namespace Darwin.Xpc {
 		public static Connection create (string? name, GCD.DispatchQueue targetq);
 		public static Connection create_mach_service (string? name, GCD.DispatchQueue targetq, uint64 flags = 0);
 
-		[CCode (cname = "_frida_xpc_connection_set_event_handler", cheader_filename = "frida-darwin.h")]
+		[CCode (cname = "_plawnekjx_xpc_connection_set_event_handler", cheader_filename = "plawnekjx-darwin.h")]
 		public void set_event_handler (Handler handler);
 
 		public void activate ();
 		public void cancel ();
 
 		public void send_message (Object message);
-		[CCode (cname = "_frida_xpc_connection_send_message_with_reply", cheader_filename = "frida-darwin.h")]
+		[CCode (cname = "_plawnekjx_xpc_connection_send_message_with_reply", cheader_filename = "plawnekjx-darwin.h")]
 		public void send_message_with_reply (Object message, GCD.DispatchQueue replyq, owned Handler handler);
 	}
 
-	[CCode (cname = "FridaXpcHandler")]
+	[CCode (cname = "PlawnekjxXpcHandler")]
 	public delegate void Handler (Object object);
 
 	[Compact]
@@ -28,7 +28,7 @@ namespace Darwin.Xpc {
 			get;
 		}
 
-		[CCode (cname = "_frida_xpc_object_to_string", cheader_filename = "frida-darwin.h")]
+		[CCode (cname = "_plawnekjx_xpc_object_to_string", cheader_filename = "plawnekjx-darwin.h")]
 		public string to_string ();
 	}
 
@@ -159,13 +159,13 @@ namespace Darwin.Xpc {
 		public unowned Object? get_value (string key);
 		public void set_value (string key, Object val);
 
-		[CCode (cname = "_frida_xpc_dictionary_apply", cheader_filename = "frida-darwin.h")]
+		[CCode (cname = "_plawnekjx_xpc_dictionary_apply", cheader_filename = "plawnekjx-darwin.h")]
 		public bool apply (DictionaryApplier applier);
 
 		public Connection? create_connection (string key);
 	}
 
-	[CCode (cname = "FridaXpcDictionaryApplier")]
+	[CCode (cname = "PlawnekjxXpcDictionaryApplier")]
 	public delegate bool DictionaryApplier (string key, Object val);
 
 	[Compact]

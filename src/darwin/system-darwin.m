@@ -1,4 +1,4 @@
-#include "frida-core.h"
+#include "plawnekjx-core.h"
 
 #include "icon-helpers.h"
 
@@ -28,72 +28,72 @@
 # define PROC_PIDPATHINFO_MAXSIZE (4 * MAXPATHLEN)
 #endif
 
-typedef struct _FridaEnumerateApplicationsOperation FridaEnumerateApplicationsOperation;
-typedef struct _FridaEnumerateProcessesOperation FridaEnumerateProcessesOperation;
+typedef struct _PlawnekjxEnumerateApplicationsOperation PlawnekjxEnumerateApplicationsOperation;
+typedef struct _PlawnekjxEnumerateProcessesOperation PlawnekjxEnumerateProcessesOperation;
 
-struct _FridaEnumerateApplicationsOperation
+struct _PlawnekjxEnumerateApplicationsOperation
 {
-  FridaScope scope;
+  PlawnekjxScope scope;
   GHashTable * process_by_identifier;
 #if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-  FridaSpringboardApi * api;
+  PlawnekjxSpringboardApi * api;
 #endif
 
   GArray * result;
 };
 
-struct _FridaEnumerateProcessesOperation
+struct _PlawnekjxEnumerateProcessesOperation
 {
-  FridaScope scope;
+  PlawnekjxScope scope;
 #if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-  FridaSpringboardApi * api;
+  PlawnekjxSpringboardApi * api;
 #endif
 
   GArray * result;
 };
 
 #if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-static void frida_collect_application_info_from_id_cstring (const gchar * identifier, FridaEnumerateApplicationsOperation * op);
-static void frida_collect_application_info_from_id_nsstring (NSString * identifier, FridaEnumerateApplicationsOperation * op);
+static void plawnekjx_collect_application_info_from_id_cstring (const gchar * identifier, PlawnekjxEnumerateApplicationsOperation * op);
+static void plawnekjx_collect_application_info_from_id_nsstring (NSString * identifier, PlawnekjxEnumerateApplicationsOperation * op);
 #endif
 
-static void frida_collect_process_info_from_pid (guint pid, FridaEnumerateProcessesOperation * op);
-static void frida_collect_process_info_from_kinfo (struct kinfo_proc * process, FridaEnumerateProcessesOperation * op);
+static void plawnekjx_collect_process_info_from_pid (guint pid, PlawnekjxEnumerateProcessesOperation * op);
+static void plawnekjx_collect_process_info_from_kinfo (struct kinfo_proc * process, PlawnekjxEnumerateProcessesOperation * op);
 
 #if defined (HAVE_MACOS) || defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-static void frida_add_app_id (GHashTable * parameters, NSString * identifier);
+static void plawnekjx_add_app_id (GHashTable * parameters, NSString * identifier);
 #endif
 
 #if defined (HAVE_MACOS)
-static void frida_add_app_icons (GHashTable * parameters, NSImage * image);
+static void plawnekjx_add_app_icons (GHashTable * parameters, NSImage * image);
 #elif defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-static void frida_add_app_metadata (GHashTable * parameters, NSString * identifier, FridaSpringboardApi * api);
-static void frida_add_app_state (GHashTable * parameters, guint pid, FridaSpringboardApi * api);
-static void frida_add_app_icons (GHashTable * parameters, NSString * identifier);
+static void plawnekjx_add_app_metadata (GHashTable * parameters, NSString * identifier, PlawnekjxSpringboardApi * api);
+static void plawnekjx_add_app_state (GHashTable * parameters, guint pid, PlawnekjxSpringboardApi * api);
+static void plawnekjx_add_app_icons (GHashTable * parameters, NSString * identifier);
 #endif
 
 #ifndef HAVE_MACOS
 extern int proc_pidpath (int pid, void * buffer, uint32_t buffer_size);
 #endif
 
-static void frida_add_process_metadata (GHashTable * parameters, const struct kinfo_proc * process);
+static void plawnekjx_add_process_metadata (GHashTable * parameters, const struct kinfo_proc * process);
 
-static struct kinfo_proc * frida_system_query_kinfo_procs (guint * count);
-static GVariant * frida_uid_to_name (uid_t uid);
+static struct kinfo_proc * plawnekjx_system_query_kinfo_procs (guint * count);
+static GVariant * plawnekjx_uid_to_name (uid_t uid);
 
 #if defined (HAVE_MACOS)
 
 void
-frida_system_get_frontmost_application (FridaFrontmostQueryOptions * options, FridaHostApplicationInfo * result, GError ** error)
+plawnekjx_system_get_frontmost_application (PlawnekjxFrontmostQueryOptions * options, PlawnekjxHostApplicationInfo * result, GError ** error)
 {
   g_set_error (error,
-      FRIDA_ERROR,
-      FRIDA_ERROR_NOT_SUPPORTED,
+      PLAWNEKJX_ERROR,
+      PLAWNEKJX_ERROR_NOT_SUPPORTED,
       "Not implemented");
 }
 
-FridaHostApplicationInfo *
-frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int * result_length)
+PlawnekjxHostApplicationInfo *
+plawnekjx_system_enumerate_applications (PlawnekjxApplicationQueryOptions * options, int * result_length)
 {
   *result_length = 0;
 
@@ -103,19 +103,19 @@ frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int
 #elif defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
 
 void
-frida_system_get_frontmost_application (FridaFrontmostQueryOptions * options, FridaHostApplicationInfo * result, GError ** error)
+plawnekjx_system_get_frontmost_application (PlawnekjxFrontmostQueryOptions * options, PlawnekjxHostApplicationInfo * result, GError ** error)
 {
   NSAutoreleasePool * pool;
-  FridaSpringboardApi * api;
+  PlawnekjxSpringboardApi * api;
   NSString * identifier = nil;
   NSString * name = nil;
-  FridaScope scope;
+  PlawnekjxScope scope;
   struct kinfo_proc * processes = NULL;
   guint count, i;
 
   pool = [[NSAutoreleasePool alloc] init];
 
-  api = _frida_get_springboard_api ();
+  api = _plawnekjx_get_springboard_api ();
 
   identifier = api->SBSCopyFrontmostApplicationDisplayIdentifier ();
   if (identifier == nil || identifier.length <= 1)
@@ -127,12 +127,12 @@ frida_system_get_frontmost_application (FridaFrontmostQueryOptions * options, Fr
 
   result->identifier = g_strdup ([identifier UTF8String]);
   result->name = g_strdup ([name UTF8String]);
-  result->parameters = frida_make_parameters_dict ();
+  result->parameters = plawnekjx_make_parameters_dict ();
   result->pid = 0;
 
-  scope = frida_frontmost_query_options_get_scope (options);
+  scope = plawnekjx_frontmost_query_options_get_scope (options);
 
-  processes = frida_system_query_kinfo_procs (&count);
+  processes = plawnekjx_system_query_kinfo_procs (&count);
 
   for (i = 0; i != count && result->pid == 0; i++)
   {
@@ -149,25 +149,25 @@ frida_system_get_frontmost_application (FridaFrontmostQueryOptions * options, Fr
       {
         result->pid = pid;
 
-        if (scope != FRIDA_SCOPE_MINIMAL)
-          frida_add_process_metadata (result->parameters, process);
+        if (scope != PLAWNEKJX_SCOPE_MINIMAL)
+          plawnekjx_add_process_metadata (result->parameters, process);
       }
 
       [cur_identifier release];
     }
   }
 
-  if (scope != FRIDA_SCOPE_MINIMAL)
-    frida_add_app_metadata (result->parameters, identifier, api);
+  if (scope != PLAWNEKJX_SCOPE_MINIMAL)
+    plawnekjx_add_app_metadata (result->parameters, identifier, api);
 
-  if (scope == FRIDA_SCOPE_FULL)
-    frida_add_app_icons (result->parameters, identifier);
+  if (scope == PLAWNEKJX_SCOPE_FULL)
+    plawnekjx_add_app_icons (result->parameters, identifier);
 
   goto beach;
 
 no_frontmost_app:
   {
-    frida_host_application_info_init_empty (result);
+    plawnekjx_host_application_info_init_empty (result);
     goto beach;
   }
 beach:
@@ -181,23 +181,23 @@ beach:
   }
 }
 
-FridaHostApplicationInfo *
-frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int * result_length)
+PlawnekjxHostApplicationInfo *
+plawnekjx_system_enumerate_applications (PlawnekjxApplicationQueryOptions * options, int * result_length)
 {
-  FridaEnumerateApplicationsOperation op;
+  PlawnekjxEnumerateApplicationsOperation op;
   NSAutoreleasePool * pool;
   struct kinfo_proc * processes;
   guint count, i;
 
-  op.scope = frida_application_query_options_get_scope (options);
+  op.scope = plawnekjx_application_query_options_get_scope (options);
   op.process_by_identifier = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
-  op.api = _frida_get_springboard_api ();
+  op.api = _plawnekjx_get_springboard_api ();
 
-  op.result = g_array_new (FALSE, FALSE, sizeof (FridaHostApplicationInfo));
+  op.result = g_array_new (FALSE, FALSE, sizeof (PlawnekjxHostApplicationInfo));
 
   pool = [[NSAutoreleasePool alloc] init];
 
-  processes = frida_system_query_kinfo_procs (&count);
+  processes = plawnekjx_system_query_kinfo_procs (&count);
   for (i = 0; i != count; i++)
   {
     struct kinfo_proc * process = &processes[i];
@@ -211,9 +211,9 @@ frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int
     }
   }
 
-  if (frida_application_query_options_has_selected_identifiers (options))
+  if (plawnekjx_application_query_options_has_selected_identifiers (options))
   {
-    frida_application_query_options_enumerate_selected_identifiers (options, (GFunc) frida_collect_application_info_from_id_cstring, &op);
+    plawnekjx_application_query_options_enumerate_selected_identifiers (options, (GFunc) plawnekjx_collect_application_info_from_id_cstring, &op);
   }
   else
   {
@@ -224,7 +224,7 @@ frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int
 
     count = [identifiers count];
     for (i = 0; i != count; i++)
-      frida_collect_application_info_from_id_nsstring ([identifiers objectAtIndex:i], &op);
+      plawnekjx_collect_application_info_from_id_nsstring ([identifiers objectAtIndex:i], &op);
 
     [identifiers release];
   }
@@ -236,21 +236,21 @@ frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int
 
   *result_length = op.result->len;
 
-  return (FridaHostApplicationInfo *) g_array_free (op.result, FALSE);
+  return (PlawnekjxHostApplicationInfo *) g_array_free (op.result, FALSE);
 }
 
 static void
-frida_collect_application_info_from_id_cstring (const gchar * identifier, FridaEnumerateApplicationsOperation * op)
+plawnekjx_collect_application_info_from_id_cstring (const gchar * identifier, PlawnekjxEnumerateApplicationsOperation * op)
 {
-  frida_collect_application_info_from_id_nsstring ([NSString stringWithUTF8String:identifier], op);
+  plawnekjx_collect_application_info_from_id_nsstring ([NSString stringWithUTF8String:identifier], op);
 }
 
 static void
-frida_collect_application_info_from_id_nsstring (NSString * identifier, FridaEnumerateApplicationsOperation * op)
+plawnekjx_collect_application_info_from_id_nsstring (NSString * identifier, PlawnekjxEnumerateApplicationsOperation * op)
 {
-  FridaHostApplicationInfo info = { 0, };
-  FridaScope scope = op->scope;
-  FridaSpringboardApi * api = op->api;
+  PlawnekjxHostApplicationInfo info = { 0, };
+  PlawnekjxScope scope = op->scope;
+  PlawnekjxSpringboardApi * api = op->api;
   NSString * name;
   struct kinfo_proc * process;
 
@@ -263,7 +263,7 @@ frida_collect_application_info_from_id_nsstring (NSString * identifier, FridaEnu
 
   info.identifier = g_strdup (identifier.UTF8String);
   info.name = g_strdup ((name != nil) ? name.UTF8String : "");
-  info.parameters = frida_make_parameters_dict ();
+  info.parameters = plawnekjx_make_parameters_dict ();
 
   process = g_hash_table_lookup (op->process_by_identifier, info.identifier);
   if (process != NULL)
@@ -277,20 +277,20 @@ frida_collect_application_info_from_id_nsstring (NSString * identifier, FridaEnu
       info.pid = pid;
   }
 
-  if (scope != FRIDA_SCOPE_MINIMAL)
+  if (scope != PLAWNEKJX_SCOPE_MINIMAL)
   {
-    frida_add_app_metadata (info.parameters, identifier, api);
+    plawnekjx_add_app_metadata (info.parameters, identifier, api);
 
     if (process != NULL)
     {
-      frida_add_app_state (info.parameters, process->kp_proc.p_pid, api);
+      plawnekjx_add_app_state (info.parameters, process->kp_proc.p_pid, api);
 
-      frida_add_process_metadata (info.parameters, process);
+      plawnekjx_add_process_metadata (info.parameters, process);
     }
   }
 
-  if (scope == FRIDA_SCOPE_FULL)
-    frida_add_app_icons (info.parameters, identifier);
+  if (scope == PLAWNEKJX_SCOPE_FULL)
+    plawnekjx_add_app_icons (info.parameters, identifier);
 
   [name release];
 
@@ -299,34 +299,34 @@ frida_collect_application_info_from_id_nsstring (NSString * identifier, FridaEnu
 
 #endif
 
-FridaHostProcessInfo *
-frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * result_length)
+PlawnekjxHostProcessInfo *
+plawnekjx_system_enumerate_processes (PlawnekjxProcessQueryOptions * options, int * result_length)
 {
-  FridaEnumerateProcessesOperation op;
+  PlawnekjxEnumerateProcessesOperation op;
   NSAutoreleasePool * pool;
 
-  op.scope = frida_process_query_options_get_scope (options);
+  op.scope = plawnekjx_process_query_options_get_scope (options);
 #if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-  op.api = _frida_get_springboard_api ();
+  op.api = _plawnekjx_get_springboard_api ();
 #endif
 
-  op.result = g_array_new (FALSE, FALSE, sizeof (FridaHostProcessInfo));
+  op.result = g_array_new (FALSE, FALSE, sizeof (PlawnekjxHostProcessInfo));
 
   pool = [[NSAutoreleasePool alloc] init];
 
-  if (frida_process_query_options_has_selected_pids (options))
+  if (plawnekjx_process_query_options_has_selected_pids (options))
   {
-    frida_process_query_options_enumerate_selected_pids (options, (GFunc) frida_collect_process_info_from_pid, &op);
+    plawnekjx_process_query_options_enumerate_selected_pids (options, (GFunc) plawnekjx_collect_process_info_from_pid, &op);
   }
   else
   {
     struct kinfo_proc * processes;
     guint count, i;
 
-    processes = frida_system_query_kinfo_procs (&count);
+    processes = plawnekjx_system_query_kinfo_procs (&count);
 
     for (i = 0; i != count; i++)
-      frida_collect_process_info_from_kinfo (&processes[i], &op);
+      plawnekjx_collect_process_info_from_kinfo (&processes[i], &op);
 
     g_free (processes);
   }
@@ -335,11 +335,11 @@ frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * resu
 
   *result_length = op.result->len;
 
-  return (FridaHostProcessInfo *) g_array_free (op.result, FALSE);
+  return (PlawnekjxHostProcessInfo *) g_array_free (op.result, FALSE);
 }
 
 static void
-frida_collect_process_info_from_pid (guint pid, FridaEnumerateProcessesOperation * op)
+plawnekjx_collect_process_info_from_pid (guint pid, PlawnekjxEnumerateProcessesOperation * op)
 {
   struct kinfo_proc process;
   size_t size;
@@ -354,23 +354,23 @@ frida_collect_process_info_from_pid (guint pid, FridaEnumerateProcessesOperation
   if (size == 0)
     return;
 
-  frida_collect_process_info_from_kinfo (&process, op);
+  plawnekjx_collect_process_info_from_kinfo (&process, op);
 }
 
 static void
-frida_collect_process_info_from_kinfo (struct kinfo_proc * process, FridaEnumerateProcessesOperation * op)
+plawnekjx_collect_process_info_from_kinfo (struct kinfo_proc * process, PlawnekjxEnumerateProcessesOperation * op)
 {
-  FridaHostProcessInfo info = { 0, };
-  FridaScope scope = op->scope;
+  PlawnekjxHostProcessInfo info = { 0, };
+  PlawnekjxScope scope = op->scope;
   gboolean still_alive;
   gchar path[PROC_PIDPATHINFO_MAXSIZE];
 
   info.pid = process->kp_proc.p_pid;
 
-  info.parameters = frida_make_parameters_dict ();
+  info.parameters = plawnekjx_make_parameters_dict ();
 
-  if (scope != FRIDA_SCOPE_MINIMAL)
-    frida_add_process_metadata (info.parameters, process);
+  if (scope != PLAWNEKJX_SCOPE_MINIMAL)
+    plawnekjx_add_process_metadata (info.parameters, process);
 
 #if defined (HAVE_MACOS)
   {
@@ -381,23 +381,23 @@ frida_collect_process_info_from_kinfo (struct kinfo_proc * process, FridaEnumera
       if (name.length > 0)
         info.name = g_strdup (name.UTF8String);
 
-      if (scope != FRIDA_SCOPE_MINIMAL)
+      if (scope != PLAWNEKJX_SCOPE_MINIMAL)
       {
         NSString * identifier = app.bundleIdentifier;
         if (identifier != nil)
-          frida_add_app_id (info.parameters, identifier);
+          plawnekjx_add_app_id (info.parameters, identifier);
 
         if (app.active)
           g_hash_table_insert (info.parameters, g_strdup ("frontmost"), g_variant_ref_sink (g_variant_new_boolean (TRUE)));
       }
 
-      if (scope == FRIDA_SCOPE_FULL)
-        frida_add_app_icons (info.parameters, app.icon);
+      if (scope == PLAWNEKJX_SCOPE_FULL)
+        plawnekjx_add_app_icons (info.parameters, app.icon);
     }
   }
 #elif defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
   {
-    FridaSpringboardApi * api = op->api;
+    PlawnekjxSpringboardApi * api = op->api;
     NSString * identifier;
 
     identifier = api->SBSCopyDisplayIdentifierForProcessID (info.pid);
@@ -409,15 +409,15 @@ frida_collect_process_info_from_kinfo (struct kinfo_proc * process, FridaEnumera
       info.name = g_strdup ([app_name UTF8String]);
       [app_name release];
 
-      if (scope != FRIDA_SCOPE_MINIMAL)
+      if (scope != PLAWNEKJX_SCOPE_MINIMAL)
       {
-        frida_add_app_id (info.parameters, identifier);
+        plawnekjx_add_app_id (info.parameters, identifier);
 
-        frida_add_app_state (info.parameters, info.pid, api);
+        plawnekjx_add_app_state (info.parameters, info.pid, api);
       }
 
-      if (scope == FRIDA_SCOPE_FULL)
-        frida_add_app_icons (info.parameters, identifier);
+      if (scope == PLAWNEKJX_SCOPE_FULL)
+        plawnekjx_add_app_icons (info.parameters, identifier);
 
       [identifier release];
     }
@@ -430,24 +430,24 @@ frida_collect_process_info_from_kinfo (struct kinfo_proc * process, FridaEnumera
     if (info.name == NULL)
       info.name = g_path_get_basename (path);
 
-    if (scope != FRIDA_SCOPE_MINIMAL)
+    if (scope != PLAWNEKJX_SCOPE_MINIMAL)
       g_hash_table_insert (info.parameters, g_strdup ("path"), g_variant_ref_sink (g_variant_new_string (path)));
   }
 
   if (still_alive)
     g_array_append_val (op->result, info);
   else
-    frida_host_process_info_destroy (&info);
+    plawnekjx_host_process_info_destroy (&info);
 }
 
 void
-frida_system_kill (guint pid)
+plawnekjx_system_kill (guint pid)
 {
   kill (pid, SIGKILL);
 }
 
 gchar *
-frida_temporary_directory_get_system_tmp (void)
+plawnekjx_temporary_directory_get_system_tmp (void)
 {
   if (geteuid () == 0)
   {
@@ -462,7 +462,7 @@ frida_temporary_directory_get_system_tmp (void)
   {
 #ifdef HAVE_MACOS
     /* Mac App Store apps are sandboxed but able to read ~/.Trash/ */
-    return g_build_filename (g_get_home_dir (), ".Trash", ".frida", NULL);
+    return g_build_filename (g_get_home_dir (), ".Trash", ".plawnekjx", NULL);
 #else
     return g_strdup (g_get_tmp_dir ());
 #endif
@@ -472,7 +472,7 @@ frida_temporary_directory_get_system_tmp (void)
 #if defined (HAVE_MACOS) || defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
 
 static void
-frida_add_app_id (GHashTable * parameters, NSString * identifier)
+plawnekjx_add_app_id (GHashTable * parameters, NSString * identifier)
 {
   GVariantBuilder builder;
 
@@ -486,7 +486,7 @@ frida_add_app_id (GHashTable * parameters, NSString * identifier)
 #if defined (HAVE_MACOS)
 
 static void
-frida_add_app_icons (GHashTable * parameters, NSImage * image)
+plawnekjx_add_app_icons (GHashTable * parameters, NSImage * image)
 {
   GVariantBuilder builder;
   const guint sizes[] = { 16, 32 };
@@ -544,7 +544,7 @@ frida_add_app_icons (GHashTable * parameters, NSImage * image)
 #elif defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
 
 static void
-frida_add_app_metadata (GHashTable * parameters, NSString * identifier, FridaSpringboardApi * api)
+plawnekjx_add_app_metadata (GHashTable * parameters, NSString * identifier, PlawnekjxSpringboardApi * api)
 {
   LSApplicationProxy * app;
   const char * version, * build, * data_path;
@@ -588,7 +588,7 @@ frida_add_app_metadata (GHashTable * parameters, NSString * identifier, FridaSpr
 }
 
 static void
-frida_add_app_state (GHashTable * parameters, guint pid, FridaSpringboardApi * api)
+plawnekjx_add_app_state (GHashTable * parameters, guint pid, PlawnekjxSpringboardApi * api)
 {
   NSDictionary * info;
   NSNumber * is_frontmost;
@@ -603,12 +603,12 @@ frida_add_app_state (GHashTable * parameters, guint pid, FridaSpringboardApi * a
 }
 
 static void
-frida_add_app_icons (GHashTable * parameters, NSString * identifier)
+plawnekjx_add_app_icons (GHashTable * parameters, NSString * identifier)
 {
   NSData * png;
   GVariantBuilder builder;
 
-  png = _frida_get_springboard_api ()->SBSCopyIconImagePNGDataForDisplayIdentifier (identifier);
+  png = _plawnekjx_get_springboard_api ()->SBSCopyIconImagePNGDataForDisplayIdentifier (identifier);
   if (png == nil)
     return;
 
@@ -626,12 +626,12 @@ frida_add_app_icons (GHashTable * parameters, NSString * identifier)
 #endif /* HAVE_IOS */
 
 static void
-frida_add_process_metadata (GHashTable * parameters, const struct kinfo_proc * process)
+plawnekjx_add_process_metadata (GHashTable * parameters, const struct kinfo_proc * process)
 {
   const struct timeval * started = &process->kp_proc.p_un.__p_starttime;
   GDateTime * t0, * t1;
 
-  g_hash_table_insert (parameters, g_strdup ("user"), frida_uid_to_name (process->kp_eproc.e_ucred.cr_uid));
+  g_hash_table_insert (parameters, g_strdup ("user"), plawnekjx_uid_to_name (process->kp_eproc.e_ucred.cr_uid));
 
   g_hash_table_insert (parameters, g_strdup ("ppid"), g_variant_ref_sink (g_variant_new_int64 (process->kp_eproc.e_ppid)));
 
@@ -643,7 +643,7 @@ frida_add_process_metadata (GHashTable * parameters, const struct kinfo_proc * p
 }
 
 static struct kinfo_proc *
-frida_system_query_kinfo_procs (guint * count)
+plawnekjx_system_query_kinfo_procs (guint * count)
 {
   struct kinfo_proc * processes = NULL;
   int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL };
@@ -685,7 +685,7 @@ sysctl_failed:
 }
 
 static GVariant *
-frida_uid_to_name (uid_t uid)
+plawnekjx_uid_to_name (uid_t uid)
 {
   GVariant * name;
   static size_t buffer_size = 0;

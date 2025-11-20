@@ -1,6 +1,6 @@
-namespace Frida {
-	public const uint16 DEFAULT_CONTROL_PORT = 27042;
-	public const uint16 DEFAULT_CLUSTER_PORT = 27052;
+namespace Plawnekjx {
+    public const uint16 DEFAULT_CONTROL_PORT = 28391;
+    public const uint16 DEFAULT_CLUSTER_PORT = 28473;
 
 	public SocketConnectable parse_control_address (string? address, uint16 port = 0) throws Error {
 		return parse_socket_address (address, port, "127.0.0.1", DEFAULT_CONTROL_PORT);
@@ -163,7 +163,7 @@ namespace Frida {
 		var msg = new Soup.Message.from_uri ("GET", uri);
 		Soup.websocket_client_prepare_handshake (msg, origin, null, null);
 		msg.request_headers.replace ("Host", make_host_header_value (uri));
-		msg.request_headers.replace ("User-Agent", "Frida/" + _version_string ());
+		msg.request_headers.replace ("User-Agent", "Plawnekjx/" + _version_string ());
 		msg.request_headers.foreach ((name, val) => {
 			request.append (name + ": " + val + "\r\n");
 		});
@@ -206,7 +206,7 @@ namespace Frida {
 		}
 
 		WebConnection connection = null;
-		var frida_context = MainContext.ref_thread_default ();
+		var plawnekjx_context = MainContext.ref_thread_default ();
 		var dbus_context = yield get_dbus_context ();
 		var dbus_source = new IdleSource ();
 		dbus_source.set_callback (() => {
@@ -214,9 +214,9 @@ namespace Frida {
 				new List<Soup.WebsocketExtension> ());
 			connection = new WebConnection (websocket);
 
-			var frida_source = new IdleSource ();
-			frida_source.set_callback (negotiate_connection.callback);
-			frida_source.attach (frida_context);
+			var plawnekjx_source = new IdleSource ();
+			plawnekjx_source.set_callback (negotiate_connection.callback);
+			plawnekjx_source.attach (plawnekjx_context);
 
 			return Source.REMOVE;
 		});
@@ -270,7 +270,7 @@ namespace Frida {
 
 		private Cancellable io_cancellable = new Cancellable ();
 
-		private MainContext? frida_context;
+		private MainContext? plawnekjx_context;
 		private MainContext? dbus_context;
 
 		public WebService (EndpointParameters endpoint_params, WebServiceFlavor flavor,
@@ -284,7 +284,7 @@ namespace Frida {
 		}
 
 		public async void start (Cancellable? cancellable) throws Error, IOError {
-			frida_context = MainContext.ref_thread_default ();
+			plawnekjx_context = MainContext.ref_thread_default ();
 			dbus_context = yield get_dbus_context ();
 
 			cancellable.set_error_if_cancelled ();
@@ -301,13 +301,13 @@ namespace Frida {
 		private async void handle_start_request (Promise<SocketAddress> start_request, Cancellable? cancellable) {
 			try {
 				SocketAddress effective_address = yield do_start (cancellable);
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					start_request.resolve (effective_address);
 					return Source.REMOVE;
 				});
 			} catch (GLib.Error e) {
 				GLib.Error start_error = e;
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					start_request.reject (start_error);
 					return Source.REMOVE;
 				});
@@ -385,7 +385,7 @@ namespace Frida {
 		}
 
 		private void on_incoming_connection (ConnectionHandler handler, IOStream connection, SocketAddress remote_address) {
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				incoming (connection, remote_address, handler.dynamic_iface);
 				return Source.REMOVE;
 			});
@@ -414,12 +414,12 @@ namespace Frida {
 				main_handler.close ();
 		}
 
-		private void schedule_on_frida_thread (owned SourceFunc function) {
-			assert (frida_context != null);
+		private void schedule_on_plawnekjx_thread (owned SourceFunc function) {
+			assert (plawnekjx_context != null);
 
 			var source = new IdleSource ();
 			source.set_callback ((owned) function);
-			source.attach (frida_context);
+			source.attach (plawnekjx_context);
 		}
 
 		private void schedule_on_dbus_thread (owned SourceFunc function) {
@@ -577,7 +577,7 @@ namespace Frida {
 
 			private void on_asset_request (Soup.Server server, Soup.ServerMessage msg, string path,
 					HashTable<string, string>? query) {
-				msg.get_response_headers ().replace ("Server", "Frida/" + _version_string ());
+				msg.get_response_headers ().replace ("Server", "Plawnekjx/" + _version_string ());
 
 				unowned string method = msg.get_method ();
 				if (method != "GET" && method != "HEAD") {
@@ -794,7 +794,7 @@ namespace Frida {
 <center><h1>301 Moved Permanently</h1></center>
 <hr><center>%s</center>
 </body>
-</html>""".printf ("Frida/" + _version_string ());
+</html>""".printf ("Plawnekjx/" + _version_string ());
 
 				if (msg.get_method () == "HEAD") {
 					var headers = msg.get_response_headers ();

@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 #if WINDOWS
 	public sealed class ForkMonitor : Object {
 		public weak ForkHandler handler {

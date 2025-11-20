@@ -1,7 +1,7 @@
 {
-  "name": "frida-barebone-script-runtime",
+  "name": "plawnekjx-barebone-script-runtime",
   "version": "1.0.0",
-  "description": "Script runtime used by Frida's Barebone backend",
+  "description": "Script runtime used by Plawnekjx's Barebone backend",
   "type": "module",
   "scripts": {
     "build": "esbuild script-runtime/entrypoint.ts --outfile=script-runtime.js --bundle --platform=node --target=es2022 --minify",
@@ -9,7 +9,7 @@
     "watch": "tsc -w"
   },
   "devDependencies": {
-    "@types/frida-gum": "^19.0.1",
+    "@types/plawnekjx-gum": "^19.0.1",
     "esbuild": "^0.25.5",
     "typescript": "^5.8.3"
   }

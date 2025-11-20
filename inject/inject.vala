@@ -1,4 +1,4 @@
-namespace Frida.Inject {
+namespace Plawnekjx.Inject {
 	private static Application application;
 
 	private static string? device_id;
@@ -352,7 +352,7 @@ namespace Frida.Inject {
 			 * by the user including the newline.
 			 *
 			 * rpc.exports = {
-			 *   onFridaStdin(data) {
+			 *   onPlawnekjxStdin(data) {
 			 *     ...
 			 *   }
 			 * };
@@ -522,7 +522,7 @@ namespace Frida.Inject {
 				} else {
 					source = script_source;
 
-					options.name = "frida";
+					options.name = "plawnekjx";
 				}
 
 				options.runtime = script_runtime;
@@ -596,7 +596,7 @@ namespace Frida.Inject {
 		private async TerminalMode query_terminal_mode () {
 			Json.Node mode_value;
 			try {
-				mode_value = yield rpc_client.call ("getFridaTerminalMode", new Json.Node[] {}, null, io_cancellable);
+				mode_value = yield rpc_client.call ("getPlawnekjxTerminalMode", new Json.Node[] {}, null, io_cancellable);
 			} catch (GLib.Error e) {
 				return COOKED;
 			}
@@ -647,7 +647,7 @@ namespace Frida.Inject {
 		public void on_stdin (string str, Bytes? data) {
 			var str_value = new Json.Node.alloc ().init_string (str);
 
-			rpc_client.call.begin ("onFridaStdin", new Json.Node[] { str_value }, data, io_cancellable);
+			rpc_client.call.begin ("onPlawnekjxStdin", new Json.Node[] { str_value }, data, io_cancellable);
 		}
 
 		private void on_script_file_changed (File file, File? other_file, FileMonitorEvent event_type) {
@@ -661,7 +661,7 @@ namespace Frida.Inject {
 				try_reload.begin ();
 				return false;
 			});
-			source.attach (Frida.get_main_context ());
+			source.attach (Plawnekjx.get_main_context ());
 
 			if (script_unchanged_timeout != null)
 				script_unchanged_timeout.destroy ();
@@ -720,19 +720,19 @@ namespace Frida.Inject {
 		}
 
 		/**
-		 * The script can send strings to frida-inject to write to its stdout or
+		 * The script can send strings to plawnekjx-inject to write to its stdout or
 		 * stderr. This can be done either inside the RPC handler for receiving
-		 * input from frida-inject, or elsewhere at any arbitrary point in the
+		 * input from plawnekjx-inject, or elsewhere at any arbitrary point in the
 		 * script. We use the following syntax:
 		 *
-		 * send(['frida:stdout', 'DATA']);
-		 * send(['frida:stderr', 'DATA']);
+		 * send(['plawnekjx:stdout', 'DATA']);
+		 * send(['plawnekjx:stderr', 'DATA']);
 		 *
 		 * The resulting message will look as shown below. Note that we don't
 		 * use the parent object's `type` field since this is reserved for use
 		 * by the runtime itself.
 		 *
-		 * {"type":"send","payload":["frida:stdout","DATA"]}
+		 * {"type":"send","payload":["plawnekjx:stdout","DATA"]}
 		 */
 		private bool try_handle_stdout_message (Json.Object message, Bytes? data) {
 			var payload = message.get_member ("payload");
@@ -748,8 +748,8 @@ namespace Frida.Inject {
 			if (type == null)
 				return false;
 			switch (type) {
-				case "frida:stdout":
-				case "frida:stderr":
+				case "plawnekjx:stdout":
+				case "plawnekjx:stderr":
 					break;
 				default:
 					return false;
@@ -761,11 +761,11 @@ namespace Frida.Inject {
 					return false;
 
 				switch (type) {
-					case "frida:stdout":
+					case "plawnekjx:stdout":
 						stdout.write (str.data);
 						stdout.flush ();
 						break;
-					case "frida:stderr":
+					case "plawnekjx:stderr":
 						stderr.write (str.data);
 						break;
 					default:
@@ -775,11 +775,11 @@ namespace Frida.Inject {
 
 			if (data != null) {
 				switch (type) {
-					case "frida:stdout":
+					case "plawnekjx:stdout":
 						stdout.write (data.get_data ());
 						stdout.flush ();
 						break;
-					case "frida:stderr":
+					case "plawnekjx:stderr":
 						stderr.write (data.get_data ());
 						break;
 					default:

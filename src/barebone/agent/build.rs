@@ -22,7 +22,7 @@ fn main() {
 
     let bindings = bindgen::Builder::default()
         .use_core()
-        .header(devkit_dir.join("frida-gumjs.h").to_str().unwrap())
+        .header(devkit_dir.join("plawnekjx-gumjs.h").to_str().unwrap())
         .clang_arg("-nostdinc")
         .clang_arg("-target")
         .clang_arg("aarch64-none-elf")
@@ -40,7 +40,7 @@ fn main() {
         "cargo:rustc-link-search=native={}",
         devkit_dir.to_str().unwrap()
     );
-    println!("cargo:rustc-link-lib=static=frida-gumjs");
+    println!("cargo:rustc-link-lib=static=plawnekjx-gumjs");
     for path in cc_library_paths {
         println!("cargo:rustc-link-search=native={}", path.to_string_lossy());
     }

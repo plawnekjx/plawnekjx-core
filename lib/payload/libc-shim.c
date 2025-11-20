@@ -1,4 +1,4 @@
-#define FRIDA_PRINTF_BUFFER_SIZE (512 * 1024)
+#define PLAWNEKJX_PRINTF_BUFFER_SIZE (512 * 1024)
 #define _GNU_SOURCE
 
 #include <errno.h>
@@ -21,21 +21,21 @@
 #if defined (HAVE_WINDOWS) || defined (HAVE_ASAN)
 
 void
-frida_run_atexit_handlers (void)
+plawnekjx_run_atexit_handlers (void)
 {
 }
 
 # ifdef HAVE_ASAN
 
 __attribute__ ((constructor)) static void
-frida_init_memory (void)
+plawnekjx_init_memory (void)
 {
   asm volatile ("");
 }
 
 #  ifndef HAVE_DARWIN
 __attribute__ ((destructor)) static void
-frida_deinit_memory (void)
+plawnekjx_deinit_memory (void)
 {
   asm volatile ("");
 }
@@ -45,31 +45,31 @@ frida_deinit_memory (void)
 
 #else
 
-#define FRIDA_SHIM_LOCK() gum_spinlock_acquire (&frida_shim_lock)
-#define FRIDA_SHIM_UNLOCK() gum_spinlock_release (&frida_shim_lock)
+#define PLAWNEKJX_SHIM_LOCK() gum_spinlock_acquire (&plawnekjx_shim_lock)
+#define PLAWNEKJX_SHIM_UNLOCK() gum_spinlock_release (&plawnekjx_shim_lock)
 
-typedef struct _FridaExitEntry FridaExitEntry;
-typedef void (* FridaExitFunc) (gpointer user_data);
+typedef struct _PlawnekjxExitEntry PlawnekjxExitEntry;
+typedef void (* PlawnekjxExitFunc) (gpointer user_data);
 
-struct _FridaExitEntry
+struct _PlawnekjxExitEntry
 {
-  FridaExitFunc func;
+  PlawnekjxExitFunc func;
   gpointer user_data;
 };
 
-static gboolean frida_heap_initialized = FALSE;
-static FridaExitEntry * frida_atexit_entries = NULL;
-static guint frida_atexit_count = 0;
+static gboolean plawnekjx_heap_initialized = FALSE;
+static PlawnekjxExitEntry * plawnekjx_atexit_entries = NULL;
+static guint plawnekjx_atexit_count = 0;
 
-static GumSpinlock frida_shim_lock = GUM_SPINLOCK_INIT;
+static GumSpinlock plawnekjx_shim_lock = GUM_SPINLOCK_INIT;
 
 __attribute__ ((constructor)) static void
-frida_init_memory (void)
+plawnekjx_init_memory (void)
 {
-  if (!frida_heap_initialized)
+  if (!plawnekjx_heap_initialized)
   {
     gum_internal_heap_ref ();
-    frida_heap_initialized = TRUE;
+    plawnekjx_heap_initialized = TRUE;
   }
 }
 
@@ -85,7 +85,7 @@ frida_init_memory (void)
 #ifndef HAVE_DARWIN
 
 __attribute__ ((destructor)) static void
-frida_deinit_memory (void)
+plawnekjx_deinit_memory (void)
 {
   gum_internal_heap_unref ();
 }
@@ -93,34 +93,34 @@ frida_deinit_memory (void)
 #endif
 
 void
-frida_run_atexit_handlers (void)
+plawnekjx_run_atexit_handlers (void)
 {
   gint i;
 
-  for (i = (gint) frida_atexit_count - 1; i >= 0; i--)
+  for (i = (gint) plawnekjx_atexit_count - 1; i >= 0; i--)
   {
-    const FridaExitEntry * entry = &frida_atexit_entries[i];
+    const PlawnekjxExitEntry * entry = &plawnekjx_atexit_entries[i];
 
     entry->func (entry->user_data);
   }
 
-  gum_free (frida_atexit_entries);
-  frida_atexit_entries = 0;
-  frida_atexit_count = 0;
+  gum_free (plawnekjx_atexit_entries);
+  plawnekjx_atexit_entries = 0;
+  plawnekjx_atexit_count = 0;
 }
 
 G_GNUC_INTERNAL int
 __cxa_atexit (void (* func) (void *), void * arg, void * dso_handle)
 {
-  FridaExitEntry * entry;
+  PlawnekjxExitEntry * entry;
 
-  frida_init_memory ();
+  plawnekjx_init_memory ();
 
-  FRIDA_SHIM_LOCK ();
-  frida_atexit_count++;
-  frida_atexit_entries = gum_realloc (frida_atexit_entries, frida_atexit_count * sizeof (FridaExitEntry));
-  entry = &frida_atexit_entries[frida_atexit_count - 1];
-  FRIDA_SHIM_UNLOCK ();
+  PLAWNEKJX_SHIM_LOCK ();
+  plawnekjx_atexit_count++;
+  plawnekjx_atexit_entries = gum_realloc (plawnekjx_atexit_entries, plawnekjx_atexit_count * sizeof (PlawnekjxExitEntry));
+  entry = &plawnekjx_atexit_entries[plawnekjx_atexit_count - 1];
+  PLAWNEKJX_SHIM_UNLOCK ();
 
   entry->func = func;
   entry->user_data = arg;
@@ -133,7 +133,7 @@ __cxa_atexit (void (* func) (void *), void * arg, void * dso_handle)
 G_GNUC_INTERNAL int
 atexit (void (* func) (void))
 {
-  __cxa_atexit ((FridaExitFunc) func, NULL, NULL);
+  __cxa_atexit ((PlawnekjxExitFunc) func, NULL, NULL);
 
   return 0;
 }
@@ -250,7 +250,7 @@ sprintf (char * string, const char * format, ...)
   va_list args;
 
   va_start (args, format);
-  result = gum_vsnprintf (string, FRIDA_PRINTF_BUFFER_SIZE, format, args);
+  result = gum_vsnprintf (string, PLAWNEKJX_PRINTF_BUFFER_SIZE, format, args);
   va_end (args);
 
   return result;
@@ -346,7 +346,7 @@ sprintf_l (char * string, locale_t loc, const char * format, ...)
   va_list args;
 
   va_start (args, format);
-  result = gum_vsnprintf (string, FRIDA_PRINTF_BUFFER_SIZE, format, args);
+  result = gum_vsnprintf (string, PLAWNEKJX_PRINTF_BUFFER_SIZE, format, args);
   va_end (args);
 
   return result;
@@ -482,7 +482,7 @@ dup3 (int old_fd, int new_fd, int flags)
 }
 
 G_GNUC_INTERNAL long
-_frida_set_errno (int n)
+_plawnekjx_set_errno (int n)
 {
   errno = n;
 

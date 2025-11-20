@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [ -z "$FRIDA_VERSION" ]; then
-  echo "FRIDA_VERSION must be set" > /dev/stderr
+if [ -z "$PLAWNEKJX_VERSION" ]; then
+  echo "PLAWNEKJX_VERSION must be set" > /dev/stderr
   exit 2
 fi
 
@@ -13,13 +13,13 @@ arch=$1
 prefix=$2
 output_deb=$3
 
-executable=$prefix/usr/bin/frida-server
+executable=$prefix/usr/bin/plawnekjx-server
 if [ ! -f "$executable" ]; then
   echo "$executable: not found" > /dev/stderr
   exit 4
 fi
 
-agent=$prefix/usr/lib/frida/frida-agent.dylib
+agent=$prefix/usr/lib/plawnekjx/plawnekjx-agent.dylib
 if [ ! -f "$agent" ]; then
   echo "$agent: not found" > /dev/stderr
   exit 5
@@ -41,16 +41,16 @@ tmpdir="$(mktemp -d /tmp/package-server.XXXXXX)"
 
 pkroot=$tmpdir$sysroot
 bindir=$pkroot/usr/sbin
-libdir=$pkroot/usr/lib/frida
+libdir=$pkroot/usr/lib/plawnekjx
 daedir=$pkroot/Library/LaunchDaemons
 
 mkdir -p "$bindir/"
-cp "$executable" "$bindir/frida-server"
-chmod 755 "$bindir/frida-server"
+cp "$executable" "$bindir/plawnekjx-server"
+chmod 755 "$bindir/plawnekjx-server"
 
 mkdir -p "$libdir/"
-cp "$agent" "$libdir/frida-agent.dylib"
-chmod 755 "$libdir/frida-agent.dylib"
+cp "$agent" "$libdir/plawnekjx-agent.dylib"
+chmod 755 "$libdir/plawnekjx-agent.dylib"
 
 mkdir -p "$daedir/"
 (
@@ -59,12 +59,12 @@ mkdir -p "$daedir/"
   echo '<plist version="1.0">'
   echo "<dict>"
   echo "	<key>Label</key>"
-  echo "	<string>re.frida.server</string>"
+  echo "	<string>re.plawnekjx.server</string>"
   echo "	<key>Program</key>"
-  echo "	<string>$sysroot/usr/sbin/frida-server</string>"
+  echo "	<string>$sysroot/usr/sbin/plawnekjx-server</string>"
   echo "	<key>ProgramArguments</key>"
   echo "	<array>"
-  echo "		<string>$sysroot/usr/sbin/frida-server</string>"
+  echo "		<string>$sysroot/usr/sbin/plawnekjx-server</string>"
   echo "	</array>"
   if [ $rootless -eq 0 ]; then
     echo "	<key>EnvironmentVariables</key>"
@@ -91,33 +91,33 @@ mkdir -p "$daedir/"
   echo "	<true/>"
   echo "</dict>"
   echo "</plist>"
-) > "$daedir/re.frida.server.plist"
-chmod 644 "$daedir/re.frida.server.plist"
+) > "$daedir/re.plawnekjx.server.plist"
+chmod 644 "$daedir/re.plawnekjx.server.plist"
 
 installed_size=$(du -sk "$tmpdir" | cut -f1)
 
 mkdir -p "$tmpdir/DEBIAN/"
 cat >"$tmpdir/DEBIAN/control" <<EOF
-Package: re.frida.server
-Name: Frida
-Version: $FRIDA_VERSION
+Package: re.plawnekjx.server
+Name: Plawnekjx
+Version: $PLAWNEKJX_VERSION
 Priority: optional
 Size: 1337
 Installed-Size: $installed_size
 Architecture: $arch
 Description: Observe and reprogram running programs.
-Homepage: https://frida.re/
+Homepage: https://plawnekjx.re/
 Maintainer: Ole André Vadla Ravnås <oleavr@nowsecure.com>
-Author: Frida Developers <oleavr@nowsecure.com>
+Author: Plawnekjx Developers <oleavr@nowsecure.com>
 Section: Development
-Conflicts: re.frida.server64
+Conflicts: re.plawnekjx.server64
 EOF
 chmod 644 "$tmpdir/DEBIAN/control"
 
 cat >"$tmpdir/DEBIAN/extrainst_" <<EOF
 #!/bin/bash
 
-launchcfg=$sysroot/Library/LaunchDaemons/re.frida.server.plist
+launchcfg=$sysroot/Library/LaunchDaemons/re.plawnekjx.server.plist
 launchlog=\$(mktemp)
 
 function dispose {
@@ -152,7 +152,7 @@ cat >"$tmpdir/DEBIAN/prerm" <<EOF
 #!/bin/bash
 
 if [ "\$1" = remove ] || [ "\$1" = purge ]; then
-  launchctl unload $sysroot/Library/LaunchDaemons/re.frida.server.plist &> /dev/null
+  launchctl unload $sysroot/Library/LaunchDaemons/re.plawnekjx.server.plist &> /dev/null
 fi
 
 exit 0

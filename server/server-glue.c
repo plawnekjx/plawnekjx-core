@@ -1,11 +1,11 @@
 #include "server-glue.h"
 
-#include "frida-core.h"
+#include "plawnekjx-core.h"
 #if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
 # include "server-ios-tvos.h"
 #endif
 #ifdef HAVE_ANDROID
-# include "frida-selinux.h"
+# include "plawnekjx-selinux.h"
 #endif
 
 #if defined (HAVE_DARWIN)
@@ -33,40 +33,40 @@ void CFLog (CFLogLevel level, CFStringRef format, ...);
 # include <stdio.h>
 #endif
 
-static void frida_server_on_log_message (const gchar * log_domain, GLogLevelFlags log_level, const gchar * message, gpointer user_data);
+static void plawnekjx_server_on_log_message (const gchar * log_domain, GLogLevelFlags log_level, const gchar * message, gpointer user_data);
 
-static gboolean frida_verbose_logging_enabled = FALSE;
+static gboolean plawnekjx_verbose_logging_enabled = FALSE;
 
 void
-frida_server_environment_init (void)
+plawnekjx_server_environment_init (void)
 {
-  frida_init_with_runtime (FRIDA_RUNTIME_GLIB);
+  plawnekjx_init_with_runtime (PLAWNEKJX_RUNTIME_GLIB);
 
-  g_log_set_default_handler (frida_server_on_log_message, NULL);
+  g_log_set_default_handler (plawnekjx_server_on_log_message, NULL);
 }
 
 void
-frida_server_environment_set_verbose_logging_enabled (gboolean enabled)
+plawnekjx_server_environment_set_verbose_logging_enabled (gboolean enabled)
 {
-  frida_verbose_logging_enabled = enabled;
+  plawnekjx_verbose_logging_enabled = enabled;
 }
 
 void
-frida_server_environment_configure (void)
+plawnekjx_server_environment_configure (void)
 {
 #if defined (HAVE_IOS) || defined (HAVE_TVOS) || defined (HAVE_XROS)
-  _frida_server_ios_tvos_configure ();
+  _plawnekjx_server_ios_tvos_configure ();
 #endif
 
 #ifdef HAVE_ANDROID
-  frida_selinux_patch_policy ();
+  plawnekjx_selinux_patch_policy ();
 #endif
 }
 
 static void
-frida_server_on_log_message (const gchar * log_domain, GLogLevelFlags log_level, const gchar * message, gpointer user_data)
+plawnekjx_server_on_log_message (const gchar * log_domain, GLogLevelFlags log_level, const gchar * message, gpointer user_data)
 {
-  if (!frida_verbose_logging_enabled && (log_level & G_LOG_LEVEL_MASK) >= G_LOG_LEVEL_DEBUG)
+  if (!plawnekjx_verbose_logging_enabled && (log_level & G_LOG_LEVEL_MASK) >= G_LOG_LEVEL_DEBUG)
     return;
 
 #if defined (HAVE_DARWIN)

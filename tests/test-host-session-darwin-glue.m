@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static id frida_parse_plist (const uint8_t * data, int length, char ** error_message);
+static id plawnekjx_parse_plist (const uint8_t * data, int length, char ** error_message);
 
 uint8_t *
-frida_host_session_test_fruity_plist_to_binary_using_apple_implementation (const uint8_t * data, int length, char ** error_message,
+plawnekjx_host_session_test_fruity_plist_to_binary_using_apple_implementation (const uint8_t * data, int length, char ** error_message,
     int * output_length)
 {
   @autoreleasepool
@@ -21,7 +21,7 @@ frida_host_session_test_fruity_plist_to_binary_using_apple_implementation (const
     *error_message = NULL;
     *output_length = 0;
 
-    plist = frida_parse_plist (data, length, error_message);
+    plist = plawnekjx_parse_plist (data, length, error_message);
     if (plist == nil)
       return NULL;
 
@@ -40,7 +40,7 @@ frida_host_session_test_fruity_plist_to_binary_using_apple_implementation (const
 }
 
 char *
-frida_host_session_test_fruity_plist_to_xml_using_apple_implementation (const uint8_t * data, int length, char ** error_message)
+plawnekjx_host_session_test_fruity_plist_to_xml_using_apple_implementation (const uint8_t * data, int length, char ** error_message)
 {
   @autoreleasepool
   {
@@ -49,7 +49,7 @@ frida_host_session_test_fruity_plist_to_xml_using_apple_implementation (const ui
 
     *error_message = NULL;
 
-    plist = frida_parse_plist (data, length, error_message);
+    plist = plawnekjx_parse_plist (data, length, error_message);
     if (plist == nil)
       return NULL;
 
@@ -63,7 +63,7 @@ frida_host_session_test_fruity_plist_to_xml_using_apple_implementation (const ui
 }
 
 static id
-frida_parse_plist (const uint8_t * data, int length, char ** error_message)
+plawnekjx_parse_plist (const uint8_t * data, int length, char ** error_message)
 {
   id plist;
   NSData * input;

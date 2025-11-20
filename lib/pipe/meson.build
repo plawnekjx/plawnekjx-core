@@ -12,7 +12,7 @@ if host_os_family == 'windows'
   ]
 elif host_os in ['macos', 'ios', 'tvos']
   pipe_sources += 'pipe-darwin.c'
-  extra_vala_args += '--pkg=frida-gum-darwin-1.0'
+  extra_vala_args += '--pkg=plawnekjx-gum-darwin-1.0'
 else
   pipe_sources += 'pipe-unix.c'
 endif
@@ -27,10 +27,10 @@ if host_os == 'android'
   extra_vala_args += '--pkg=libselinux'
 endif
 
-pipe = static_library('frida-pipe', pipe_sources,
-  c_args: frida_component_cflags,
+pipe = static_library('plawnekjx-pipe', pipe_sources,
+  c_args: plawnekjx_component_cflags,
   vala_args: base_vala_args + extra_vala_args,
-  vala_header: 'frida-pipe.h',
+  vala_header: 'plawnekjx-pipe.h',
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, base_dep] + system_deps,
 )
 

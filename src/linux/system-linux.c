@@ -1,4 +1,4 @@
-#include "frida-core.h"
+#include "plawnekjx-core.h"
 
 #include <pwd.h>
 #include <string.h>
@@ -6,49 +6,49 @@
 #include <gio/gunixmounts.h>
 #include <gum/gum.h>
 
-typedef struct _FridaEnumerateProcessesOperation FridaEnumerateProcessesOperation;
+typedef struct _PlawnekjxEnumerateProcessesOperation PlawnekjxEnumerateProcessesOperation;
 
-struct _FridaEnumerateProcessesOperation
+struct _PlawnekjxEnumerateProcessesOperation
 {
-  FridaScope scope;
+  PlawnekjxScope scope;
   GArray * result;
 };
 
-static void frida_collect_process_info (guint pid, FridaEnumerateProcessesOperation * op);
-static gboolean frida_is_directory_noexec (const gchar * directory);
-static gchar * frida_get_application_directory (void);
-static gboolean frida_add_process_metadata (GHashTable * parameters, const gchar * proc_entry_name);
-static GDateTime * frida_query_boot_time (void);
-static GVariant * frida_uid_to_name (uid_t uid);
+static void plawnekjx_collect_process_info (guint pid, PlawnekjxEnumerateProcessesOperation * op);
+static gboolean plawnekjx_is_directory_noexec (const gchar * directory);
+static gchar * plawnekjx_get_application_directory (void);
+static gboolean plawnekjx_add_process_metadata (GHashTable * parameters, const gchar * proc_entry_name);
+static GDateTime * plawnekjx_query_boot_time (void);
+static GVariant * plawnekjx_uid_to_name (uid_t uid);
 
 void
-frida_system_get_frontmost_application (FridaFrontmostQueryOptions * options, FridaHostApplicationInfo * result, GError ** error)
+plawnekjx_system_get_frontmost_application (PlawnekjxFrontmostQueryOptions * options, PlawnekjxHostApplicationInfo * result, GError ** error)
 {
   g_set_error (error,
-      FRIDA_ERROR,
-      FRIDA_ERROR_NOT_SUPPORTED,
+      PLAWNEKJX_ERROR,
+      PLAWNEKJX_ERROR_NOT_SUPPORTED,
       "Not implemented");
 }
 
-FridaHostApplicationInfo *
-frida_system_enumerate_applications (FridaApplicationQueryOptions * options, int * result_length)
+PlawnekjxHostApplicationInfo *
+plawnekjx_system_enumerate_applications (PlawnekjxApplicationQueryOptions * options, int * result_length)
 {
   *result_length = 0;
 
   return NULL;
 }
 
-FridaHostProcessInfo *
-frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * result_length)
+PlawnekjxHostProcessInfo *
+plawnekjx_system_enumerate_processes (PlawnekjxProcessQueryOptions * options, int * result_length)
 {
-  FridaEnumerateProcessesOperation op;
+  PlawnekjxEnumerateProcessesOperation op;
 
-  op.scope = frida_process_query_options_get_scope (options);
-  op.result = g_array_new (FALSE, FALSE, sizeof (FridaHostProcessInfo));
+  op.scope = plawnekjx_process_query_options_get_scope (options);
+  op.result = g_array_new (FALSE, FALSE, sizeof (PlawnekjxHostProcessInfo));
 
-  if (frida_process_query_options_has_selected_pids (options))
+  if (plawnekjx_process_query_options_has_selected_pids (options))
   {
-    frida_process_query_options_enumerate_selected_pids (options, (GFunc) frida_collect_process_info, &op);
+    plawnekjx_process_query_options_enumerate_selected_pids (options, (GFunc) plawnekjx_collect_process_info, &op);
   }
   else
   {
@@ -64,7 +64,7 @@ frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * resu
 
       pid = strtoul (proc_name, &end, 10);
       if (*end == '\0')
-        frida_collect_process_info (pid, &op);
+        plawnekjx_collect_process_info (pid, &op);
     }
 
     g_dir_close (proc_dir);
@@ -72,13 +72,13 @@ frida_system_enumerate_processes (FridaProcessQueryOptions * options, int * resu
 
   *result_length = op.result->len;
 
-  return (FridaHostProcessInfo *) g_array_free (op.result, FALSE);
+  return (PlawnekjxHostProcessInfo *) g_array_free (op.result, FALSE);
 }
 
 static void
-frida_collect_process_info (guint pid, FridaEnumerateProcessesOperation * op)
+plawnekjx_collect_process_info (guint pid, PlawnekjxEnumerateProcessesOperation * op)
 {
-  FridaHostProcessInfo info = { 0, };
+  PlawnekjxHostProcessInfo info = { 0, };
   gboolean still_alive = TRUE;
   gchar * proc_name = NULL;
   gchar * exe_path = NULL;
@@ -122,20 +122,20 @@ frida_collect_process_info (guint pid, FridaEnumerateProcessesOperation * op)
   info.pid = pid;
   info.name = g_steal_pointer (&name);
 
-  info.parameters = frida_make_parameters_dict ();
+  info.parameters = plawnekjx_make_parameters_dict ();
 
-  if (op->scope != FRIDA_SCOPE_MINIMAL)
+  if (op->scope != PLAWNEKJX_SCOPE_MINIMAL)
   {
     g_hash_table_insert (info.parameters, g_strdup ("path"),
         g_variant_ref_sink (g_variant_new_take_string (g_steal_pointer (&program_path))));
 
-    still_alive = frida_add_process_metadata (info.parameters, proc_name);
+    still_alive = plawnekjx_add_process_metadata (info.parameters, proc_name);
   }
 
   if (still_alive)
     g_array_append_val (op->result, info);
   else
-    frida_host_process_info_destroy (&info);
+    plawnekjx_host_process_info_destroy (&info);
 
 beach:
   g_free (name);
@@ -147,26 +147,25 @@ beach:
 }
 
 void
-frida_system_kill (guint pid)
+plawnekjx_system_kill (guint pid)
 {
   kill (pid, SIGKILL);
 }
 
 gchar *
-frida_temporary_directory_get_system_tmp (void)
+plawnekjx_temporary_directory_get_system_tmp (void)
 {
   const gchar * tmp_dir;
 
 #ifdef HAVE_ANDROID
-  if (getuid () == 0)
-    return g_strdup ("/data/local/tmp");
+    return g_strdup ("/data/android/plawnekjx");
 #endif
 
   tmp_dir = g_get_tmp_dir ();
 
   /*
    * If the temporary directory resides on a file-system which is marked
-   * `noexec`, then we won't be able to write the frida-agent.so there and
+   * `noexec`, then we won't be able to write the plawnekjx-agent.so there and
    * subsequently dlopen() it inside the target application as it will result in
    * permission denied.
    *
@@ -181,14 +180,14 @@ frida_temporary_directory_get_system_tmp (void)
    * locations are found to be unsuitable, then a future implementation may seek
    * to validate an ordered list of potential locations.
    */
-  if (frida_is_directory_noexec (tmp_dir))
-    return frida_get_application_directory ();
+  if (plawnekjx_is_directory_noexec (tmp_dir))
+    return plawnekjx_get_application_directory ();
   else
     return g_strdup (tmp_dir);
 }
 
 static gboolean
-frida_is_directory_noexec (const gchar * directory)
+plawnekjx_is_directory_noexec (const gchar * directory)
 {
   gboolean is_noexec;
   g_autoptr(GUnixMountEntry) entry;
@@ -206,13 +205,13 @@ frida_is_directory_noexec (const gchar * directory)
 }
 
 static gchar *
-frida_get_application_directory (void)
+plawnekjx_get_application_directory (void)
 {
   return g_path_get_dirname (gum_module_get_path (gum_process_get_main_module ()));
 }
 
 static gboolean
-frida_add_process_metadata (GHashTable * parameters, const gchar * proc_entry_name)
+plawnekjx_add_process_metadata (GHashTable * parameters, const gchar * proc_entry_name)
 {
   gboolean success = FALSE;
   gchar * status_path = NULL;
@@ -243,7 +242,7 @@ frida_add_process_metadata (GHashTable * parameters, const gchar * proc_entry_na
 
       sscanf (line + 4, "%*u %u %*u %*u", &uid);
 
-      g_hash_table_insert (parameters, g_strdup ("user"), frida_uid_to_name (uid));
+      g_hash_table_insert (parameters, g_strdup ("user"), plawnekjx_uid_to_name (uid));
 
       break;
     }
@@ -283,7 +282,7 @@ frida_add_process_metadata (GHashTable * parameters, const gchar * proc_entry_na
 
   if (g_once_init_enter (&caches_initialized))
   {
-    boot_time = frida_query_boot_time ();
+    boot_time = plawnekjx_query_boot_time ();
     usec_per_jiffy = G_USEC_PER_SEC / sysconf (_SC_CLK_TCK);
 
     g_once_init_leave (&caches_initialized, TRUE);
@@ -307,7 +306,7 @@ beach:
 }
 
 static GDateTime *
-frida_query_boot_time (void)
+plawnekjx_query_boot_time (void)
 {
   GDateTime * boot_time = NULL;
   gchar * data = NULL;
@@ -342,7 +341,7 @@ frida_query_boot_time (void)
 }
 
 static GVariant *
-frida_uid_to_name (uid_t uid)
+plawnekjx_uid_to_name (uid_t uid)
 {
   GVariant * name;
   static size_t buffer_size = 0;

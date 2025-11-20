@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class SocketHostSessionBackend : Object, HostSessionBackend {
 		private SocketHostSessionProvider provider;
 
@@ -99,9 +99,9 @@ namespace Frida {
 				socket_connection = yield client.connect_async (connectable, cancellable);
 			} catch (GLib.Error e) {
 				if (e is IOError.CONNECTION_REFUSED)
-					throw new Error.SERVER_NOT_RUNNING ("Unable to connect to remote frida-server");
+					throw new Error.SERVER_NOT_RUNNING ("Unable to connect to remote plawnekjx-server");
 				else
-					throw new Error.SERVER_NOT_RUNNING ("Unable to connect to remote frida-server: %s", e.message);
+					throw new Error.SERVER_NOT_RUNNING ("Unable to connect to remote plawnekjx-server: %s", e.message);
 			}
 
 			Socket socket = socket_connection.socket;
@@ -151,7 +151,7 @@ namespace Frida {
 					auth_service = yield connection.get_proxy (null, ObjectPath.AUTHENTICATION_SERVICE,
 						DO_NOT_LOAD_PROPERTIES, cancellable);
 				} catch (IOError e) {
-					throw new Error.PROTOCOL ("Incompatible frida-server version");
+					throw new Error.PROTOCOL ("Incompatible plawnekjx-server version");
 				}
 
 				try {
@@ -166,7 +166,7 @@ namespace Frida {
 				host_session = yield connection.get_proxy (null, ObjectPath.HOST_SESSION, DO_NOT_LOAD_PROPERTIES,
 					cancellable);
 			} catch (IOError e) {
-				throw new Error.PROTOCOL ("Incompatible frida-server version");
+				throw new Error.PROTOCOL ("Incompatible plawnekjx-server version");
 			}
 
 			var entry = new HostEntry (connection, host_session, keepalive_interval);

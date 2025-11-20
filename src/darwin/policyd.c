@@ -1,6 +1,6 @@
 #include "policyd.h"
 
-#include "frida-tvos.h"
+#include "plawnekjx-tvos.h"
 
 #include <errno.h>
 #include <glib.h>
@@ -11,36 +11,36 @@
 #define PT_DETACH    11
 #define PT_ATTACHEXC 14
 
-typedef struct _FridaPolicydRequest FridaPolicydRequest;
+typedef struct _PlawnekjxPolicydRequest PlawnekjxPolicydRequest;
 
-struct _FridaPolicydRequest
+struct _PlawnekjxPolicydRequest
 {
-  union __RequestUnion__frida_policyd_subsystem body;
+  union __RequestUnion__plawnekjx_policyd_subsystem body;
   mach_msg_trailer_t trailer;
 };
 
 extern kern_return_t bootstrap_check_in (mach_port_t bp, const char * service_name, mach_port_t * sp);
 extern int ptrace (int request, pid_t pid, void * addr, int data);
 
-#define frida_policyd_soften frida_policyd_do_soften
+#define plawnekjx_policyd_soften plawnekjx_policyd_do_soften
 #include "policyd-server.c"
 
 int
-frida_policyd_main (void)
+plawnekjx_policyd_main (void)
 {
   kern_return_t kr;
   mach_port_t listening_port;
 
   signal (SIGCHLD, SIG_IGN);
 
-  kr = bootstrap_check_in (bootstrap_port, FRIDA_POLICYD_SERVICE_NAME, &listening_port);
+  kr = bootstrap_check_in (bootstrap_port, PLAWNEKJX_POLICYD_SERVICE_NAME, &listening_port);
   if (kr != KERN_SUCCESS)
     goto checkin_error;
 
   while (TRUE)
   {
-    FridaPolicydRequest request;
-    union __ReplyUnion__frida_policyd_subsystem reply;
+    PlawnekjxPolicydRequest request;
+    union __ReplyUnion__plawnekjx_policyd_subsystem reply;
     mach_msg_header_t * header_in, * header_out;
     boolean_t handled;
 
@@ -56,7 +56,7 @@ frida_policyd_main (void)
 
     header_out = (mach_msg_header_t *) &reply;
 
-    handled = frida_policyd_server (header_in, header_out);
+    handled = plawnekjx_policyd_server (header_in, header_out);
     if (handled)
       mach_msg_send (header_out);
     else
@@ -73,7 +73,7 @@ checkin_error:
 }
 
 kern_return_t
-frida_policyd_do_soften (mach_port_t server, int pid, int * error_code)
+plawnekjx_policyd_do_soften (mach_port_t server, int pid, int * error_code)
 {
   gboolean should_retry;
 

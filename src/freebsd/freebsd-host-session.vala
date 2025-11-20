@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class FreebsdHostSessionBackend : LocalHostSessionBackend {
 		protected override LocalHostSessionProvider make_provider () {
 			return new FreebsdHostSessionProvider ();
@@ -25,7 +25,7 @@ namespace Frida {
 			binjector.uninjected.connect (on_uninjected);
 			injector = binjector;
 
-			var blob = Frida.Data.Agent.get_frida_agent_so_blob ();
+			var blob = Plawnekjx.Data.Agent.get_plawnekjx_agent_so_blob ();
 			agent_desc = new AgentDescriptor (blob.name, new MemoryInputStream.from_data (blob.data, null));
 		}
 
@@ -132,7 +132,7 @@ namespace Frida {
 
 			var stream_request = Pipe.open (t.local_address, cancellable);
 
-			var id = yield binjector.inject_library_resource (pid, agent_desc, "frida_agent_main",
+			var id = yield binjector.inject_library_resource (pid, agent_desc, "plawnekjx_agent_main",
 				make_agent_parameters (pid, t.remote_address, options), cancellable);
 			injectee_by_pid[pid] = id;
 

@@ -1,5 +1,5 @@
 [wrap-git]
-url = https://github.com/frida/termux-elf-cleaner.git
+url = https://github.com/plawnekjx/termux-elf-cleaner.git
 revision = 8e572cb066907cfc8ac1f73d511683844de906ee
 depth = 1
 

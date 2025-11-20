@@ -1,8 +1,8 @@
 [CCode (cheader_filename = "dispatch/dispatch.h", gir_namespace = "Darwin", gir_version = "1.0")]
 namespace Darwin.GCD {
 	[Compact]
-	[CCode (cname = "void", ref_function = "_frida_dispatch_retain", unref_function = "dispatch_release",
-		cheader_filename = "frida-darwin.h")]
+	[CCode (cname = "void", ref_function = "_plawnekjx_dispatch_retain", unref_function = "dispatch_release",
+		cheader_filename = "plawnekjx-darwin.h")]
 	public class DispatchQueue {
 		[CCode (cname = "dispatch_queue_create")]
 		public DispatchQueue (string label, DispatchQueueAttr attr);

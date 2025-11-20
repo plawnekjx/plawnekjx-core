@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class Winjector : Object, Injector {
 		public WindowsHelper helper {
 			get;

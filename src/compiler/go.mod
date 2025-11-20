@@ -1,10 +1,10 @@
-module github.com/frida/frida-core-compiler
+module github.com/plawnekjx/plawnekjx-core-compiler
 
 go 1.24.3
 
 require (
 	github.com/evanw/esbuild v0.25.5
-	github.com/frida/typescript-go v0.0.0-20250601212135-a4721f45f19c
+	github.com/plawnekjx/typescript-go v0.0.0-20250601212135-a4721f45f19c
 )
 
 require (

@@ -13,15 +13,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/frida/typescript-go/pkg/ast"
-	"github.com/frida/typescript-go/pkg/bundled"
-	"github.com/frida/typescript-go/pkg/compiler"
-	"github.com/frida/typescript-go/pkg/core"
-	"github.com/frida/typescript-go/pkg/tsoptions"
-	"github.com/frida/typescript-go/pkg/tspath"
-	"github.com/frida/typescript-go/pkg/vfs"
-	"github.com/frida/typescript-go/pkg/vfs/iovfs"
-	"github.com/frida/typescript-go/pkg/vfs/osvfs"
+	"github.com/plawnekjx/typescript-go/pkg/ast"
+	"github.com/plawnekjx/typescript-go/pkg/bundled"
+	"github.com/plawnekjx/typescript-go/pkg/compiler"
+	"github.com/plawnekjx/typescript-go/pkg/core"
+	"github.com/plawnekjx/typescript-go/pkg/tsoptions"
+	"github.com/plawnekjx/typescript-go/pkg/tspath"
+	"github.com/plawnekjx/typescript-go/pkg/vfs"
+	"github.com/plawnekjx/typescript-go/pkg/vfs/iovfs"
+	"github.com/plawnekjx/typescript-go/pkg/vfs/osvfs"
 )
 
 //go:embed node_modules/@types/*/package.json

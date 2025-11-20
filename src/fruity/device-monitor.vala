@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaFruity", gir_version = "1.0")]
-namespace Frida.Fruity {
+[CCode (gir_namespace = "PlawnekjxFruity", gir_version = "1.0")]
+namespace Plawnekjx.Fruity {
 	public sealed class DeviceMonitor : Object {
 		public signal void device_attached (Device device);
 		public signal void device_detached (Device device);
@@ -1004,7 +1004,7 @@ namespace Frida.Fruity {
 			lock (state)
 				state = STARTING;
 
-			usb_worker = new Thread<void> ("frida-core-device-usb", perform_usb_work);
+			usb_worker = new Thread<void> ("plawnekjx-core-device-usb", perform_usb_work);
 
 			yield network_browser.start (cancellable);
 
@@ -1091,7 +1091,7 @@ namespace Frida.Fruity {
 
 		private void perform_usb_work () {
 			if (LibUSB.Context.init (out usb_context) != SUCCESS) {
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					usb_started.resolve (true);
 					usb_stopped.resolve (true);
 					return Source.REMOVE;
@@ -1121,7 +1121,7 @@ namespace Frida.Fruity {
 			}
 
 			if (AtomicUint.dec_and_test (ref pending_usb_device_arrivals)) {
-				schedule_on_frida_thread (() => {
+				schedule_on_plawnekjx_thread (() => {
 					usb_started.resolve (true);
 					return Source.REMOVE;
 				});
@@ -1153,7 +1153,7 @@ namespace Frida.Fruity {
 				}
 			}
 
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				usb_stopped.resolve (true);
 				return Source.REMOVE;
 			});
@@ -1169,14 +1169,14 @@ namespace Frida.Fruity {
 
 		private void on_usb_device_arrived (LibUSB.Device device) {
 			AtomicUint.inc (ref pending_usb_device_arrivals);
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				handle_usb_device_arrival.begin (device);
 				return Source.REMOVE;
 			});
 		}
 
 		private void on_usb_device_left (LibUSB.Device device) {
-			schedule_on_frida_thread (() => {
+			schedule_on_plawnekjx_thread (() => {
 				handle_usb_device_departure.begin (device);
 				return Source.REMOVE;
 			});
@@ -1331,7 +1331,7 @@ namespace Frida.Fruity {
 			}
 		}
 
-		private void schedule_on_frida_thread (owned SourceFunc function) {
+		private void schedule_on_plawnekjx_thread (owned SourceFunc function) {
 			var source = new IdleSource ();
 			source.set_callback ((owned) function);
 			source.attach (main_context);

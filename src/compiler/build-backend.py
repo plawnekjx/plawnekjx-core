@@ -55,11 +55,11 @@ def build_backend(
         )
 
     run(npm, "install")
-    # run(npm, "link", "/home/oleavr/src/frida-fs")
+    # run(npm, "link", "/home/oleavr/src/plawnekjx-fs")
 
     mode = config["mode"]
 
-    backend_stem = "frida-compiler-backend"
+    backend_stem = "plawnekjx-compiler-backend"
     if mode == "c-shared":
         backend_stem += "-raw"
 
@@ -143,7 +143,7 @@ def detect_conflictful_symbols_in_archive(
         tokens = line.lstrip().split(" ")
         if len(tokens) >= 3 and tokens[1] in {"S", "T"}:
             symbol = tokens[2]
-            if all(sub not in symbol for sub in ("/", ".", ":", "frida")):
+            if all(sub not in symbol for sub in ("/", ".", ":", "plawnekjx")):
                 result.append(symbol)
     return result
 

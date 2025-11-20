@@ -1,5 +1,5 @@
-[CCode (gir_namespace = "FridaFruity", gir_version = "1.0")]
-namespace Frida.Fruity {
+[CCode (gir_namespace = "PlawnekjxFruity", gir_version = "1.0")]
+namespace Plawnekjx.Fruity {
 	using OpenSSL;
 	using OpenSSL.Envelope;
 
@@ -226,7 +226,7 @@ namespace Frida.Fruity {
 
 		public async TunnelConnection open_tunnel (InetAddress device_address, NetworkStack netstack,
 				Cancellable? cancellable = null) throws Error, IOError {
-			string? protocol = Environment.get_variable ("FRIDA_FRUITY_TUNNEL_PROTOCOL");
+			string? protocol = Environment.get_variable ("PLAWNEKJX_FRUITY_TUNNEL_PROTOCOL");
 			if (protocol == null)
 				protocol = "tcp";
 
@@ -1678,7 +1678,7 @@ namespace Frida.Fruity {
 		}
 
 		private static File query_base_location () {
-			return File.new_build_filename (Environment.get_user_config_dir (), "frida");
+			return File.new_build_filename (Environment.get_user_config_dir (), "plawnekjx");
 		}
 
 		private static void save_plist (Plist plist, File location) throws Error {

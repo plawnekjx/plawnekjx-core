@@ -1,10 +1,10 @@
-#ifndef __FRIDA_POLICYD_H__
-#define __FRIDA_POLICYD_H__
+#ifndef __PLAWNEKJX_POLICYD_H__
+#define __PLAWNEKJX_POLICYD_H__
 
 #include "policyd-client.h"
 
-#define FRIDA_POLICYD_SERVICE_NAME "re.frida.policyd"
+#define PLAWNEKJX_POLICYD_SERVICE_NAME "re.plawnekjx.policyd"
 
-int frida_policyd_main (void);
+int plawnekjx_policyd_main (void);
 
 #endif

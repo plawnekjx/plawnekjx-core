@@ -1,5 +1,5 @@
 [wrap-git]
-url = https://github.com/frida/lwip.git
+url = https://github.com/plawnekjx/lwip.git
 revision = 4fe7223c2e80dc328266fb2483e789ee5fad7c79
 depth = 1
 

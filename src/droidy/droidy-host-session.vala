@@ -1,4 +1,4 @@
-namespace Frida {
+namespace Plawnekjx {
 	public sealed class DroidyHostSessionBackend : Object, HostSessionBackend {
 		private Droidy.DeviceTracker tracker;
 
@@ -247,7 +247,7 @@ namespace Frida {
 		private Cancellable io_cancellable = new Cancellable ();
 
 		private const double MIN_SERVER_CHECK_INTERVAL = 5.0;
-		private const string GADGET_APP_ID = "re.frida.Gadget";
+		private const string GADGET_APP_ID = "re.plawnekjx.Gadget";
 
 		public DroidyHostSession (Droidy.DeviceDetails device_details, HostChannelProvider channel_provider) {
 			Object (
@@ -527,7 +527,7 @@ namespace Frida {
 				if (opts.has_selected_identifiers ()) {
 					gadget_is_selected = false;
 					opts.enumerate_selected_identifiers (identifier => {
-						if (identifier == "re.frida.Gadget")
+						if (identifier == "re.plawnekjx.Gadget")
 							gadget_is_selected = true;
 					});
 				}
@@ -704,7 +704,7 @@ namespace Frida {
 			if (user_gadget_value != null) {
 				if (!user_gadget_value.is_of_type (VariantType.STRING)) {
 					throw new Error.INVALID_ARGUMENT ("The 'gadget' option must be a string pointing at the " +
-						"frida-gadget.so to use");
+						"plawnekjx-gadget.so to use");
 				}
 				user_gadget_path = user_gadget_value.get_string ();
 			}
@@ -713,7 +713,7 @@ namespace Frida {
 			if (user_gadget_path != null) {
 				gadget_path = user_gadget_path;
 			} else {
-				gadget_path = Path.build_filename (Environment.get_user_cache_dir (), "frida", "gadget-android-arm64.so");
+				gadget_path = Path.build_filename (Environment.get_user_cache_dir (), "plawnekjx", "gadget-android-arm64.so");
 			}
 
 			InputStream gadget;
@@ -996,7 +996,7 @@ namespace Frida {
 				}
 
 				if (connection.closed)
-					throw new Error.SERVER_NOT_RUNNING ("Unable to connect to remote frida-server");
+					throw new Error.SERVER_NOT_RUNNING ("Unable to connect to remote plawnekjx-server");
 
 				var server = new RemoteServer (session, connection, flavor, transport_broker);
 				attach_remote_server (server);
@@ -1017,11 +1017,11 @@ namespace Frida {
 					last_server_check_error = null;
 				} else {
 					if (e is Error.SERVER_NOT_RUNNING) {
-						api_error = new Error.SERVER_NOT_RUNNING ("Unable to connect to remote frida-server");
+						api_error = new Error.SERVER_NOT_RUNNING ("Unable to connect to remote plawnekjx-server");
 					} else if (connection != null) {
-						api_error = new Error.PROTOCOL ("Incompatible frida-server version");
+						api_error = new Error.PROTOCOL ("Incompatible plawnekjx-server version");
 					} else {
-						api_error = new Error.SERVER_NOT_RUNNING ("Unable to connect to remote frida-server: %s",
+						api_error = new Error.SERVER_NOT_RUNNING ("Unable to connect to remote plawnekjx-server: %s",
 							e.message);
 					}
 
@@ -1214,7 +1214,7 @@ namespace Frida {
 			try {
 				string device_serial = device_details.serial;
 				string instance_id = Uuid.string_random ().replace ("-", "");
-				string helper_path = "/data/local/tmp/frida-helper-" + instance_id + ".dex";
+				string helper_path = "/data/android/plawnekjx/plawnekjx-helper-" + instance_id + ".dex";
 
 				var helper_dex = new MemoryInputStream.from_bytes (new Bytes.static (HELPER_DEX));
 
@@ -1239,9 +1239,9 @@ namespace Frida {
 					yield shell.open (device_serial, cancellable);
 
 					shell.send_command (("CLASSPATH=%s app_process " +
-							"/data/local/tmp " +
-							"--nice-name=re.frida.helper " +
-							"re.frida.Helper " +
+							"/data/android/plawnekjx " +
+							"--nice-name=re.plawnekjx.helper " +
+							"re.plawnekjx.Helper " +
 							"%s; " +
 							"rm -f %s; " +
 							"echo BYE.").printf (helper_path, instance_id, helper_path));
@@ -1340,7 +1340,7 @@ namespace Frida {
 				var client = yield Droidy.Client.open (cancellable);
 				try {
 					yield client.request ("host:transport:" + device_serial, cancellable);
-					yield client.request_protocol_change ("localabstract:/frida-helper-" + instance_id, cancellable);
+					yield client.request_protocol_change ("localabstract:/plawnekjx-helper-" + instance_id, cancellable);
 				} catch (GLib.Error e) {
 					client.close.begin ();
 					throw_api_error (e);
@@ -1553,7 +1553,7 @@ namespace Frida {
 			}
 		}
 
-		/* Compiled from helper/re/frida/Helper.java */
+		/* Compiled from helper/re/plawnekjx/Helper.java */
 		private const uint8[] HELPER_DEX = {
 			0x64, 0x65, 0x78, 0x0a, 0x30, 0x33, 0x35, 0x00, 0x95, 0x6c, 0x1e, 0xee, 0xe7, 0x7d, 0x5d, 0xfc, 0xbd, 0x43, 0x1a,
 			0x78, 0x94, 0x6e, 0x5e, 0x0f, 0x96, 0x9b, 0x3b, 0x62, 0xed, 0x6a, 0x94, 0xc3, 0x38, 0x41, 0x00, 0x00, 0x70, 0x00,

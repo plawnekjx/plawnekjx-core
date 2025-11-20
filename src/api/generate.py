@@ -24,31 +24,31 @@ CORE_TAG_METHOD = f"{{{CORE_NAMESPACE}}}method"
 OBJECT_TYPE_PATTERN = re.compile(r"\bpublic\s+(sealed )?(class|interface)\s+(\w+)\b")
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate refined Frida API definitions")
+    parser = argparse.ArgumentParser(description="Generate refined Plawnekjx API definitions")
     parser.add_argument('--output', dest='output_type', choices=['bundle', 'header', 'gir', 'vapi', 'vapi-stamp'], default='bundle')
-    parser.add_argument('frida_version', metavar='frida-version', type=str)
-    parser.add_argument('frida_major_version', metavar='frida-major-version', type=str)
-    parser.add_argument('frida_minor_version', metavar='frida-minor-version', type=str)
-    parser.add_argument('frida_micro_version', metavar='frida-micro-version', type=str)
-    parser.add_argument('frida_nano_version', metavar='frida-nano-version', type=str)
+    parser.add_argument('plawnekjx_version', metavar='plawnekjx-version', type=str)
+    parser.add_argument('plawnekjx_major_version', metavar='plawnekjx-major-version', type=str)
+    parser.add_argument('plawnekjx_minor_version', metavar='plawnekjx-minor-version', type=str)
+    parser.add_argument('plawnekjx_micro_version', metavar='plawnekjx-micro-version', type=str)
+    parser.add_argument('plawnekjx_nano_version', metavar='plawnekjx-nano-version', type=str)
     parser.add_argument('api_version', metavar='api-version', type=str)
-    parser.add_argument('core_header', metavar='/path/to/frida-core.h', type=argparse.FileType('r', encoding='utf-8'))
-    parser.add_argument('core_gir', metavar='/path/to/Frida-x.y.gir', type=argparse.FileType('r', encoding='utf-8'))
-    parser.add_argument('core_vapi', metavar='/path/to/frida-core.vapi', type=argparse.FileType('r', encoding='utf-8'))
-    parser.add_argument('base_header', metavar='/path/to/frida-base.h', type=argparse.FileType('r', encoding='utf-8'))
-    parser.add_argument('base_gir', metavar='/path/to/FridaBase-x.y.gir', type=argparse.FileType('r', encoding='utf-8'))
-    parser.add_argument('base_vapi', metavar='/path/to/frida-base.vapi', type=argparse.FileType('r', encoding='utf-8'))
+    parser.add_argument('core_header', metavar='/path/to/plawnekjx-core.h', type=argparse.FileType('r', encoding='utf-8'))
+    parser.add_argument('core_gir', metavar='/path/to/Plawnekjx-x.y.gir', type=argparse.FileType('r', encoding='utf-8'))
+    parser.add_argument('core_vapi', metavar='/path/to/plawnekjx-core.vapi', type=argparse.FileType('r', encoding='utf-8'))
+    parser.add_argument('base_header', metavar='/path/to/plawnekjx-base.h', type=argparse.FileType('r', encoding='utf-8'))
+    parser.add_argument('base_gir', metavar='/path/to/PlawnekjxBase-x.y.gir', type=argparse.FileType('r', encoding='utf-8'))
+    parser.add_argument('base_vapi', metavar='/path/to/plawnekjx-base.vapi', type=argparse.FileType('r', encoding='utf-8'))
     parser.add_argument('output_dir', metavar='/output/dir')
 
     args = parser.parse_args()
 
     output_type = args.output_type
-    frida_version = args.frida_version
-    frida_version_components = (
-        args.frida_major_version,
-        args.frida_minor_version,
-        args.frida_micro_version,
-        args.frida_nano_version,
+    plawnekjx_version = args.plawnekjx_version
+    plawnekjx_version_components = (
+        args.plawnekjx_major_version,
+        args.plawnekjx_minor_version,
+        args.plawnekjx_micro_version,
+        args.plawnekjx_nano_version,
     )
     api_version = args.api_version
     core_header = args.core_header.read()
@@ -60,11 +60,11 @@ def main():
     output_dir = Path(args.output_dir)
 
     if output_type == 'vapi-stamp':
-        (output_dir / f"frida-core-{api_version}.vapi.stamp").write_bytes(b"")
+        (output_dir / f"plawnekjx-core-{api_version}.vapi.stamp").write_bytes(b"")
         return
 
     toplevel_names = [
-        "frida.vala",
+        "plawnekjx.vala",
         "package-manager.vala",
         "control-service.vala",
         "portal-service.vala",
@@ -91,7 +91,7 @@ def main():
     elif output_type == 'vapi':
         enable_vapi = True
 
-    api = parse_api(frida_version, frida_version_components, api_version, toplevel_code, core_header, core_vapi, base_header, base_vapi)
+    api = parse_api(plawnekjx_version, plawnekjx_version_components, api_version, toplevel_code, core_header, core_vapi, base_header, base_vapi)
 
     if enable_header:
         emit_header(api, output_dir)
@@ -103,27 +103,27 @@ def main():
         emit_vapi(api, output_dir)
 
 def emit_header(api, output_dir):
-    with OutputFile(output_dir / 'frida-core.h') as output_header_file:
-        output_header_file.write("#ifndef __FRIDA_CORE_H__\n#define __FRIDA_CORE_H__\n\n")
+    with OutputFile(output_dir / 'plawnekjx-core.h') as output_header_file:
+        output_header_file.write("#ifndef __PLAWNEKJX_CORE_H__\n#define __PLAWNEKJX_CORE_H__\n\n")
 
         output_header_file.write("#include <glib.h>\n#include <glib-object.h>\n#include <gio/gio.h>\n#include <json-glib/json-glib.h>\n\n")
 
-        output_header_file.write(f"#define FRIDA_VERSION \"{api.frida_version}\"\n\n")
+        output_header_file.write(f"#define PLAWNEKJX_VERSION \"{api.plawnekjx_version}\"\n\n")
 
-        for name, value in zip(['MAJOR', 'MINOR', 'MICRO', 'NANO'], api.frida_version_components):
-            output_header_file.write(f"#define FRIDA_{name}_VERSION {value}\n")
+        for name, value in zip(['MAJOR', 'MINOR', 'MICRO', 'NANO'], api.plawnekjx_version_components):
+            output_header_file.write(f"#define PLAWNEKJX_{name}_VERSION {value}\n")
 
         output_header_file.write("""
-#define FRIDA_CHECK_VERSION(maj, min, mic) \\
-    (FRIDA_CURRENT_VERSION >= FRIDA_VERSION_ENCODE ((maj), (min), (mic)))
+#define PLAWNEKJX_CHECK_VERSION(maj, min, mic) \\
+    (PLAWNEKJX_CURRENT_VERSION >= PLAWNEKJX_VERSION_ENCODE ((maj), (min), (mic)))
 
-#define FRIDA_CURRENT_VERSION \\
-    FRIDA_VERSION_ENCODE (    \\
-        FRIDA_MAJOR_VERSION,  \\
-        FRIDA_MINOR_VERSION,  \\
-        FRIDA_MICRO_VERSION)
+#define PLAWNEKJX_CURRENT_VERSION \\
+    PLAWNEKJX_VERSION_ENCODE (    \\
+        PLAWNEKJX_MAJOR_VERSION,  \\
+        PLAWNEKJX_MINOR_VERSION,  \\
+        PLAWNEKJX_MICRO_VERSION)
 
-#define FRIDA_VERSION_ENCODE(maj, min, mic) \\
+#define PLAWNEKJX_VERSION_ENCODE(maj, min, mic) \\
     (((maj) * 1000000U) + ((min) * 1000U) + (mic))
 """)
 
@@ -138,17 +138,17 @@ def emit_header(api, output_dir):
             output_header_file.write("\n\n" + enum.c_definition)
 
         output_header_file.write("\n\n/* Library lifetime */")
-        output_header_file.write("\nvoid frida_init (void);")
-        output_header_file.write("\nvoid frida_shutdown (void);")
-        output_header_file.write("\nvoid frida_deinit (void);")
-        output_header_file.write("\nGMainContext * frida_get_main_context (void);")
+        output_header_file.write("\nvoid plawnekjx_init (void);")
+        output_header_file.write("\nvoid plawnekjx_shutdown (void);")
+        output_header_file.write("\nvoid plawnekjx_deinit (void);")
+        output_header_file.write("\nGMainContext * plawnekjx_get_main_context (void);")
 
         output_header_file.write("\n\n/* Object lifetime */")
-        output_header_file.write("\nvoid frida_unref (gpointer obj);")
+        output_header_file.write("\nvoid plawnekjx_unref (gpointer obj);")
 
         output_header_file.write("\n\n/* Library versioning */")
-        output_header_file.write("\nvoid frida_version (guint * major, guint * minor, guint * micro, guint * nano);")
-        output_header_file.write("\nconst gchar * frida_version_string (void);")
+        output_header_file.write("\nvoid plawnekjx_version (guint * major, guint * minor, guint * micro, guint * nano);")
+        output_header_file.write("\nconst gchar * plawnekjx_version_string (void);")
 
         for object_type in api.object_types:
             output_header_file.write("\n\n/* %s */" % object_type.name)
@@ -171,7 +171,7 @@ def emit_header(api, output_dir):
 
         if len(api.error_types) > 0:
             output_header_file.write("\n\n/* Errors */\n")
-            output_header_file.write("\n\n".join(map(lambda enum: "GQuark frida_%(name_lc)s_quark (void);\n" \
+            output_header_file.write("\n\n".join(map(lambda enum: "GQuark plawnekjx_%(name_lc)s_quark (void);\n" \
                 % { 'name_lc': enum.name_lc }, api.error_types)))
             output_header_file.write("\n")
             output_header_file.write("\n\n".join(map(lambda enum: enum.c_definition, api.error_types)))
@@ -186,16 +186,16 @@ def emit_header(api, output_dir):
         output_header_file.write("\n\n/* Macros */")
         macros = []
         for enum in api.enum_types:
-            macros.append("#define FRIDA_TYPE_%(name_uc)s (frida_%(name_lc)s_get_type ())" \
+            macros.append("#define PLAWNEKJX_TYPE_%(name_uc)s (plawnekjx_%(name_lc)s_get_type ())" \
                 % { 'name_lc': enum.name_lc, 'name_uc': enum.name_uc })
         for object_type in api.object_types:
-            macros.append("""#define FRIDA_TYPE_%(name_uc)s (frida_%(name_lc)s_get_type ())
-#define FRIDA_%(name_uc)s(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), FRIDA_TYPE_%(name_uc)s, Frida%(name)s))
-#define FRIDA_IS_%(name_uc)s(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FRIDA_TYPE_%(name_uc)s))""" \
+            macros.append("""#define PLAWNEKJX_TYPE_%(name_uc)s (plawnekjx_%(name_lc)s_get_type ())
+#define PLAWNEKJX_%(name_uc)s(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PLAWNEKJX_TYPE_%(name_uc)s, Plawnekjx%(name)s))
+#define PLAWNEKJX_IS_%(name_uc)s(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PLAWNEKJX_TYPE_%(name_uc)s))""" \
                 % { 'name': object_type.name, 'name_lc': object_type.name_lc, 'name_uc': object_type.name_uc })
 
         for enum in api.error_types:
-            macros.append("#define FRIDA_%(name_uc)s (frida_%(name_lc)s_quark ())" \
+            macros.append("#define PLAWNEKJX_%(name_uc)s (plawnekjx_%(name_lc)s_quark ())" \
                 % { 'name_lc': enum.name_lc, 'name_uc': enum.name_uc })
         output_header_file.write("\n" + "\n\n".join(macros))
 
@@ -238,7 +238,7 @@ def emit_gir(api: ApiSpec, core_gir: str, base_gir: str, output_dir: Path) -> st
         for elem in core_elements + base_elements:
             if tag_name == "class":
                 for child in list(elem):
-                    if (child.tag == CORE_TAG_IMPLEMENTS and child.get("name") in {"Frida.HostSessionHub", "FridaBase.AgentMessageSink"}) \
+                    if (child.tag == CORE_TAG_IMPLEMENTS and child.get("name") in {"Plawnekjx.HostSessionHub", "PlawnekjxBase.AgentMessageSink"}) \
                             or child.tag == CORE_TAG_FIELD \
                             or child.get("name").startswith("_"):
                         elem.remove(child)
@@ -252,17 +252,17 @@ def emit_gir(api: ApiSpec, core_gir: str, base_gir: str, output_dir: Path) -> st
     result = ET.tostring(merged_root,
                          encoding="unicode",
                          xml_declaration=True)
-    result = result.replace("FridaBase.", "Frida.")
-    with OutputFile(output_dir / f"Frida-{api.version}.gir") as output_gir:
+    result = result.replace("PlawnekjxBase.", "Plawnekjx.")
+    with OutputFile(output_dir / f"Plawnekjx-{api.version}.gir") as output_gir:
         output_gir.write(result)
 
 def filter_elements(elements: List[ET.Element], spec_set: Set[str]):
     return [elem for elem in elements if elem.get("name") in spec_set]
 
 def emit_vapi(api, output_dir):
-    with OutputFile(output_dir / f"frida-core-{api.version}.vapi") as output_vapi_file:
-        output_vapi_file.write("[CCode (cheader_filename = \"frida-core.h\", cprefix = \"Frida\", lower_case_cprefix = \"frida_\")]")
-        output_vapi_file.write("\nnamespace Frida {")
+    with OutputFile(output_dir / f"plawnekjx-core-{api.version}.vapi") as output_vapi_file:
+        output_vapi_file.write("[CCode (cheader_filename = \"plawnekjx-core.h\", cprefix = \"Plawnekjx\", lower_case_cprefix = \"plawnekjx_\")]")
+        output_vapi_file.write("\nnamespace Plawnekjx {")
         output_vapi_file.write("\n\tpublic static void init ();")
         output_vapi_file.write("\n\tpublic static void shutdown ();")
         output_vapi_file.write("\n\tpublic static void deinit ();")
@@ -298,12 +298,12 @@ def emit_vapi(api, output_dir):
 
         output_vapi_file.write("\n}\n")
 
-    with OutputFile(output_dir / f"frida-core-{api.version}.deps") as output_deps_file:
+    with OutputFile(output_dir / f"plawnekjx-core-{api.version}.deps") as output_deps_file:
         output_deps_file.write("glib-2.0\n")
         output_deps_file.write("gobject-2.0\n")
         output_deps_file.write("gio-2.0\n")
 
-def parse_api(frida_version, frida_version_components, api_version, toplevel_code, core_header, core_vapi, base_header, base_vapi):
+def parse_api(plawnekjx_version, plawnekjx_version_components, api_version, toplevel_code, core_header, core_vapi, base_header, base_vapi):
     all_headers = core_header + "\n" + base_header
 
     all_enum_names = [m.group(1) for m in re.finditer(r"^\t+public\s+enum\s+(\w+)\s+", toplevel_code + "\n" + base_vapi, re.MULTILINE)]
@@ -469,7 +469,7 @@ def parse_api(frida_version, frida_version_components, api_version, toplevel_cod
         elif current_enum is not None:
             current_enum.vapi_members.append(stripped_line)
         elif current_object_type is not None and stripped_line.startswith("public"):
-            if stripped_line.startswith("public " + current_object_type.name + " (") or stripped_line.startswith("public static Frida." + current_object_type.name + " @new ("):
+            if stripped_line.startswith("public " + current_object_type.name + " (") or stripped_line.startswith("public static Plawnekjx." + current_object_type.name + " @new ("):
                 if len(current_object_type.c_constructors) > 0:
                     current_object_type.vapi_constructor = stripped_line
             elif stripped_line.startswith("public signal"):
@@ -493,10 +493,10 @@ def parse_api(frida_version, frida_version_components, api_version, toplevel_cod
 
     functions = [f for f in parse_vapi_functions(base_vapi) if function_is_public(f.name)]
     for f in functions:
-        m = re.search(r"^[\w\*]+ frida_{}.+?;".format(f.name), all_headers, re.MULTILINE | re.DOTALL)
+        m = re.search(r"^[\w\*]+ plawnekjx_{}.+?;".format(f.name), all_headers, re.MULTILINE | re.DOTALL)
         f.c_prototype = beautify_cprototype(m.group(0))
 
-    return ApiSpec(frida_version, frida_version_components, api_version, object_types, functions, enum_types, error_types)
+    return ApiSpec(plawnekjx_version, plawnekjx_version_components, api_version, object_types, functions, enum_types, error_types)
 
 def function_is_public(name):
     return not name.startswith("_") and \
@@ -524,8 +524,8 @@ def parse_vapi_functions(vapi) -> List[ApiFunction]:
 
 @dataclass
 class ApiSpec:
-    frida_version: str
-    frida_version_components: List[int]
+    plawnekjx_version: str
+    plawnekjx_version_components: List[int]
     version: str
     object_types: List[ApiObjectType]
     functions: List[ApiFunction]
@@ -537,7 +537,7 @@ class ApiEnum:
         self.name = name
         self.name_lc = camel_identifier_to_lc(self.name)
         self.name_uc = camel_identifier_to_uc(self.name)
-        self.c_name = 'Frida' + name
+        self.c_name = 'Plawnekjx' + name
         self.c_name_lc = camel_identifier_to_lc(self.c_name)
         self.c_definition = None
         self.vapi_declaration = None
@@ -551,7 +551,7 @@ class ApiObjectType:
         self.kind = kind
         self.property_names = []
         self.method_names = []
-        self.c_name = 'Frida' + name
+        self.c_name = 'Plawnekjx' + name
         self.c_name_lc = camel_identifier_to_lc(self.c_name)
         self.c_get_type = None
         self.c_constructors = []

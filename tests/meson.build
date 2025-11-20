@@ -50,7 +50,7 @@ else
   system_vala_args += ['--pkg=posix']
 endif
 
-frida_tests = static_library('frida-tests', test_sources,
+plawnekjx_tests = static_library('plawnekjx-tests', test_sources,
   vala_args: [
     '--pkg=gmodule-2.0',
     test_vala_args,
@@ -63,32 +63,32 @@ frida_tests = static_library('frida-tests', test_sources,
 extra_link_args = []
 extra_link_depends = []
 if host_os_family == 'darwin'
-  symlist = 'frida-tests.symbols'
+  symlist = 'plawnekjx-tests.symbols'
   extra_link_args += ['-Wl,-exported_symbols_list,' + meson.current_source_dir() / symlist]
   extra_link_depends += [symlist]
 elif host_os_family != 'windows'
-  symscript = 'frida-tests.version'
+  symscript = 'plawnekjx-tests.version'
   extra_link_args += ['-Wl,--version-script,' + meson.current_source_dir() / symscript]
   extra_link_depends += [symscript]
 endif
 if host_os == 'macos'
-  runner_plist = 'frida-tests.plist'
+  runner_plist = 'plawnekjx-tests.plist'
   extra_link_args += ['-Wl,-sectcreate,__TEXT,__info_plist,' + meson.current_source_dir() / runner_plist]
   extra_link_depends += [runner_plist]
 endif
 
-raw_runner = executable('frida-tests-raw', 'main.vala',
+raw_runner = executable('plawnekjx-tests-raw', 'main.vala',
   vala_args: [core_vala_args, system_vala_args],
   link_args: extra_link_args,
   link_depends: extra_link_depends,
-  link_with: frida_tests,
+  link_with: plawnekjx_tests,
   dependencies: [core_dep],
 )
 
-runner = custom_target('frida-tests',
-  input: [raw_runner, 'frida-tests.xcent'],
-  output: 'frida-tests' + exe_suffix,
-  command: post_process + ['executable', 're.frida.CoreTests', '@INPUT1@'],
+runner = custom_target('plawnekjx-tests',
+  input: [raw_runner, 'plawnekjx-tests.xcent'],
+  output: 'plawnekjx-tests' + exe_suffix,
+  command: post_process + ['executable', 're.plawnekjx.CoreTests', '@INPUT1@'],
   build_by_default: true,
 )
 
